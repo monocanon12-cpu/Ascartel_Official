@@ -1,0 +1,33 @@
+# Robots.txt pour Boutique Aina
+# https://boutique-aina.mg/
+
+User-agent: *
+Allow: /
+
+# Pages à indexer
+Allow: /index.html
+Allow: /a-propos.html
+Allow: /faq.html
+Allow: /contact.html
+
+# Pages légales (noindex mais accessibles)
+Allow: /mentions-legales.html
+Allow: /cgv.html
+Allow: /confidentialite.html
+Allow: /politique-cookies.html
+
+# Pages à ne pas indexer
+Disallow: /panier.html
+Disallow: /login.html
+Disallow: /404.html
+
+# Ressources
+Allow: /*.css
+Allow: /*.js
+Allow: /*.jpg
+Allow: /*.png
+Allow: /*.gif
+Allow: /*.svg
+
+# Sitemap
+Sitemap: https://boutique-aina.mg/sitemap.xml

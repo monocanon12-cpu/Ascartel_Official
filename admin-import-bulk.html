@@ -1,0 +1,997 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Import en Masse • ASCARTEL Admin</title>
+  
+  <meta name="robots" content="noindex, nofollow" />
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+  
+  <link rel="stylesheet" href="design-system.css" />
+  <link rel="stylesheet" href="admin.css" />
+  <link rel="stylesheet" href="dark-mode.css" />
+  
+  <style>
+    .upload-zone {
+      border: 3px dashed #d1d5db;
+      border-radius: 16px;
+      padding: 60px 20px;
+      text-align: center;
+      background: #f9fafb;
+      transition: all 0.3s;
+      cursor: pointer;
+      margin-bottom: 30px;
+    }
+    
+    .upload-zone:hover,
+    .upload-zone.dragover {
+      border-color: #f68db5;
+      background: #fef3f8;
+    }
+    
+    .upload-zone i {
+      font-size: 4rem;
+      color: #d1d5db;
+      margin-bottom: 20px;
+      display: block;
+    }
+    
+    .upload-zone.dragover i {
+      color: #f68db5;
+    }
+    
+    .upload-zone h3 {
+      color: #374151;
+      margin: 0 0 10px 0;
+      font-size: 1.3rem;
+    }
+    
+    .upload-zone p {
+      color: #6b7280;
+      margin: 0;
+    }
+    
+    .upload-zone .btn-upload {
+      margin-top: 20px;
+      padding: 15px 40px;
+      background: #f68db5;
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-size: 1.1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .upload-zone .btn-upload:hover {
+      background: #e85d9a;
+      transform: translateY(-2px);
+    }
+    
+    .products-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+      gap: 25px;
+      margin-bottom: 30px;
+    }
+    
+    .product-card {
+      background: white;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+      transition: all 0.3s;
+    }
+    
+    .product-card:hover {
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+    }
+    
+    .product-image-container {
+      position: relative;
+      height: 250px;
+      background: #f3f4f6;
+      overflow: hidden;
+    }
+    
+    .product-image-container img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    
+    .product-remove {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: rgba(239, 68, 68, 0.9);
+      color: white;
+      border: none;
+      width: 35px;
+      height: 35px;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s;
+    }
+    
+    .product-remove:hover {
+      background: #dc2626;
+      transform: scale(1.1);
+    }
+    
+    .product-number {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      background: rgba(26, 26, 46, 0.8);
+      color: white;
+      padding: 5px 12px;
+      border-radius: 20px;
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+    
+    .product-form {
+      padding: 20px;
+    }
+    
+    .form-group-compact {
+      margin-bottom: 15px;
+    }
+    
+    .form-group-compact label {
+      display: block;
+      margin-bottom: 6px;
+      font-weight: 500;
+      color: #374151;
+      font-size: 0.85rem;
+    }
+    
+    .form-group-compact .required {
+      color: #ef4444;
+    }
+    
+    .form-control-compact {
+      width: 100%;
+      padding: 10px 12px;
+      border: 2px solid #e5e7eb;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      font-family: inherit;
+      transition: border-color 0.3s;
+    }
+    
+    .form-control-compact:focus {
+      outline: none;
+      border-color: #f68db5;
+    }
+    
+    .form-row-compact {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    
+    textarea.form-control-compact {
+      min-height: 70px;
+      resize: vertical;
+    }
+    
+    .form-check-compact {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px;
+      background: #fef3c7;
+      border-radius: 8px;
+      font-size: 0.85rem;
+    }
+    
+    .form-check-compact input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      accent-color: #f68db5;
+    }
+    
+    .action-bar {
+      position: sticky;
+      bottom: 0;
+      background: white;
+      padding: 20px;
+      box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.1);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 15px;
+      z-index: 100;
+      border-radius: 16px 16px 0 0;
+    }
+    
+    .action-bar-info {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+    
+    .action-bar-info .count {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: #1a1a2e;
+    }
+    
+    .action-bar-info .count span {
+      color: #f68db5;
+      font-size: 1.5rem;
+    }
+    
+    .action-bar-buttons {
+      display: flex;
+      gap: 10px;
+    }
+    
+    .btn-save-all {
+      padding: 15px 40px;
+      background: #22c55e;
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-size: 1.1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .btn-save-all:hover {
+      background: #16a34a;
+      transform: translateY(-2px);
+    }
+    
+    .btn-save-all:disabled {
+      background: #9ca3af;
+      cursor: not-allowed;
+      transform: none;
+    }
+    
+    .btn-cancel-all {
+      padding: 15px 30px;
+      background: #f3f4f6;
+      color: #374151;
+      border: none;
+      border-radius: 12px;
+      font-size: 1rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    
+    .btn-cancel-all:hover {
+      background: #e5e7eb;
+    }
+    
+    .progress-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.8);
+      z-index: 3000;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .progress-overlay.active {
+      display: flex;
+    }
+    
+    .progress-content {
+      background: white;
+      border-radius: 16px;
+      padding: 40px;
+      text-align: center;
+      max-width: 500px;
+      width: 90%;
+    }
+    
+    .progress-content h3 {
+      margin: 0 0 20px 0;
+      color: #1a1a2e;
+    }
+    
+    .progress-bar-container {
+      background: #e5e7eb;
+      border-radius: 10px;
+      height: 30px;
+      overflow: hidden;
+      margin-bottom: 15px;
+    }
+    
+    .progress-bar {
+      background: linear-gradient(90deg, #f68db5 0%, #e85d9a 100%);
+      height: 100%;
+      transition: width 0.3s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: 600;
+    }
+    
+    .progress-text {
+      color: #6b7280;
+      font-size: 0.95rem;
+    }
+    
+    .notification {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      padding: 15px 25px;
+      border-radius: 10px;
+      color: white;
+      font-weight: 500;
+      z-index: 4000;
+      animation: slideIn 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    }
+    
+    .notification.success {
+      background: #22c55e;
+    }
+    
+    .notification.error {
+      background: #ef4444;
+    }
+    
+    .notification.info {
+      background: #3b82f6;
+    }
+    
+    @keyframes slideIn {
+      from {
+        transform: translateX(100%);
+        opacity: 0;
+      }
+      to {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
+    
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: #6b7280;
+    }
+    
+    .empty-state i {
+      font-size: 4rem;
+      color: #d1d5db;
+      margin-bottom: 20px;
+    }
+    
+    @media (max-width: 768px) {
+      .products-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .action-bar {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      
+      .action-bar-buttons {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body class="admin-body">
+  <!-- Mobile Menu Toggle -->
+  <button class="mobile-menu-toggle" id="mobileMenuToggle" aria-label="Ouvrir le menu">
+    <i class="fas fa-bars"></i>
+  </button>
+
+  <!-- Sidebar Overlay -->
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <!-- Sidebar -->
+  <aside class="admin-sidebar" id="adminSidebar">
+    <div class="sidebar-header">
+      <div class="admin-logo">
+        <i class="fas fa-store"></i>
+        <span>ASCARTEL</span>
+      </div>
+      <button class="sidebar-close" id="sidebarClose" aria-label="Fermer le menu">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    
+    <nav class="sidebar-nav">
+      <ul class="nav-list">
+        <li class="nav-item">
+          <a href="admin-dashboard.html" class="nav-link">
+            <i class="fas fa-chart-line"></i>
+            <span>Dashboard</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="admin-articles.html" class="nav-link">
+            <i class="fas fa-boxes-stacked"></i>
+            <span>Gestion Articles</span>
+          </a>
+        </li>
+        <li class="nav-item active">
+          <a href="admin-import-bulk.html" class="nav-link">
+            <i class="fas fa-cloud-upload-alt"></i>
+            <span>Import en Masse</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="#ventes" class="nav-link">
+            <i class="fas fa-shopping-cart"></i>
+            <span>Ventes</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="#parametres" class="nav-link">
+            <i class="fas fa-cog"></i>
+            <span>Paramètres</span>
+          </a>
+        </li>
+      </ul>
+    </nav>
+    
+    <div class="sidebar-footer">
+      <div class="admin-profile">
+        <div class="profile-avatar">
+          <i class="fas fa-user"></i>
+        </div>
+        <div class="profile-info">
+          <span class="profile-name" id="adminName">Admin</span>
+          <span class="profile-role">Administrateur</span>
+        </div>
+      </div>
+      <a href="#" class="logout-btn" id="logoutBtn">
+        <i class="fas fa-sign-out-alt"></i>
+        <span>Déconnexion</span>
+      </a>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="admin-main">
+    <div style="margin-bottom: 25px;">
+      <h1 style="font-size: 1.8rem; color: #1a1a2e; margin: 0 0 10px 0;">
+        <i class="fas fa-cloud-upload-alt" style="color: #f68db5; margin-right: 10px;"></i>
+        Import en Masse
+      </h1>
+      <p style="color: #6b7280; margin: 0;">
+        Importez plusieurs photos à la fois, puis ajoutez les détails pour chaque produit
+      </p>
+    </div>
+
+    <!-- Upload Zone -->
+    <div class="upload-zone" id="uploadZone">
+      <i class="fas fa-cloud-upload-alt"></i>
+      <h3>Glissez vos images ici</h3>
+      <p>ou cliquez pour sélectionner plusieurs fichiers</p>
+      <button class="btn-upload" onclick="document.getElementById('bulkUpload').click()">
+        <i class="fas fa-folder-open"></i>
+        Sélectionner les images
+      </button>
+      <input type="file" id="bulkUpload" multiple accept="image/*" style="display: none;">
+      <p style="margin-top: 15px; font-size: 0.85rem; color: #9ca3af;">
+        Formats acceptés: JPG, PNG, GIF • Max 5MB par image
+      </p>
+    </div>
+
+    <!-- Products Grid -->
+    <div id="productsContainer">
+      <div class="empty-state">
+        <i class="fas fa-images"></i>
+        <h3>Aucune image importée</h3>
+        <p>Commencez par sélectionner vos images ci-dessus</p>
+      </div>
+    </div>
+
+    <!-- Action Bar (hidden by default) -->
+    <div class="action-bar" id="actionBar" style="display: none;">
+      <div class="action-bar-info">
+        <div class="count">
+          <span id="productCount">0</span> produit(s) à enregistrer
+        </div>
+      </div>
+      <div class="action-bar-buttons">
+        <button class="btn-cancel-all" onclick="cancelAll()">
+          <i class="fas fa-times"></i> Annuler tout
+        </button>
+        <button class="btn-save-all" onclick="saveAllProducts()">
+          <i class="fas fa-save"></i> Enregistrer tous les produits
+        </button>
+      </div>
+    </div>
+  </main>
+
+  <!-- Progress Overlay -->
+  <div class="progress-overlay" id="progressOverlay">
+    <div class="progress-content">
+      <h3>Enregistrement en cours...</h3>
+      <div class="progress-bar-container">
+        <div class="progress-bar" id="progressBar" style="width: 0%;">0%</div>
+      </div>
+      <p class="progress-text" id="progressText">Préparation...</p>
+    </div>
+  </div>
+
+  <!-- Dark Mode Toggle -->
+  <button class="dark-mode-toggle" onclick="toggleDarkMode()" aria-label="Toggle Dark Mode">
+    <i class="fas fa-moon"></i>
+  </button>
+
+  <script src="dark-mode.js"></script>
+
+  <script>
+    // =============================================
+    // CONFIGURATION
+    // =============================================
+    const API_URL = 'http://localhost:3000/api';
+    let authToken = localStorage.getItem('ascartel_token') || sessionStorage.getItem('ascartel_token');
+    let products = [];
+
+    // =============================================
+    // INITIALISATION
+    // =============================================
+    document.addEventListener('DOMContentLoaded', async () => {
+      await checkConnection();
+      setupUploadZone();
+      setupSidebar();
+    });
+
+    async function checkConnection() {
+      try {
+        if (!authToken) {
+          await autoLogin();
+        }
+      } catch (error) {
+        console.error('Connection error:', error);
+      }
+    }
+
+    async function autoLogin() {
+      try {
+        const response = await fetch(`${API_URL}/auth/login`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            email: 'master@ascartel.com',
+            password: 'ASCARTEL_MASTER_2025'
+          })
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+          authToken = data.token;
+          localStorage.setItem('ascartel_token', authToken);
+          document.getElementById('adminName').textContent = data.user.name;
+        }
+      } catch (error) {
+        console.error('Auto-login failed:', error);
+      }
+    }
+
+    // =============================================
+    // UPLOAD ZONE
+    // =============================================
+    function setupUploadZone() {
+      const uploadZone = document.getElementById('uploadZone');
+      const fileInput = document.getElementById('bulkUpload');
+      
+      // Click to upload
+      uploadZone.addEventListener('click', (e) => {
+        if (e.target.tagName !== 'BUTTON') {
+          fileInput.click();
+        }
+      });
+      
+      // File input change
+      fileInput.addEventListener('change', handleFiles);
+      
+      // Drag and drop
+      uploadZone.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        uploadZone.classList.add('dragover');
+      });
+      
+      uploadZone.addEventListener('dragleave', () => {
+        uploadZone.classList.remove('dragover');
+      });
+      
+      uploadZone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        uploadZone.classList.remove('dragover');
+        
+        const files = Array.from(e.dataTransfer.files).filter(f => f.type.startsWith('image/'));
+        if (files.length > 0) {
+          processFiles(files);
+        }
+      });
+    }
+
+    function handleFiles(event) {
+      const files = Array.from(event.target.files);
+      processFiles(files);
+      event.target.value = ''; // Reset input
+    }
+
+    function processFiles(files) {
+      let validFiles = 0;
+      let invalidFiles = 0;
+      
+      files.forEach((file, index) => {
+        // Vérifications
+        if (!file.type.startsWith('image/')) {
+          invalidFiles++;
+          return;
+        }
+        
+        if (file.size > 5 * 1024 * 1024) {
+          showNotification(`${file.name} est trop grande (max 5MB)`, 'error');
+          invalidFiles++;
+          return;
+        }
+        
+        // Lire le fichier
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          const product = {
+            id: Date.now() + index,
+            image: e.target.result,
+            fileName: file.name,
+            nom: '',
+            description: '',
+            genre: '',
+            categorie: '',
+            stock_quantite: 10,
+            prix_reel: 0,
+            prix_promo: null,
+            flash_active: false
+          };
+          
+          products.push(product);
+          validFiles++;
+          
+          renderProducts();
+          updateActionBar();
+        };
+        reader.readAsDataURL(file);
+      });
+      
+      if (validFiles > 0) {
+        showNotification(`${validFiles} image(s) importée(s)`, 'success');
+      }
+      
+      if (invalidFiles > 0) {
+        showNotification(`${invalidFiles} fichier(s) ignoré(s)`, 'error');
+      }
+    }
+
+    // =============================================
+    // RENDER PRODUCTS
+    // =============================================
+    function renderProducts() {
+      const container = document.getElementById('productsContainer');
+      
+      if (products.length === 0) {
+        container.innerHTML = `
+          <div class="empty-state">
+            <i class="fas fa-images"></i>
+            <h3>Aucune image importée</h3>
+            <p>Commencez par sélectionner vos images ci-dessus</p>
+          </div>
+        `;
+        return;
+      }
+      
+      container.innerHTML = `
+        <div class="products-grid">
+          ${products.map((product, index) => renderProductCard(product, index)).join('')}
+        </div>
+      `;
+    }
+
+    function renderProductCard(product, index) {
+      return `
+        <div class="product-card">
+          <div class="product-image-container">
+            <img src="${product.image}" alt="Produit ${index + 1}">
+            <div class="product-number">#${index + 1}</div>
+            <button class="product-remove" onclick="removeProduct(${product.id})">
+              <i class="fas fa-times"></i>
+            </button>
+          </div>
+          <div class="product-form">
+            <div class="form-group-compact">
+              <label>Nom du produit <span class="required">*</span></label>
+              <input type="text" class="form-control-compact" 
+                     placeholder="Ex: Robe Élégante Rose" 
+                     value="${product.nom}"
+                     onchange="updateProduct(${product.id}, 'nom', this.value)">
+            </div>
+            
+            <div class="form-group-compact">
+              <label>Description</label>
+              <textarea class="form-control-compact" 
+                        placeholder="Description du produit..."
+                        onchange="updateProduct(${product.id}, 'description', this.value)">${product.description}</textarea>
+            </div>
+            
+            <div class="form-group-compact">
+              <label>Pour qui ? <span class="required">*</span></label>
+              <select class="form-control-compact" 
+                      onchange="updateProduct(${product.id}, 'genre', this.value)">
+                <option value="">Sélectionner...</option>
+                <option value="Femme" ${product.genre === 'Femme' ? 'selected' : ''}>👩 Femme</option>
+                <option value="Homme" ${product.genre === 'Homme' ? 'selected' : ''}>👨 Homme</option>
+                <option value="Enfant" ${product.genre === 'Enfant' ? 'selected' : ''}>👶 Enfant</option>
+                <option value="Unisexe" ${product.genre === 'Unisexe' ? 'selected' : ''}>👥 Unisexe</option>
+                <option value="Accessoires" ${product.genre === 'Accessoires' ? 'selected' : ''}>💍 Accessoires</option>
+              </select>
+            </div>
+            
+            <div class="form-row-compact">
+              <div class="form-group-compact">
+                <label>Catégorie</label>
+                <select class="form-control-compact" 
+                        onchange="updateProduct(${product.id}, 'categorie', this.value)">
+                  <option value="">Sélectionner...</option>
+                  <option value="Robes" ${product.categorie === 'Robes' ? 'selected' : ''}>Robes</option>
+                  <option value="Tops" ${product.categorie === 'Tops' ? 'selected' : ''}>Tops</option>
+                  <option value="Pantalons" ${product.categorie === 'Pantalons' ? 'selected' : ''}>Pantalons</option>
+                  <option value="Jupes" ${product.categorie === 'Jupes' ? 'selected' : ''}>Jupes</option>
+                  <option value="Chemises" ${product.categorie === 'Chemises' ? 'selected' : ''}>Chemises</option>
+                  <option value="Vestes" ${product.categorie === 'Vestes' ? 'selected' : ''}>Vestes</option>
+                  <option value="Accessoires" ${product.categorie === 'Accessoires' ? 'selected' : ''}>Accessoires</option>
+                  <option value="Chaussures" ${product.categorie === 'Chaussures' ? 'selected' : ''}>Chaussures</option>
+                  <option value="Sacs" ${product.categorie === 'Sacs' ? 'selected' : ''}>Sacs</option>
+                </select>
+              </div>
+              
+              <div class="form-group-compact">
+                <label>Stock <span class="required">*</span></label>
+                <input type="number" class="form-control-compact" 
+                       placeholder="10" 
+                       min="0"
+                       value="${product.stock_quantite}"
+                       onchange="updateProduct(${product.id}, 'stock_quantite', parseInt(this.value))">
+              </div>
+            </div>
+            
+            <div class="form-row-compact">
+              <div class="form-group-compact">
+                <label>Prix (Ar) <span class="required">*</span></label>
+                <input type="number" class="form-control-compact" 
+                       placeholder="50000" 
+                       min="0"
+                       value="${product.prix_reel || ''}"
+                       onchange="updateProduct(${product.id}, 'prix_reel', parseInt(this.value))">
+              </div>
+              
+              <div class="form-group-compact">
+                <label>Prix promo (Ar)</label>
+                <input type="number" class="form-control-compact" 
+                       placeholder="25000" 
+                       min="0"
+                       value="${product.prix_promo || ''}"
+                       onchange="updateProduct(${product.id}, 'prix_promo', this.value ? parseInt(this.value) : null)">
+              </div>
+            </div>
+            
+            <div class="form-group-compact">
+              <label class="form-check-compact">
+                <input type="checkbox" 
+                       ${product.flash_active ? 'checked' : ''}
+                       onchange="updateProduct(${product.id}, 'flash_active', this.checked)">
+                <span>🔥 Vente Flash</span>
+              </label>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    // =============================================
+    // PRODUCT MANAGEMENT
+    // =============================================
+    function updateProduct(id, field, value) {
+      const product = products.find(p => p.id === id);
+      if (product) {
+        product[field] = value;
+      }
+    }
+
+    function removeProduct(id) {
+      products = products.filter(p => p.id !== id);
+      renderProducts();
+      updateActionBar();
+      showNotification('Produit retiré', 'info');
+    }
+
+    function updateActionBar() {
+      const actionBar = document.getElementById('actionBar');
+      const countEl = document.getElementById('productCount');
+      
+      if (products.length > 0) {
+        actionBar.style.display = 'flex';
+        countEl.textContent = products.length;
+      } else {
+        actionBar.style.display = 'none';
+      }
+    }
+
+    function cancelAll() {
+      if (confirm('Êtes-vous sûr de vouloir annuler ? Toutes les images seront supprimées.')) {
+        products = [];
+        renderProducts();
+        updateActionBar();
+        showNotification('Import annulé', 'info');
+      }
+    }
+
+    // =============================================
+    // SAVE ALL PRODUCTS
+    // =============================================
+    async function saveAllProducts() {
+      if (!authToken) {
+        showNotification('Vous devez être connecté', 'error');
+        return;
+      }
+      
+      // Validation
+      const invalidProducts = products.filter(p => !p.nom || !p.prix_reel);
+      if (invalidProducts.length > 0) {
+        showNotification(`${invalidProducts.length} produit(s) incomplet(s). Nom et prix sont obligatoires.`, 'error');
+        return;
+      }
+      
+      // Show progress
+      const overlay = document.getElementById('progressOverlay');
+      const progressBar = document.getElementById('progressBar');
+      const progressText = document.getElementById('progressText');
+      overlay.classList.add('active');
+      
+      let saved = 0;
+      let failed = 0;
+      
+      for (let i = 0; i < products.length; i++) {
+        const product = products[i];
+        const progress = Math.round(((i + 1) / products.length) * 100);
+        
+        progressBar.style.width = progress + '%';
+        progressBar.textContent = progress + '%';
+        progressText.textContent = `Enregistrement de ${product.nom || 'Produit ' + (i + 1)}... (${i + 1}/${products.length})`;
+        
+        try {
+          const response = await fetch(`${API_URL}/articles`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${authToken}`
+            },
+            body: JSON.stringify({
+              nom: product.nom,
+              description: product.description || null,
+              genre: product.genre || null,
+              categorie: product.categorie || null,
+              stock_quantite: product.stock_quantite,
+              prix_reel: product.prix_reel,
+              prix_promo: product.prix_promo,
+              image_url: product.image,
+              flash_active: product.flash_active
+            })
+          });
+          
+          const data = await response.json();
+          
+          if (data.success) {
+            saved++;
+          } else {
+            failed++;
+            console.error('Failed to save:', product.nom, data.error);
+          }
+        } catch (error) {
+          failed++;
+          console.error('Error saving:', product.nom, error);
+        }
+        
+        // Small delay to avoid overwhelming the server
+        await new Promise(resolve => setTimeout(resolve, 100));
+      }
+      
+      overlay.classList.remove('active');
+      
+      if (saved > 0) {
+        showNotification(`✅ ${saved} produit(s) enregistré(s) avec succès !`, 'success');
+        products = [];
+        renderProducts();
+        updateActionBar();
+        
+        // Redirect after 2 seconds
+        setTimeout(() => {
+          window.location.href = 'admin-articles.html';
+        }, 2000);
+      }
+      
+      if (failed > 0) {
+        showNotification(`⚠️ ${failed} produit(s) n'ont pas pu être enregistrés`, 'error');
+      }
+    }
+
+    // =============================================
+    // UTILITIES
+    // =============================================
+    function showNotification(message, type = 'info') {
+      const existing = document.querySelector('.notification');
+      if (existing) existing.remove();
+      
+      const notification = document.createElement('div');
+      notification.className = `notification ${type}`;
+      notification.innerHTML = `
+        <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'}"></i>
+        <span>${message}</span>
+      `;
+      
+      document.body.appendChild(notification);
+      setTimeout(() => notification.remove(), 4000);
+    }
+
+    function setupSidebar() {
+      const toggle = document.getElementById('mobileMenuToggle');
+      const sidebar = document.getElementById('adminSidebar');
+      const overlay = document.getElementById('sidebarOverlay');
+      const close = document.getElementById('sidebarClose');
+      
+      toggle.addEventListener('click', () => {
+        sidebar.classList.add('active');
+        overlay.classList.add('active');
+      });
+      
+      [close, overlay].forEach(el => {
+        el.addEventListener('click', () => {
+          sidebar.classList.remove('active');
+          overlay.classList.remove('active');
+        });
+      });
+    }
+
+    // Logout
+    document.getElementById('logoutBtn').addEventListener('click', (e) => {
+      e.preventDefault();
+      localStorage.removeItem('ascartel_token');
+      sessionStorage.removeItem('ascartel_token');
+      window.location.href = 'login.html';
+    });
+  </script>
+</body>
+</html>

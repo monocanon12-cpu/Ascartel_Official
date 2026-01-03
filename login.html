@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Connexion • Boutique Aina</title>
+  
+  <!-- SEO Meta Tags -->
+  <meta name="description" content="Connectez-vous à votre compte Boutique Aina pour accéder à vos commandes, favoris et bien plus." />
+  <meta name="robots" content="noindex, nofollow" />
+  
+  <!-- Preconnect -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  
+  <!-- Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+  
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="design-system.css" />
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="auth.css" />
+</head>
+<body>
+  <div class="auth-container">
+    <div class="auth-image"></div>
+    <div class="auth-form-container">
+      <form class="auth-form" action="#" method="POST">
+        <h1>Connexion</h1>
+        
+        <div class="form-group">
+          <label for="email">Adresse e-mail</label>
+          <input type="email" id="email" class="form-control" placeholder="votre@email.com" required>
+        </div>
+        
+        <div class="form-group">
+          <label for="password">Mot de passe</label>
+          <input type="password" id="password" class="form-control" placeholder="••••••••" required>
+        </div>
+        
+        <div class="form-group auth-options">
+          <label>
+            <input type="checkbox" id="remember">
+            Se souvenir de moi
+          </label>
+          <a href="#">Mot de passe oublié ?</a>
+        </div>
+        
+        <button type="submit" class="btn">Se connecter</button>
+        
+        <div class="auth-divider">
+          <span>ou</span>
+        </div>
+        
+        <div class="social-login">
+          <button type="button" class="social-btn google-btn">
+            <span>Se connecter avec Google</span>
+            <img src="https://www.google.com/favicon.ico" alt="Google" class="social-logo">
+          </button>
+          <button type="button" class="social-btn facebook-btn">
+            <span>Se connecter avec Facebook</span>
+            <img src="https://static.xx.fbcdn.net/rsrc.php/yD/r/d4ZIVX-5C-b.ico" alt="Facebook" class="social-logo">
+          </button>
+        </div>
+        
+        <div class="auth-footer">
+          Pas encore de compte ? <a href="#">S'inscrire</a>
+        </div>
+      </form>
+    </div>
+  </div>
+  
+  <script>
+    // Identifiants de test pour simulation
+    const TEST_USERS = {
+      'admin@monsite.com': {
+        password: 'Admin2025!',
+        role: 'admin',
+        redirect: 'admin-dashboard.html',
+        name: 'Administrateur'
+      },
+      'vendeur@monsite.com': {
+        password: 'Vente123',
+        role: 'collaborateur',
+        redirect: 'admin-dashboard.html',
+        name: 'Vendeur'
+      }
+    };
+
+    // Gestion de la connexion
+    document.querySelector('.auth-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      const email = document.getElementById('email').value.trim().toLowerCase();
+      const password = document.getElementById('password').value;
+      const remember = document.getElementById('remember').checked;
+      
+      // Vérification des identifiants
+      const user = TEST_USERS[email];
+      
+      if (user && user.password === password) {
+        // Connexion réussie
+        const userData = {
+          email: email,
+          role: user.role,
+          name: user.name,
+          loggedIn: true
+        };
+        
+        // Stocker les infos utilisateur
+        if (remember) {
+          localStorage.setItem('ainaUser', JSON.stringify(userData));
+        } else {
+          sessionStorage.setItem('ainaUser', JSON.stringify(userData));
+        }
+        
+        // Afficher message de succès
+        showNotification('Connexion réussie ! Redirection...', 'success');
+        
+        // Redirection selon le rôle
+        setTimeout(() => {
+          window.location.href = user.redirect;
+        }, 1000);
+        
+      } else {
+        // Échec de connexion
+        showNotification('Email ou mot de passe incorrect', 'error');
+        document.getElementById('password').value = '';
+      }
+    });
+    
+    // Fonction de notification
+    function showNotification(message, type) {
+      // Supprimer notification existante
+      const existing = document.querySelector('.login-notification');
+      if (existing) existing.remove();
+      
+      const notification = document.createElement('div');
+      notification.className = `login-notification ${type}`;
+      notification.innerHTML = `
+        <i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'}"></i>
+        <span>${message}</span>
+      `;
+      
+      document.querySelector('.auth-form').insertBefore(notification, document.querySelector('.auth-form h1').nextSibling);
+      
+      // Auto-suppression après 5s
+      setTimeout(() => notification.remove(), 5000);
+    }
+    
+    // Gestion des boutons de connexion sociale
+    document.querySelectorAll('.social-btn').forEach(btn => {
+      btn.addEventListener('click', function() {
+        showNotification('Connexion sociale bientôt disponible', 'error');
+      });
+    });
+    
+    // Vérifier si déjà connecté
+    const savedUser = localStorage.getItem('ainaUser') || sessionStorage.getItem('ainaUser');
+    if (savedUser) {
+      const user = JSON.parse(savedUser);
+      if (user.loggedIn && user.role === 'admin') {
+        window.location.href = 'admin-dashboard.html';
+      } else if (user.loggedIn) {
+        window.location.href = 'index.html';
+      }
+    }
+  </script>
+</body>
+</html>

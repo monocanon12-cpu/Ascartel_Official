@@ -1,0 +1,544 @@
+// =============================================
+// Application principale - Fonctionnalités e-commerce
+// =============================================
+
+document.addEventListener('DOMContentLoaded', function() {
+
+  // =============================================
+  // DEVISE - Normalisation EUR -> Ariary (Ar)
+  // =============================================
+  const CURRENCY = {
+    symbol: 'Ar',
+    euroToAriaryRate: 1000
+  };
+
+  function formatAriary(amount) {
+    const n = Math.round(Number(amount) || 0);
+    // Groupement par espaces (style FR)
+    const grouped = n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+    return `${grouped} ${CURRENCY.symbol}`;
+  }
+
+  function parseEuroLike(text) {
+    // Accepte: 29,99€ | 29.99 € | 29,99 | 29.99
+    const cleaned = String(text)
+      .replace(/\s/g, '')
+      .replace(/€/g, '')
+      .replace(/eur/gi, '');
+
+    const match = cleaned.match(/\d+(?:[\.,]\d+)?/);
+    if (!match) return null;
+    return Number(match[0].replace(',', '.'));
+  }
+
+  function convertEuroTextToAriaryText(text) {
+    const t = String(text);
+    if (!/€|\beur\b|\beuro\b/i.test(t)) return t;
+    const eur = parseEuroLike(t);
+    if (eur == null) return t.replace(/€/g, CURRENCY.symbol);
+    return formatAriary(eur * CURRENCY.euroToAriaryRate);
+  }
+
+  function normalizeDomCurrency() {
+    const selectors = [
+      '.price',
+      '.original-price',
+      '.sale-price',
+      '.rec-price',
+      '.flash-prices .original',
+      '.flash-prices .sale',
+      '.price-labels span',
+      '.country-selector span',
+      '.promo-content span',
+      '.shipping-item span'
+    ];
+
+    document.querySelectorAll(selectors.join(',')).forEach((el) => {
+      const before = el.textContent;
+      const after = convertEuroTextToAriaryText(before);
+      if (after !== before) el.textContent = after;
+    });
+  }
+
+  function migrateStoredCurrency() {
+    const keys = ['cart', 'wishlist', 'recentSearches', 'recentlyViewed'];
+
+    keys.forEach((key) => {
+      const raw = localStorage.getItem(key);
+      if (!raw) return;
+
+      try {
+        const data = JSON.parse(raw);
+
+        if (Array.isArray(data)) {
+          const migrated = data.map((item) => {
+            if (item && typeof item === 'object' && typeof item.price === 'string') {
+              return { ...item, price: convertEuroTextToAriaryText(item.price) };
+            }
+            return item;
+          });
+          localStorage.setItem(key, JSON.stringify(migrated));
+        }
+      } catch (_) {
+        // Ignore: donnée invalide
+      }
+    });
+  }
+
+  // 1) Migre le localStorage (anciens prix en €)
+  migrateStoredCurrency();
+
+  // =============================================
+  // WISHLIST - Liste de souhaits
+  // =============================================
+  const wishlist = {
+    items: JSON.parse(localStorage.getItem('wishlist')) || [],
+    
+    add(productId, productData) {
+      if (!this.items.find(item => item.id === productId)) {
+        this.items.push({ id: productId, ...productData });
+        this.save();
+        this.updateUI();
+        this.showNotification('Ajouté aux favoris ❤️');
+      }
+    },
+    
+    remove(productId) {
+      this.items = this.items.filter(item => item.id !== productId);
+      this.save();
+      this.updateUI();
+      this.showNotification('Retiré des favoris');
+    },
+    
+    toggle(productId, productData) {
+      if (this.items.find(item => item.id === productId)) {
+        this.remove(productId);
+        return false;
+      } else {
+        this.add(productId, productData);
+        return true;
+      }
+    },
+    
+    save() {
+      localStorage.setItem('wishlist', JSON.stringify(this.items));
+    },
+    
+    updateUI() {
+      const countEl = document.getElementById('wishlistCount');
+      if (countEl) {
+        countEl.textContent = this.items.length;
+        countEl.style.display = this.items.length > 0 ? 'flex' : 'none';
+      }
+      
+      // Mettre à jour les icônes coeur sur les produits
+      document.querySelectorAll('.wishlist-btn').forEach(btn => {
+        const productId = btn.dataset.productId;
+        const isInWishlist = this.items.find(item => item.id === productId);
+        btn.classList.toggle('active', isInWishlist);
+        btn.innerHTML = isInWishlist ? '<i class="fas fa-heart"></i>' : '<i class="far fa-heart"></i>';
+      });
+    },
+    
+    showNotification(message) {
+      const notification = document.createElement('div');
+      notification.className = 'wishlist-notification';
+      notification.textContent = message;
+      document.body.appendChild(notification);
+      
+      setTimeout(() => notification.classList.add('show'), 10);
+      setTimeout(() => {
+        notification.classList.remove('show');
+        setTimeout(() => notification.remove(), 300);
+      }, 2000);
+    }
+  };
+  
+  // Initialiser le compteur wishlist
+  wishlist.updateUI();
+  
+  // =============================================
+  // CART - Panier
+  // =============================================
+  const cart = {
+    items: JSON.parse(localStorage.getItem('cart')) || [],
+    
+    add(productId, productData) {
+      const existing = this.items.find(item => item.id === productId);
+      if (existing) {
+        existing.quantity++;
+      } else {
+        this.items.push({ id: productId, quantity: 1, ...productData });
+      }
+      this.save();
+      this.updateUI();
+      this.animateCart();
+      this.showNotification('Ajouté au panier 🛒');
+    },
+    
+    remove(productId) {
+      this.items = this.items.filter(item => item.id !== productId);
+      this.save();
+      this.updateUI();
+    },
+    
+    save() {
+      localStorage.setItem('cart', JSON.stringify(this.items));
+    },
+    
+    updateUI() {
+      const countEl = document.querySelector('.cart-count');
+      if (countEl) {
+        const total = this.items.reduce((sum, item) => sum + item.quantity, 0);
+        countEl.textContent = total;
+        countEl.style.display = total > 0 ? 'flex' : 'none';
+      }
+    },
+    
+    animateCart() {
+      const cartIcon = document.querySelector('.cart-icon');
+      if (cartIcon) {
+        cartIcon.classList.add('cart-bounce');
+        setTimeout(() => cartIcon.classList.remove('cart-bounce'), 1000);
+      }
+    },
+    
+    showNotification(message) {
+      const notification = document.createElement('div');
+      notification.className = 'cart-notification';
+      notification.textContent = message;
+      document.body.appendChild(notification);
+      
+      setTimeout(() => notification.classList.add('show'), 10);
+      setTimeout(() => {
+        notification.classList.remove('show');
+        setTimeout(() => notification.remove(), 300);
+      }, 2000);
+    }
+  };
+  
+  // Initialiser le compteur panier
+  cart.updateUI();
+
+  // 2) Normalise la devise visible (au cas où du contenu affiche encore €)
+  normalizeDomCurrency();
+  // 3) Re-normalise après les rendus dynamiques (Flash Sale, recommandations, etc.)
+  setTimeout(normalizeDomCurrency, 0);
+  setTimeout(normalizeDomCurrency, 500);
+
+  // =============================================
+  // NAVIGATION - Menus déroulants
+  // =============================================
+  const dropdowns = document.querySelectorAll('.nav-dropdown');
+  
+  dropdowns.forEach(dropdown => {
+    const trigger = dropdown.querySelector('.dropdown-trigger');
+    const menu = dropdown.querySelector('.dropdown-menu');
+    
+    if (trigger && menu) {
+      trigger.addEventListener('mouseenter', () => {
+        menu.classList.add('active');
+      });
+      
+      dropdown.addEventListener('mouseleave', () => {
+        menu.classList.remove('active');
+      });
+      
+      // Support tactile
+      trigger.addEventListener('click', (e) => {
+        e.preventDefault();
+        menu.classList.toggle('active');
+      });
+    }
+  });
+  
+  // =============================================
+  // FILTRES AVANCÉS
+  // =============================================
+  const filterToggle = document.getElementById('filterToggle');
+  const filtersPanel = document.getElementById('filtersPanel');
+  
+  if (filterToggle && filtersPanel) {
+    filterToggle.addEventListener('click', () => {
+      filtersPanel.classList.toggle('active');
+      filterToggle.classList.toggle('active');
+    });
+  }
+  
+  // Filtres de taille
+  document.querySelectorAll('.size-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      btn.classList.toggle('active');
+    });
+  });
+  
+  // Filtres de couleur
+  document.querySelectorAll('.color-filter-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      btn.classList.toggle('active');
+    });
+  });
+  
+  // Slider de prix
+  const priceRange = document.getElementById('priceRange');
+  const priceValue = document.getElementById('priceValue');
+  
+  if (priceRange && priceValue) {
+    priceRange.addEventListener('input', () => {
+      priceValue.textContent = priceRange.value + ' 000 Ar';
+    });
+  }
+  
+  // =============================================
+  // FLASH SALE - Vente flash
+  // =============================================
+  const flashProducts = [
+    { id: 'flash1', name: 'Robe élégante', originalPrice: 89.99, salePrice: 26.99, discount: 70, image: 'https://via.placeholder.com/200x280/fce7f3/333' },
+    { id: 'flash2', name: 'Veste tendance', originalPrice: 129.99, salePrice: 45.49, discount: 65, image: 'https://via.placeholder.com/200x280/dbeafe/333' },
+    { id: 'flash3', name: 'Jean slim', originalPrice: 69.99, salePrice: 27.99, discount: 60, image: 'https://via.placeholder.com/200x280/e5e7eb/333' },
+    { id: 'flash4', name: 'Pull cozy', originalPrice: 59.99, salePrice: 20.99, discount: 65, image: 'https://via.placeholder.com/200x280/fef3c7/333' },
+    { id: 'flash5', name: 'Blouse chic', originalPrice: 49.99, salePrice: 17.49, discount: 65, image: 'https://via.placeholder.com/200x280/d1fae5/333' }
+  ];
+  
+  const flashSaleContainer = document.getElementById('flashSaleProducts');
+  
+  if (flashSaleContainer) {
+    flashProducts.forEach(product => {
+      const card = document.createElement('div');
+      card.className = 'flash-product-card';
+      card.innerHTML = `
+        <div class="flash-discount-badge">-${product.discount}%</div>
+        <button class="wishlist-btn" data-product-id="${product.id}">
+          <i class="far fa-heart"></i>
+        </button>
+        <img src="${product.image}" alt="${product.name}">
+        <div class="flash-product-info">
+          <h4>${product.name}</h4>
+          <div class="flash-prices">
+            <span class="original">${(product.originalPrice * 1000).toFixed(0)} Ar</span>
+            <span class="sale">${(product.salePrice * 1000).toFixed(0)} Ar</span>
+          </div>
+          <div class="flash-progress">
+            <div class="progress-bar" style="width: ${Math.random() * 40 + 50}%"></div>
+            <span>Presque épuisé !</span>
+          </div>
+          <button class="flash-add-cart" data-product-id="${product.id}">
+            <i class="fas fa-shopping-cart"></i> Ajouter
+          </button>
+        </div>
+      `;
+      flashSaleContainer.appendChild(card);
+    });
+  }
+  
+  // Timer Flash Sale
+  function updateFlashTimer() {
+    const hours = document.getElementById('flash-hours');
+    const minutes = document.getElementById('flash-minutes');
+    const seconds = document.getElementById('flash-seconds');
+    
+    if (!hours || !minutes || !seconds) return;
+    
+    let h = parseInt(hours.textContent);
+    let m = parseInt(minutes.textContent);
+    let s = parseInt(seconds.textContent);
+    
+    s--;
+    if (s < 0) { s = 59; m--; }
+    if (m < 0) { m = 59; h--; }
+    if (h < 0) { h = 23; m = 59; s = 59; }
+    
+    hours.textContent = h.toString().padStart(2, '0');
+    minutes.textContent = m.toString().padStart(2, '0');
+    seconds.textContent = s.toString().padStart(2, '0');
+  }
+  
+  setInterval(updateFlashTimer, 1000);
+  
+  // =============================================
+  // RECOMMANDATIONS
+  // =============================================
+  const recommendations = [
+    { id: 'rec1', name: 'Robe d\'été fleurie', price: 34.99, image: 'https://via.placeholder.com/200x280/fce7f3/333', tag: 'Tendance' },
+    { id: 'rec2', name: 'Chemise classique', price: 29.99, image: 'https://via.placeholder.com/200x280/e0e7ff/333', tag: 'Populaire' },
+    { id: 'rec3', name: 'Short en jean', price: 24.99, image: 'https://via.placeholder.com/200x280/dbeafe/333', tag: 'Nouveau' },
+    { id: 'rec4', name: 'Top dentelle', price: 19.99, image: 'https://via.placeholder.com/200x280/fef3c7/333', tag: 'Bestseller' }
+  ];
+  
+  const recommendationsContainer = document.getElementById('recommendationsGrid');
+  
+  if (recommendationsContainer) {
+    recommendations.forEach(product => {
+      const card = document.createElement('div');
+      card.className = 'recommendation-card';
+      card.innerHTML = `
+        <div class="rec-tag">${product.tag}</div>
+        <button class="wishlist-btn" data-product-id="${product.id}">
+          <i class="far fa-heart"></i>
+        </button>
+        <img src="${product.image}" alt="${product.name}">
+        <div class="rec-info">
+          <h4>${product.name}</h4>
+          <span class="rec-price">${(product.price * 1000).toFixed(0)} Ar</span>
+          <button class="rec-add-cart" data-product-id="${product.id}">
+            <i class="fas fa-plus"></i> Ajouter au panier
+          </button>
+        </div>
+      `;
+      recommendationsContainer.appendChild(card);
+    });
+  }
+  
+  // =============================================
+  // EVENT LISTENERS - Produits
+  // =============================================
+  
+  // Ajouter au panier (tous les boutons)
+  document.addEventListener('click', (e) => {
+    // Bouton ajouter au panier
+    if (e.target.closest('.add-to-cart') || e.target.closest('.flash-add-cart') || e.target.closest('.rec-add-cart')) {
+      const btn = e.target.closest('.add-to-cart') || e.target.closest('.flash-add-cart') || e.target.closest('.rec-add-cart');
+      const card = btn.closest('.product-card') || btn.closest('.flash-product-card') || btn.closest('.recommendation-card');
+      
+      const productId = btn.dataset.productId || 'prod-' + Date.now();
+      const productName = card.querySelector('h3, h4')?.textContent || 'Produit';
+      const productPrice = card.querySelector('.price, .sale, .rec-price')?.textContent || '0 Ar';
+      
+      cart.add(productId, { name: productName, price: productPrice });
+      
+      // Animation du bouton
+      btn.classList.add('added');
+      btn.innerHTML = '<i class="fas fa-check"></i> Ajouté';
+      setTimeout(() => {
+        btn.classList.remove('added');
+        btn.innerHTML = btn.classList.contains('flash-add-cart') ? '<i class="fas fa-shopping-cart"></i> Ajouter' : 
+                        btn.classList.contains('rec-add-cart') ? '<i class="fas fa-plus"></i> Ajouter au panier' : 'Ajouter au panier';
+      }, 1500);
+    }
+    
+    // Bouton wishlist
+    if (e.target.closest('.wishlist-btn')) {
+      const btn = e.target.closest('.wishlist-btn');
+      const card = btn.closest('.product-card') || btn.closest('.flash-product-card') || btn.closest('.recommendation-card');
+      
+      const productId = btn.dataset.productId || 'prod-' + Date.now();
+      const productName = card.querySelector('h3, h4')?.textContent || 'Produit';
+      const productPrice = card.querySelector('.price, .sale, .rec-price')?.textContent || '0 Ar';
+      
+      const added = wishlist.toggle(productId, { name: productName, price: productPrice });
+      
+      btn.innerHTML = added ? '<i class="fas fa-heart"></i>' : '<i class="far fa-heart"></i>';
+      btn.classList.toggle('active', added);
+    }
+  });
+  
+  // =============================================
+  // AJOUT DES BOUTONS WISHLIST AUX PRODUITS EXISTANTS
+  // =============================================
+  document.querySelectorAll('.product-card').forEach((card, index) => {
+    if (!card.querySelector('.wishlist-btn')) {
+      const wishlistBtn = document.createElement('button');
+      wishlistBtn.className = 'wishlist-btn';
+      wishlistBtn.dataset.productId = 'prod-' + index;
+      wishlistBtn.innerHTML = '<i class="far fa-heart"></i>';
+      card.querySelector('.product-image').appendChild(wishlistBtn);
+    }
+  });
+  
+  // Mise à jour de l'état des boutons wishlist
+  wishlist.updateUI();
+  
+  // =============================================
+  // RECHERCHE DYNAMIQUE
+  // =============================================
+  const searchInput = document.querySelector('.search-box input');
+  
+  if (searchInput) {
+    searchInput.addEventListener('input', debounce((e) => {
+      const query = e.target.value.toLowerCase();
+      if (query.length < 2) return;
+      
+      // Filtrer les produits visibles
+      document.querySelectorAll('.product-card').forEach(card => {
+        const name = card.querySelector('h3')?.textContent.toLowerCase() || '';
+        const match = name.includes(query);
+        card.style.display = match || query.length < 2 ? 'block' : 'none';
+      });
+    }, 300));
+    
+    // Réinitialiser quand vide
+    searchInput.addEventListener('blur', () => {
+      if (!searchInput.value) {
+        document.querySelectorAll('.product-card').forEach(card => {
+          card.style.display = 'block';
+        });
+      }
+    });
+  }
+  
+  // =============================================
+  // SCROLL HORIZONTAL CATEGORIES
+  // =============================================
+  const trendingTags = document.querySelector('.trending-tags');
+  
+  if (trendingTags) {
+    let isDown = false;
+    let startX;
+    let scrollLeft;
+    
+    trendingTags.addEventListener('mousedown', (e) => {
+      isDown = true;
+      startX = e.pageX - trendingTags.offsetLeft;
+      scrollLeft = trendingTags.scrollLeft;
+    });
+    
+    trendingTags.addEventListener('mouseleave', () => isDown = false);
+    trendingTags.addEventListener('mouseup', () => isDown = false);
+    
+    trendingTags.addEventListener('mousemove', (e) => {
+      if (!isDown) return;
+      e.preventDefault();
+      const x = e.pageX - trendingTags.offsetLeft;
+      const walk = (x - startX) * 2;
+      trendingTags.scrollLeft = scrollLeft - walk;
+    });
+  }
+  
+  // =============================================
+  // UTILITAIRES
+  // =============================================
+  function debounce(func, wait) {
+    let timeout;
+    return function executedFunction(...args) {
+      const later = () => {
+        clearTimeout(timeout);
+        func(...args);
+      };
+      clearTimeout(timeout);
+      timeout = setTimeout(later, wait);
+    };
+  }
+  
+  // =============================================
+  // ANIMATIONS AU SCROLL
+  // =============================================
+  const observerOptions = {
+    threshold: 0.1,
+    rootMargin: '0px 0px -50px 0px'
+  };
+  
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('animate-in');
+        observer.unobserve(entry.target);
+      }
+    });
+  }, observerOptions);
+  
+  document.querySelectorAll('.product-card, .review-card, .flash-product-card, .recommendation-card').forEach(el => {
+    observer.observe(el);
+  });
+  
+  console.log('✨ Application Aina initialisée avec succès !');
+});

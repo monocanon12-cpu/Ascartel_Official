@@ -1,0 +1,25 @@
+{
+  "name": "ascartel-backend",
+  "version": "1.0.0",
+  "description": "Backend API pour ASCARTEL - Gestion articles, ventes flash et administration",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js",
+    "init-db": "node scripts/init-db.js"
+  },
+  "keywords": ["ascartel", "ecommerce", "api"],
+  "author": "ASCARTEL",
+  "license": "ISC",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "better-sqlite3": "^9.2.2",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "jsonwebtoken": "^9.0.2"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.2"
+  }
+}

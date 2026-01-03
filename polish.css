@@ -1,0 +1,764 @@
+/* =============================================
+   POLISH PASS - PEAUFINAGE DES DÉTAILS
+   Micro-interactions, animations et finitions
+   ============================================= */
+
+/* =============================================
+   1. MICRO-INTERACTIONS - BOUTONS
+   ============================================= */
+
+/* Base button polish */
+button,
+.btn,
+[role="button"],
+input[type="submit"],
+input[type="button"] {
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+/* Hover state - élévation légère */
+button:not(:disabled):hover,
+.btn:not(:disabled):hover,
+[role="button"]:not(:disabled):hover {
+  transform: translateY(-2px);
+}
+
+/* Active state - effet de clic */
+button:not(:disabled):active,
+.btn:not(:disabled):active,
+[role="button"]:not(:disabled):active {
+  transform: scale(0.98) translateY(0);
+}
+
+/* Disabled state */
+button:disabled,
+.btn:disabled,
+.btn.disabled,
+[role="button"][aria-disabled="true"] {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+/* =============================================
+   2. MICRO-INTERACTIONS - LIENS
+   ============================================= */
+
+/* Base links */
+a {
+  transition: color 0.2s ease, text-decoration-color 0.2s ease;
+}
+
+/* Underline on hover for content links */
+.main-content a:not(.btn):not(.product-card):not(.nav-link):hover,
+.legal-section a:hover,
+.faq-answer a:hover,
+article a:hover {
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 2px;
+}
+
+/* External links indicator */
+a[target="_blank"]:not(.social-links a):not(.btn)::after {
+  content: " ↗";
+  font-size: 0.8em;
+  opacity: 0.7;
+}
+
+/* =============================================
+   3. MICRO-INTERACTIONS - INPUTS
+   ============================================= */
+
+/* Base input polish */
+input,
+textarea,
+select {
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+}
+
+/* Placeholder styling */
+input::placeholder,
+textarea::placeholder {
+  color: var(--color-text-muted, #6b7280);
+  opacity: 0.7;
+  transition: opacity 0.2s ease;
+}
+
+/* Placeholder fade on focus */
+input:focus::placeholder,
+textarea:focus::placeholder {
+  opacity: 0.4;
+}
+
+/* Focus state enhancement */
+input:focus,
+textarea:focus,
+select:focus {
+  border-color: var(--color-primary, #f9c5d5);
+  box-shadow: 0 0 0 3px rgba(249, 197, 213, 0.25);
+  outline: none;
+}
+
+/* Valid state */
+input:valid:not(:placeholder-shown):not([type="submit"]):not([type="button"]),
+textarea:valid:not(:placeholder-shown),
+.is-valid {
+  border-color: var(--color-success, #22c55e);
+}
+
+/* Invalid state */
+input:invalid:not(:placeholder-shown):not(:focus),
+textarea:invalid:not(:placeholder-shown):not(:focus),
+.is-invalid {
+  border-color: var(--color-error, #ef4444);
+}
+
+/* Success checkmark for valid inputs */
+.input-with-validation {
+  position: relative;
+}
+
+.input-with-validation input:valid:not(:placeholder-shown) ~ .validation-icon::after {
+  content: "✓";
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--color-success, #22c55e);
+  font-weight: bold;
+}
+
+/* =============================================
+   4. MICRO-INTERACTIONS - IMAGES
+   ============================================= */
+
+/* Product image hover */
+.product-card img,
+.card-image img {
+  transition: transform 0.4s ease, filter 0.3s ease;
+}
+
+.product-card:hover img,
+.card:hover .card-image img {
+  transform: scale(1.05);
+}
+
+/* Image loading placeholder */
+img {
+  background-color: var(--color-bg-secondary, #f8f8f8);
+}
+
+/* Lazy load fade in */
+img.lazy-loaded,
+img[data-loaded="true"] {
+  animation: fadeIn 0.3s ease;
+}
+
+/* Broken image fallback */
+img::before {
+  content: "";
+  display: block;
+  position: absolute;
+  inset: 0;
+  background: var(--color-bg-secondary, #f8f8f8);
+}
+
+img::after {
+  content: "Image non disponible";
+  display: block;
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.85rem;
+  color: var(--color-text-muted, #6b7280);
+  background: var(--color-bg-secondary, #f8f8f8);
+}
+
+/* Image overlay on hover */
+.product-card .product-image,
+.card-image {
+  position: relative;
+  overflow: hidden;
+}
+
+.product-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.product-card:hover .product-overlay {
+  opacity: 1;
+}
+
+.product-overlay button {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: white;
+  border: none;
+  color: var(--color-text-primary, #0f0f0f);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transform: translateY(10px);
+  transition: all 0.3s ease;
+}
+
+.product-card:hover .product-overlay button {
+  transform: translateY(0);
+}
+
+.product-overlay button:hover {
+  background: var(--color-primary, #f9c5d5);
+  color: white;
+}
+
+/* =============================================
+   5. ANIMATIONS SUBTILES
+   ============================================= */
+
+/* Pulse animation for badges */
+@keyframes pulse-subtle {
+  0%, 100% { 
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(246, 141, 181, 0.4);
+  }
+  50% { 
+    transform: scale(1.02);
+    box-shadow: 0 0 0 4px rgba(246, 141, 181, 0);
+  }
+}
+
+.badge-new,
+.badge[data-pulse="true"],
+.pulse-badge {
+  animation: pulse-subtle 2s infinite;
+}
+
+/* Bounce animation for cart icon after add */
+@keyframes bounce-cart {
+  0%, 100% { transform: translateY(0); }
+  25% { transform: translateY(-6px); }
+  50% { transform: translateY(0); }
+  75% { transform: translateY(-3px); }
+}
+
+.cart-icon.bounce,
+.cart-bounce {
+  animation: bounce-cart 0.5s ease;
+}
+
+/* Shake animation for errors */
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  10%, 30%, 50%, 70%, 90% { transform: translateX(-4px); }
+  20%, 40%, 60%, 80% { transform: translateX(4px); }
+}
+
+.shake,
+.error-shake {
+  animation: shake 0.5s ease;
+}
+
+/* Shimmer effect for skeleton loading */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.skeleton,
+.loading-skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--color-gray-200, #e9e9e9) 25%,
+    var(--color-gray-100, #f8f8f8) 50%,
+    var(--color-gray-200, #e9e9e9) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: var(--radius-md, 8px);
+}
+
+/* Slide in from right for notifications */
+@keyframes slideInRight {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.notification-slide,
+.toast {
+  animation: slideInRight 0.3s ease;
+}
+
+/* Fade in up for scroll reveals */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.reveal-on-scroll {
+  opacity: 0;
+}
+
+.reveal-on-scroll.revealed {
+  animation: fadeInUp 0.6s ease forwards;
+}
+
+/* =============================================
+   6. MODAL & OVERLAY POLISH
+   ============================================= */
+
+/* Backdrop blur for modals */
+.modal-overlay,
+.modal-backdrop,
+[data-modal-backdrop] {
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+/* Modal entrance animation */
+.modal-content,
+.modal-dialog {
+  animation: modalEnter 0.3s ease;
+}
+
+@keyframes modalEnter {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* =============================================
+   7. LOADING STATES
+   ============================================= */
+
+/* Elegant loading spinner */
+.loading-spinner {
+  width: 24px;
+  height: 24px;
+  border: 3px solid var(--color-gray-200, #e9e9e9);
+  border-top-color: var(--color-primary, #f9c5d5);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Button loading state */
+.btn-loading {
+  position: relative;
+  color: transparent !important;
+  pointer-events: none;
+}
+
+.btn-loading::after {
+  content: "";
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  top: 50%;
+  left: 50%;
+  margin-top: -9px;
+  margin-left: -9px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+}
+
+/* =============================================
+   8. SCROLLBAR STYLING
+   ============================================= */
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-bg-secondary, #f8f8f8);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-gray-300, #d1d5db);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-gray-400, #9ca3af);
+}
+
+/* Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-gray-300, #d1d5db) var(--color-bg-secondary, #f8f8f8);
+}
+
+/* =============================================
+   9. SELECTION STYLING
+   ============================================= */
+
+::selection {
+  background-color: var(--color-primary-light, #fce7f3);
+  color: var(--color-text-primary, #0f0f0f);
+}
+
+::-moz-selection {
+  background-color: var(--color-primary-light, #fce7f3);
+  color: var(--color-text-primary, #0f0f0f);
+}
+
+/* =============================================
+   10. FOCUS IMPROVEMENTS
+   ============================================= */
+
+/* Better focus ring */
+*:focus-visible {
+  outline: 2px solid var(--color-primary-dark, #f68db5);
+  outline-offset: 2px;
+}
+
+/* Remove outline for mouse users */
+*:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* Skip link enhancement */
+.skip-link:focus {
+  position: fixed;
+  top: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 99999;
+  animation: fadeInDown 0.2s ease;
+}
+
+/* =============================================
+   11. TOUCH TARGETS (Mobile)
+   ============================================= */
+
+@media (max-width: 768px) {
+  /* Ensure minimum 44x44px touch targets */
+  button,
+  .btn,
+  a,
+  input[type="checkbox"],
+  input[type="radio"],
+  select {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  
+  /* Slightly larger touch areas for interactive elements */
+  .nav-link,
+  .bottom-nav-item,
+  .filter-btn,
+  .category-btn {
+    padding: 12px 16px;
+  }
+  
+  /* Better spacing for touch */
+  .product-card {
+    margin-bottom: 16px;
+  }
+}
+
+/* =============================================
+   12. HOVER STATES ENHANCEMENT
+   ============================================= */
+
+/* Card hover lift */
+.product-card,
+.card,
+.faq-item,
+.contact-card,
+.value-card {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.product-card:hover,
+.card:hover,
+.faq-item:hover,
+.contact-card:hover,
+.value-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
+}
+
+/* Link underline animation */
+.animated-underline {
+  position: relative;
+  text-decoration: none;
+}
+
+.animated-underline::after {
+  content: "";
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: currentColor;
+  transition: width 0.3s ease;
+}
+
+.animated-underline:hover::after {
+  width: 100%;
+}
+
+/* =============================================
+   13. ICON CONSISTENCY
+   ============================================= */
+
+/* Icon sizing */
+.icon-sm { font-size: 16px; width: 16px; height: 16px; }
+.icon-md { font-size: 20px; width: 20px; height: 20px; }
+.icon-lg { font-size: 24px; width: 24px; height: 24px; }
+.icon-xl { font-size: 32px; width: 32px; height: 32px; }
+
+/* Icon spacing with text */
+.icon-text {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Icon color inheritance */
+i, svg {
+  color: inherit;
+}
+
+/* =============================================
+   14. TYPOGRAPHY POLISH
+   ============================================= */
+
+/* Prevent orphans in paragraphs */
+p {
+  text-wrap: pretty;
+}
+
+/* Heading line heights */
+h1, h2, h3, h4, h5, h6 {
+  line-height: 1.2;
+  text-wrap: balance;
+}
+
+/* Letter spacing for uppercase text */
+.uppercase,
+[style*="text-transform: uppercase"] {
+  letter-spacing: 0.05em;
+}
+
+/* Limit uppercase to 3 words visually - handled by content */
+
+/* =============================================
+   15. FORM POLISH
+   ============================================= */
+
+/* Always visible labels */
+.form-group label {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: 500;
+  color: var(--color-text-secondary, #4a4a4a);
+}
+
+/* Error message styling */
+.form-error,
+.error-message {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 6px;
+  font-size: 0.85rem;
+  color: var(--color-error, #ef4444);
+}
+
+.form-error::before,
+.error-message::before {
+  content: "⚠";
+}
+
+/* Success message */
+.form-success,
+.success-message {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 6px;
+  font-size: 0.85rem;
+  color: var(--color-success, #22c55e);
+}
+
+.form-success::before,
+.success-message::before {
+  content: "✓";
+}
+
+/* =============================================
+   16. RESPONSIVE POLISH
+   ============================================= */
+
+/* Prevent horizontal scroll */
+html, body {
+  overflow-x: hidden;
+  max-width: 100vw;
+}
+
+/* Mobile font size minimum */
+@media (max-width: 768px) {
+  body {
+    font-size: 16px;
+  }
+  
+  /* Smaller text never below 14px */
+  small, .text-sm, .text-xs {
+    font-size: max(14px, 0.875rem);
+  }
+  
+  /* Reduced spacing on mobile (70% of desktop) */
+  section {
+    padding-top: calc(var(--spacing-12) * 0.7);
+    padding-bottom: calc(var(--spacing-12) * 0.7);
+  }
+}
+
+/* =============================================
+   17. CONTRAST IMPROVEMENTS
+   ============================================= */
+
+/* Ensure minimum contrast */
+.text-muted,
+.text-secondary {
+  color: var(--color-gray-600, #4a4a4a); /* 4.5:1 ratio with white */
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  :root {
+    --color-text-muted: var(--color-gray-700);
+    --color-border: var(--color-gray-400);
+  }
+  
+  button, .btn {
+    border-width: 2px;
+  }
+}
+
+/* =============================================
+   18. PRINT IMPROVEMENTS
+   ============================================= */
+
+@media print {
+  /* Hide interactive elements */
+  .no-print,
+  button:not(.print-btn),
+  .modal,
+  .toast,
+  .cookie-banner,
+  .bottom-nav,
+  .sticky-add-to-cart {
+    display: none !important;
+  }
+  
+  /* Ensure links are visible */
+  a[href]::after {
+    content: " (" attr(href) ")";
+    font-size: 0.8em;
+  }
+  
+  /* Page breaks */
+  h1, h2, h3 {
+    page-break-after: avoid;
+  }
+  
+  img, .product-card {
+    page-break-inside: avoid;
+  }
+}
+
+/* =============================================
+   19. DARK MODE READY (Future)
+   ============================================= */
+
+@media (prefers-color-scheme: dark) {
+  /* Placeholder for future dark mode support */
+  /* Currently disabled - uncomment to enable */
+  /*
+  :root {
+    --color-bg-primary: var(--color-gray-900);
+    --color-bg-secondary: var(--color-gray-800);
+    --color-text-primary: var(--color-gray-100);
+    --color-text-secondary: var(--color-gray-300);
+    --color-border: var(--color-gray-700);
+  }
+  */
+}
+
+/* =============================================
+   20. PERFORMANCE OPTIMIZATIONS
+   ============================================= */
+
+/* GPU acceleration for animated elements */
+.product-card,
+.card,
+.btn,
+.modal,
+.toast,
+img {
+  will-change: auto;
+}
+
+/* Only apply will-change on hover/active */
+.product-card:hover,
+.card:hover {
+  will-change: transform;
+}
+
+/* Reduce motion for users who prefer it */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  
+  .product-card:hover img {
+    transform: none;
+  }
+}

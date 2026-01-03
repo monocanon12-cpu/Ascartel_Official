@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Contact • Boutique Aina</title>
+  <meta name="description" content="Contactez Boutique Aina - Notre équipe est à votre disposition pour répondre à toutes vos questions." />
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+  <link rel="stylesheet" href="design-system.css" />
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="contact.css" />
+</head>
+<body>
+  <header class="legal-header">
+    <div class="legal-header-content">
+      <a href="index.html" class="logo"><span class="logo-text">Aina</span></a>
+      <nav class="legal-nav">
+        <a href="index.html">Accueil</a>
+        <a href="index.html#products">Produits</a>
+        <a href="faq.html">FAQ</a>
+        <a href="a-propos.html">À propos</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="contact-page">
+    <div class="contact-container">
+      <!-- Hero section -->
+      <div class="contact-hero">
+        <h1>Contactez-nous</h1>
+        <p>Notre équipe est à votre écoute pour répondre à toutes vos questions</p>
+      </div>
+
+      <div class="contact-content">
+        <!-- Informations de contact -->
+        <div class="contact-info">
+          <div class="contact-card">
+            <div class="contact-card-icon">
+              <i class="fas fa-headset"></i>
+            </div>
+            <h3>Service client</h3>
+            <p>Notre équipe répond à vos questions du lundi au samedi, de 8h à 18h.</p>
+            <a href="tel:+261340000000" class="contact-link">
+              <i class="fas fa-phone"></i> +261 34 00 000 00
+            </a>
+          </div>
+
+          <div class="contact-card">
+            <div class="contact-card-icon whatsapp">
+              <i class="fab fa-whatsapp"></i>
+            </div>
+            <h3>WhatsApp</h3>
+            <p>Chattez avec nous directement sur WhatsApp pour une réponse rapide.</p>
+            <a href="https://wa.me/261340000000" class="contact-link whatsapp" target="_blank">
+              <i class="fab fa-whatsapp"></i> Envoyer un message
+            </a>
+          </div>
+
+          <div class="contact-card">
+            <div class="contact-card-icon email">
+              <i class="fas fa-envelope"></i>
+            </div>
+            <h3>Email</h3>
+            <p>Envoyez-nous un email, nous vous répondons sous 24h.</p>
+            <a href="mailto:contact@boutique-aina.mg" class="contact-link email">
+              <i class="fas fa-envelope"></i> contact@boutique-aina.mg
+            </a>
+          </div>
+
+          <div class="contact-card">
+            <div class="contact-card-icon location">
+              <i class="fas fa-map-marker-alt"></i>
+            </div>
+            <h3>Notre adresse</h3>
+            <p>Lot IVG 123, Analakely<br>Antananarivo 101, Madagascar</p>
+            <a href="https://maps.google.com" class="contact-link location" target="_blank">
+              <i class="fas fa-directions"></i> Voir sur la carte
+            </a>
+          </div>
+        </div>
+
+        <!-- Formulaire de contact -->
+        <div class="contact-form-wrapper">
+          <h2>Envoyez-nous un message</h2>
+          <form class="contact-form" id="contactForm">
+            <div class="form-row">
+              <div class="form-group">
+                <label for="name">Nom complet *</label>
+                <input type="text" id="name" name="name" class="form-control" placeholder="Votre nom" required>
+              </div>
+              <div class="form-group">
+                <label for="email">Email *</label>
+                <input type="email" id="email" name="email" class="form-control" placeholder="votre@email.com" required>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="phone">Téléphone</label>
+                <input type="tel" id="phone" name="phone" class="form-control" placeholder="+261 34 00 000 00">
+              </div>
+              <div class="form-group">
+                <label for="subject">Sujet *</label>
+                <select id="subject" name="subject" class="form-control" required>
+                  <option value="">Choisir un sujet</option>
+                  <option value="order">Question sur une commande</option>
+                  <option value="product">Question sur un produit</option>
+                  <option value="delivery">Livraison</option>
+                  <option value="return">Retour / Échange</option>
+                  <option value="payment">Paiement</option>
+                  <option value="partnership">Partenariat</option>
+                  <option value="other">Autre</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="order-number">Numéro de commande (si applicable)</label>
+              <input type="text" id="order-number" name="order-number" class="form-control" placeholder="Ex: AIN-2024-12345">
+            </div>
+
+            <div class="form-group">
+              <label for="message">Votre message *</label>
+              <textarea id="message" name="message" class="form-control" rows="5" placeholder="Décrivez votre demande en détail..." required></textarea>
+            </div>
+
+            <div class="form-group checkbox-group">
+              <label class="checkbox-label">
+                <input type="checkbox" id="privacy" name="privacy" required>
+                <span>J'accepte la <a href="confidentialite.html">politique de confidentialité</a> *</span>
+              </label>
+            </div>
+
+            <button type="submit" class="contact-submit">
+              <i class="fas fa-paper-plane"></i>
+              <span>Envoyer le message</span>
+            </button>
+          </form>
+
+          <div class="contact-success" id="contactSuccess" style="display: none;">
+            <div class="success-icon">
+              <i class="fas fa-check-circle"></i>
+            </div>
+            <h3>Message envoyé !</h3>
+            <p>Merci de nous avoir contacté. Notre équipe vous répondra dans les plus brefs délais.</p>
+            <button class="contact-btn-secondary" onclick="document.getElementById('contactSuccess').style.display='none'; document.getElementById('contactForm').reset(); document.getElementById('contactForm').style.display='block';">
+              Envoyer un autre message
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- FAQ rapide -->
+      <div class="contact-faq">
+        <h2>Questions fréquentes</h2>
+        <div class="faq-grid">
+          <div class="faq-item">
+            <h4><i class="fas fa-truck"></i> Quels sont les délais de livraison ?</h4>
+            <p>Antananarivo: 24-48h. Autres régions: 3-7 jours ouvrés.</p>
+          </div>
+          <div class="faq-item">
+            <h4><i class="fas fa-undo"></i> Comment retourner un article ?</h4>
+            <p>Vous avez 14 jours pour retourner un article non porté avec ses étiquettes.</p>
+          </div>
+          <div class="faq-item">
+            <h4><i class="fas fa-credit-card"></i> Quels moyens de paiement acceptez-vous ?</h4>
+            <p>MVola, Orange Money, Airtel Money, cartes bancaires, et paiement à la livraison.</p>
+          </div>
+          <div class="faq-item">
+            <h4><i class="fas fa-shipping-fast"></i> La livraison est-elle gratuite ?</h4>
+            <p>Oui, à partir de 50 000 Ar d'achat. Sinon, les frais varient selon votre zone.</p>
+          </div>
+        </div>
+        <a href="faq.html" class="faq-link">Voir toutes les questions <i class="fas fa-arrow-right"></i></a>
+      </div>
+    </div>
+  </main>
+
+  <footer class="legal-footer">
+    <div class="legal-footer-content">
+      <p>&copy; 2024 Boutique Aina. Tous droits réservés.</p>
+      <div class="legal-footer-links">
+        <a href="mentions-legales.html">Mentions légales</a>
+        <a href="cgv.html">CGV</a>
+        <a href="confidentialite.html">Confidentialité</a>
+        <a href="contact.html">Contact</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    document.getElementById('contactForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      // Simuler l'envoi
+      const form = this;
+      const successMsg = document.getElementById('contactSuccess');
+      
+      // Animation de chargement
+      const btn = form.querySelector('button[type="submit"]');
+      btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Envoi en cours...';
+      btn.disabled = true;
+      
+      setTimeout(() => {
+        form.style.display = 'none';
+        successMsg.style.display = 'block';
+        btn.innerHTML = '<i class="fas fa-paper-plane"></i> Envoyer le message';
+        btn.disabled = false;
+      }, 1500);
+    });
+  </script>
+</body>
+</html>

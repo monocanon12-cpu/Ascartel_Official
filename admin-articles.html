@@ -1,0 +1,1372 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gestion Articles • ASCARTEL Admin</title>
+  
+  <meta name="robots" content="noindex, nofollow" />
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+  
+  <link rel="stylesheet" href="design-system.css">
+  <link rel="stylesheet" href="admin.css">
+  <link rel="stylesheet" href="dark-mode.css"> 
+  
+  <style>
+    /* Styles supplémentaires pour la gestion des articles */
+    .page-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 25px;
+      flex-wrap: wrap;
+      gap: 15px;
+    }
+    
+    .page-header h1 {
+      font-size: 1.5rem;
+      color: #1a1a2e;
+      margin: 0;
+    }
+    
+    /* Modal */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.6);
+      z-index: 2000;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    
+    .modal-overlay.active {
+      display: flex;
+    }
+    
+    .modal {
+      background: white;
+      border-radius: 16px;
+      width: 100%;
+      max-width: 600px;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    }
+    
+    .modal-header {
+      padding: 20px 25px;
+      border-bottom: 1px solid #e5e7eb;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      background: white;
+      z-index: 10;
+    }
+    
+    .modal-header h2 {
+      font-size: 1.2rem;
+      color: #1a1a2e;
+      margin: 0;
+    }
+    
+    .modal-close {
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      color: #6b7280;
+      cursor: pointer;
+      padding: 5px;
+      transition: color 0.3s;
+    }
+    
+    .modal-close:hover {
+      color: #ef4444;
+    }
+    
+    .modal-body {
+      padding: 25px;
+    }
+    
+    .form-group {
+      margin-bottom: 20px;
+    }
+    
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 500;
+      color: #374151;
+      font-size: 0.9rem;
+    }
+    
+    .form-group label .required {
+      color: #ef4444;
+    }
+    
+    .form-control {
+      width: 100%;
+      padding: 12px 15px;
+      border: 2px solid #e5e7eb;
+      border-radius: 10px;
+      font-size: 1rem;
+      font-family: inherit;
+      transition: border-color 0.3s;
+    }
+    
+    .form-control:focus {
+      outline: none;
+      border-color: #f68db5;
+    }
+    
+    .form-control::placeholder {
+      color: #9ca3af;
+    }
+    
+    textarea.form-control {
+      min-height: 100px;
+      resize: vertical;
+    }
+    
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+    }
+    
+    .form-check {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 15px;
+      background: #f8f9fa;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+    
+    .form-check input[type="checkbox"] {
+      width: 20px;
+      height: 20px;
+      accent-color: #f68db5;
+    }
+    
+    .form-check-label {
+      font-weight: 500;
+      color: #374151;
+    }
+    
+    .form-check-desc {
+      font-size: 0.85rem;
+      color: #6b7280;
+    }
+    
+    .modal-footer {
+      padding: 20px 25px;
+      border-top: 1px solid #e5e7eb;
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      position: sticky;
+      bottom: 0;
+      background: white;
+    }
+    
+    .btn-cancel {
+      padding: 12px 24px;
+      background: #f3f4f6;
+      color: #374151;
+      border: none;
+      border-radius: 10px;
+      font-size: 0.95rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    
+    .btn-cancel:hover {
+      background: #e5e7eb;
+    }
+    
+    .btn-save {
+      padding: 12px 24px;
+      background: #f68db5;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 0.95rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    
+    .btn-save:hover {
+      background: #e85d9a;
+    }
+    
+    .btn-delete {
+      padding: 12px 24px;
+      background: #ef4444;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 0.95rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    
+    .btn-delete:hover {
+      background: #dc2626;
+    }
+    
+    /* Notifications */
+    .notification {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      padding: 15px 25px;
+      border-radius: 10px;
+      color: white;
+      font-weight: 500;
+      z-index: 3000;
+      animation: slideIn 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    }
+    
+    .notification.success {
+      background: #22c55e;
+    }
+    
+    .notification.error {
+      background: #ef4444;
+    }
+    
+    .notification.info {
+      background: #3b82f6;
+    }
+    
+    @keyframes slideIn {
+      from {
+        transform: translateX(100%);
+        opacity: 0;
+      }
+      to {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
+    
+    /* Tutorial Section */
+    .tutorial-section {
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+      border-radius: 16px;
+      padding: 25px;
+      margin-bottom: 25px;
+      color: white;
+    }
+    
+    .tutorial-section h3 {
+      margin: 0 0 15px 0;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .tutorial-section h3 i {
+      color: #f68db5;
+    }
+    
+    .tutorial-toggle {
+      background: rgba(255, 255, 255, 0.1);
+      border: none;
+      color: white;
+      padding: 10px 20px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      transition: all 0.3s;
+    }
+    
+    .tutorial-toggle:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+    
+    .tutorial-content {
+      display: none;
+      margin-top: 20px;
+    }
+    
+    .tutorial-content.active {
+      display: block;
+    }
+    
+    .tutorial-step {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+      padding: 15px;
+      margin-bottom: 15px;
+    }
+    
+    .tutorial-step h4 {
+      color: #f68db5;
+      margin: 0 0 10px 0;
+      font-size: 1rem;
+    }
+    
+    .tutorial-step p {
+      margin: 0;
+      font-size: 0.9rem;
+      color: #a0aec0;
+      line-height: 1.6;
+    }
+    
+    .tutorial-step code {
+      background: rgba(0, 0, 0, 0.3);
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-family: monospace;
+      color: #4ade80;
+    }
+    
+    .code-block {
+      background: #0f0f1a;
+      border-radius: 8px;
+      padding: 15px;
+      margin-top: 10px;
+      overflow-x: auto;
+    }
+    
+    .code-block pre {
+      margin: 0;
+      font-family: 'Fira Code', monospace;
+      font-size: 0.85rem;
+      color: #a0aec0;
+    }
+    
+    .code-block .keyword {
+      color: #f68db5;
+    }
+    
+    .code-block .string {
+      color: #4ade80;
+    }
+    
+    .code-block .comment {
+      color: #6b7280;
+    }
+    
+    /* Articles Grid */
+    .articles-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 20px;
+    }
+    
+    .article-card {
+      background: white;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+      transition: all 0.3s;
+    }
+    
+    .article-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    }
+    
+    .article-image {
+      height: 180px;
+      background: linear-gradient(135deg, #f8f9fa 0%, #e5e7eb 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 4rem;
+      color: #d1d5db;
+      position: relative;
+    }
+    
+    .article-image .flash-badge {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: #ef4444;
+      color: white;
+      padding: 5px 12px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 600;
+    }
+    
+    .article-content {
+      padding: 20px;
+    }
+    
+    .article-category {
+      display: inline-block;
+      padding: 4px 12px;
+      background: #f3f4f6;
+      color: #6b7280;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 500;
+      margin-bottom: 10px;
+    }
+    
+    .article-name {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: #1a1a2e;
+      margin: 0 0 8px 0;
+    }
+    
+    .article-price {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+    
+    .price-current {
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: #f68db5;
+    }
+    
+    .price-original {
+      font-size: 1rem;
+      color: #9ca3af;
+      text-decoration: line-through;
+    }
+    
+    .article-stock {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.9rem;
+      color: #6b7280;
+    }
+    
+    .stock-indicator {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+    
+    .stock-ok {
+      background: #22c55e;
+    }
+    
+    .stock-low {
+      background: #f59e0b;
+    }
+    
+    .stock-critical {
+      background: #ef4444;
+    }
+    
+    .article-actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 15px;
+      padding-top: 15px;
+      border-top: 1px solid #f3f4f6;
+    }
+    
+    .article-actions button {
+      flex: 1;
+      padding: 10px;
+      border: none;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.3s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+    
+    .btn-edit-article {
+      background: #f3f4f6;
+      color: #374151;
+    }
+    
+    .btn-edit-article:hover {
+      background: #e5e7eb;
+    }
+    
+    .btn-flash-article {
+      background: #fef3c7;
+      color: #d97706;
+    }
+    
+    .btn-flash-article:hover {
+      background: #fde68a;
+    }
+    
+    .btn-flash-article.active {
+      background: #ef4444;
+      color: white;
+    }
+    
+    /* Loading */
+    .loading {
+      text-align: center;
+      padding: 50px;
+      color: #6b7280;
+    }
+    
+    .loading i {
+      font-size: 2rem;
+      animation: spin 1s linear infinite;
+      margin-bottom: 15px;
+      display: block;
+      color: #f68db5;
+    }
+    
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+    
+    /* Empty state */
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      background: white;
+      border-radius: 16px;
+    }
+    
+    .empty-state i {
+      font-size: 4rem;
+      color: #d1d5db;
+      margin-bottom: 20px;
+    }
+    
+    .empty-state h3 {
+      color: #374151;
+      margin: 0 0 10px 0;
+    }
+    
+    .empty-state p {
+      color: #6b7280;
+      margin: 0 0 20px 0;
+    }
+    
+    /* Connection status */
+    .connection-status {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 15px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 500;
+    }
+    
+    .connection-status.connected {
+      background: #dcfce7;
+      color: #16a34a;
+    }
+    
+    .connection-status.disconnected {
+      background: #fee2e2;
+      color: #dc2626;
+    }
+    
+    .connection-status .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+    }
+    
+    /* Responsive */
+    @media (max-width: 768px) {
+      .form-row {
+        grid-template-columns: 1fr;
+      }
+      
+      .articles-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .page-header {
+        flex-direction: column;
+        align-items: stretch;
+      }
+    }
+  </style>
+</head>
+<body class="admin-body">
+  <!-- Mobile Menu Toggle -->
+  <button class="mobile-menu-toggle" id="mobileMenuToggle" aria-label="Ouvrir le menu">
+    <i class="fas fa-bars"></i>
+  </button>
+
+  <!-- Sidebar Overlay -->
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <!-- Sidebar -->
+  <aside class="admin-sidebar" id="adminSidebar">
+    <div class="sidebar-header">
+      <div class="admin-logo">
+        <i class="fas fa-store"></i>
+        <span>ASCARTEL</span>
+      </div>
+      <button class="sidebar-close" id="sidebarClose" aria-label="Fermer le menu">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    
+    <nav class="sidebar-nav">
+      <ul class="nav-list">
+        <li class="nav-item">
+          <a href="admin-dashboard.html" class="nav-link">
+            <i class="fas fa-chart-line"></i>
+            <span>Dashboard</span>
+          </a>
+        </li>
+        <li class="nav-item active">
+          <a href="admin-articles.html" class="nav-link">
+            <i class="fas fa-boxes-stacked"></i>
+            <span>Gestion Articles</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="admin-import-bulk.html" class="nav-link">
+            <i class="fas fa-cloud-upload-alt"></i>
+            <span>Import en Masse</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="#ventes" class="nav-link">
+            <i class="fas fa-shopping-cart"></i>
+            <span>Ventes</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="#collaborateurs" class="nav-link">
+            <i class="fas fa-users"></i>
+            <span>Collaborateurs</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="#parametres" class="nav-link">
+            <i class="fas fa-cog"></i>
+            <span>Paramètres</span>
+          </a>
+        </li>
+      </ul>
+    </nav>
+    
+    <div class="sidebar-footer">
+      <div class="admin-profile">
+        <div class="profile-avatar">
+          <i class="fas fa-user"></i>
+        </div>
+        <div class="profile-info">
+          <span class="profile-name" id="adminName">Admin</span>
+          <span class="profile-role">Administrateur</span>
+        </div>
+      </div>
+      <a href="#" class="logout-btn" id="logoutBtn">
+        <i class="fas fa-sign-out-alt"></i>
+        <span>Déconnexion</span>
+      </a>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="admin-main">
+    <!-- Tutorial Section -->
+    <div class="tutorial-section">
+      <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
+        <h3><i class="fas fa-graduation-cap"></i> Guide API pour Débutants</h3>
+        <button class="tutorial-toggle" onclick="toggleTutorial()">
+          <i class="fas fa-book-open"></i> Voir le tutoriel
+        </button>
+      </div>
+      
+      <div class="tutorial-content" id="tutorialContent">
+        <div class="tutorial-step">
+          <h4>📡 Qu'est-ce qu'une API ?</h4>
+          <p>L'API est comme un serveur de restaurant : votre site (frontend) passe une commande, et l'API lui apporte les données depuis la base de données. Ici, l'API tourne sur <code>http://localhost:3000</code></p>
+        </div>
+        
+        <div class="tutorial-step">
+          <h4>🔐 Authentification</h4>
+          <p>Pour modifier les articles, vous devez être connecté. L'API vous donne un "token" (comme un badge d'accès) que vous envoyez avec chaque requête.</p>
+          <div class="code-block">
+<pre><span class="comment">// Connexion pour obtenir le token</span>
+<span class="keyword">const</span> response = <span class="keyword">await</span> fetch(<span class="string">'http://localhost:3000/api/auth/login'</span>, {
+  method: <span class="string">'POST'</span>,
+  headers: { <span class="string">'Content-Type'</span>: <span class="string">'application/json'</span> },
+  body: JSON.stringify({
+    email: <span class="string">'master@ascartel.com'</span>,
+    password: <span class="string">'ASCARTEL_MASTER_2025'</span>
+  })
+});</pre>
+          </div>
+        </div>
+        
+        <div class="tutorial-step">
+          <h4>📦 Récupérer les articles</h4>
+          <p>Pour afficher les articles sur votre site, utilisez cette requête :</p>
+          <div class="code-block">
+<pre><span class="comment">// Récupérer tous les articles</span>
+<span class="keyword">const</span> articles = <span class="keyword">await</span> fetch(<span class="string">'http://localhost:3000/api/articles'</span>);
+<span class="keyword">const</span> data = <span class="keyword">await</span> articles.json();
+console.log(data.articles); <span class="comment">// Liste des articles</span></pre>
+          </div>
+        </div>
+        
+        <div class="tutorial-step">
+          <h4>➕ Ajouter un article</h4>
+          <p>Envoyez les données du nouvel article avec le token d'authentification :</p>
+          <div class="code-block">
+<pre><span class="keyword">await</span> fetch(<span class="string">'http://localhost:3000/api/articles'</span>, {
+  method: <span class="string">'POST'</span>,
+  headers: {
+    <span class="string">'Content-Type'</span>: <span class="string">'application/json'</span>,
+    <span class="string">'Authorization'</span>: <span class="string">'Bearer VOTRE_TOKEN'</span>
+  },
+  body: JSON.stringify({
+    nom: <span class="string">'Nouveau Produit'</span>,
+    prix_reel: 50000,
+    stock_quantite: 10
+  })
+});</pre>
+          </div>
+        </div>
+        
+        <div class="tutorial-step">
+          <h4>🔥 Activer une Vente Flash</h4>
+          <p>Pour mettre un article en promotion :</p>
+          <div class="code-block">
+<pre><span class="keyword">await</span> fetch(<span class="string">'http://localhost:3000/api/articles/1/flash'</span>, {
+  method: <span class="string">'PATCH'</span>,
+  headers: {
+    <span class="string">'Content-Type'</span>: <span class="string">'application/json'</span>,
+    <span class="string">'Authorization'</span>: <span class="string">'Bearer VOTRE_TOKEN'</span>
+  },
+  body: JSON.stringify({
+    flash_active: <span class="keyword">true</span>,
+    prix_promo: 25000
+  })
+});</pre>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Page Header -->
+    <div class="page-header">
+      <div>
+        <h1><i class="fas fa-boxes-stacked" style="color: #f68db5; margin-right: 10px;"></i>Gestion des Articles</h1>
+        <p style="color: #6b7280; margin-top: 5px;">Ajoutez, modifiez et gérez vos produits facilement</p>
+      </div>
+      <div style="display: flex; gap: 15px; align-items: center; flex-wrap: wrap;">
+        <div class="connection-status disconnected" id="connectionStatus">
+          <span class="dot"></span>
+          <span>Non connecté</span>
+        </div>
+        <button class="btn-primary" onclick="openAddModal()">
+          <i class="fas fa-plus"></i> Ajouter un article
+        </button>
+      </div>
+    </div>
+
+    <!-- Articles Grid -->
+    <div id="articlesContainer">
+      <div class="loading">
+        <i class="fas fa-spinner"></i>
+        <p>Chargement des articles...</p>
+      </div>
+    </div>
+  </main>
+
+  <!-- Modal Ajouter/Modifier Article -->
+  <div class="modal-overlay" id="articleModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h2 id="modalTitle"><i class="fas fa-plus" style="color: #f68db5; margin-right: 10px;"></i>Ajouter un article</h2>
+        <button class="modal-close" onclick="closeModal()">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      
+      <div class="modal-body">
+        <form id="articleForm">
+          <input type="hidden" id="articleId">
+          
+          <div class="form-group">
+            <label>Nom du produit <span class="required">*</span></label>
+            <input type="text" class="form-control" id="articleNom" placeholder="Ex: Robe Élégante Rose" required>
+          </div>
+          
+          <div class="form-group">
+            <label>Description</label>
+            <textarea class="form-control" id="articleDescription" placeholder="Décrivez votre produit..."></textarea>
+          </div>
+          
+          <div class="form-row">
+            <div class="form-group">
+              <label>Catégorie</label>
+              <select class="form-control" id="articleCategorie">
+                <option value="">Sélectionner...</option>
+                <option value="Robes">Robes</option>
+                <option value="Tops">Tops</option>
+                <option value="Pantalons">Pantalons</option>
+                <option value="Jupes">Jupes</option>
+                <option value="Accessoires">Accessoires</option>
+                <option value="Chaussures">Chaussures</option>
+                <option value="Sacs">Sacs</option>
+              </select>
+            </div>
+            
+            <div class="form-group">
+              <label>Stock <span class="required">*</span></label>
+              <input type="number" class="form-control" id="articleStock" placeholder="0" min="0" required>
+            </div>
+          </div>
+          
+          <div class="form-row">
+            <div class="form-group">
+              <label>Prix normal (Ar) <span class="required">*</span></label>
+              <input type="number" class="form-control" id="articlePrix" placeholder="50000" min="0" required>
+            </div>
+            
+            <div class="form-group">
+              <label>Prix promo (Ar)</label>
+              <input type="number" class="form-control" id="articlePrixPromo" placeholder="25000" min="0">
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label>Image du produit</label>
+            <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 10px;">
+              <button type="button" class="btn-primary" onclick="document.getElementById('imageUpload').click()" style="flex: 1;">
+                <i class="fas fa-upload"></i> Choisir une image depuis mon PC
+              </button>
+              <button type="button" class="btn-cancel" onclick="toggleUrlInput()" style="flex: 1;">
+                <i class="fas fa-link"></i> Ou utiliser une URL
+              </button>
+            </div>
+            <input type="file" id="imageUpload" accept="image/*" style="display: none;" onchange="handleImageUpload(event)">
+            <input type="url" class="form-control" id="articleImage" placeholder="https://exemple.com/image.jpg" style="display: none;">
+            <div id="imagePreview" style="display: none; margin-top: 15px; text-align: center;">
+              <img id="previewImg" style="max-width: 100%; max-height: 200px; border-radius: 10px; border: 2px solid #e5e7eb;">
+              <p style="margin-top: 10px; font-size: 0.85rem; color: #6b7280;">
+                <i class="fas fa-check-circle" style="color: #22c55e;"></i> Image chargée
+                <button type="button" onclick="removeImage()" style="margin-left: 10px; background: none; border: none; color: #ef4444; cursor: pointer;">
+                  <i class="fas fa-times"></i> Supprimer
+                </button>
+              </p>
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label class="form-check">
+              <input type="checkbox" id="articleFlash">
+              <div>
+                <span class="form-check-label">🔥 Activer la Vente Flash</span>
+                <p class="form-check-desc">Le prix promo sera affiché et l'article apparaîtra dans les ventes flash</p>
+              </div>
+            </label>
+          </div>
+        </form>
+      </div>
+      
+      <div class="modal-footer">
+        <button class="btn-delete" id="btnDelete" style="display: none;" onclick="deleteArticle()">
+          <i class="fas fa-trash"></i> Supprimer
+        </button>
+        <button class="btn-cancel" onclick="closeModal()">Annuler</button>
+        <button class="btn-save" onclick="saveArticle()">
+          <i class="fas fa-save"></i> Enregistrer
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script src="dark-mode.js"></script>
+  
+  <!-- Dark Mode Toggle -->
+  <button class="dark-mode-toggle" onclick="toggleDarkMode()" aria-label="Toggle Dark Mode">
+    <i class="fas fa-moon"></i>
+  </button>
+  
+  <script>
+    // =============================================
+    // CONFIGURATION
+    // =============================================
+    const API_URL = 'http://localhost:3000/api';
+    let authToken = localStorage.getItem('ascartel_token') || sessionStorage.getItem('ascartel_token');
+    let currentArticleId = null;
+
+    // =============================================
+    // INITIALISATION
+    // =============================================
+    document.addEventListener('DOMContentLoaded', async () => {
+      // Vérifier la connexion
+      await checkConnection();
+      
+      // Charger les articles
+      await loadArticles();
+      
+      // Setup sidebar mobile
+      setupSidebar();
+    });
+
+    // =============================================
+    // CONNEXION & AUTHENTIFICATION
+    // =============================================
+    async function checkConnection() {
+      const statusEl = document.getElementById('connectionStatus');
+      
+      try {
+        // Tester l'API
+        const healthResponse = await fetch(`${API_URL}/health`);
+        if (!healthResponse.ok) throw new Error('API non disponible');
+        
+        // Vérifier le token
+        if (authToken) {
+          const meResponse = await fetch(`${API_URL}/auth/me`, {
+            headers: { 'Authorization': `Bearer ${authToken}` }
+          });
+          
+          if (meResponse.ok) {
+            const data = await meResponse.json();
+            statusEl.className = 'connection-status connected';
+            statusEl.innerHTML = `<span class="dot"></span><span>Connecté: ${data.user.name}</span>`;
+            document.getElementById('adminName').textContent = data.user.name;
+            return true;
+          }
+        }
+        
+        // Pas de token ou token invalide - connexion auto
+        await autoLogin();
+        
+      } catch (error) {
+        statusEl.className = 'connection-status disconnected';
+        statusEl.innerHTML = `<span class="dot"></span><span>API non disponible</span>`;
+        showNotification('Erreur: Le serveur backend n\'est pas lancé', 'error');
+        return false;
+      }
+    }
+
+    async function autoLogin() {
+      try {
+        const response = await fetch(`${API_URL}/auth/login`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            email: 'master@ascartel.com',
+            password: 'ASCARTEL_MASTER_2025'
+          })
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+          authToken = data.token;
+          localStorage.setItem('ascartel_token', authToken);
+          
+          const statusEl = document.getElementById('connectionStatus');
+          statusEl.className = 'connection-status connected';
+          statusEl.innerHTML = `<span class="dot"></span><span>Connecté: ${data.user.name}</span>`;
+          document.getElementById('adminName').textContent = data.user.name;
+          
+          showNotification('Connexion automatique réussie', 'success');
+        }
+      } catch (error) {
+        console.error('Auto-login failed:', error);
+      }
+    }
+
+    // =============================================
+    // GESTION DES ARTICLES
+    // =============================================
+    async function loadArticles() {
+      const container = document.getElementById('articlesContainer');
+      
+      try {
+        const response = await fetch(`${API_URL}/articles`);
+        const data = await response.json();
+        
+        if (data.success && data.articles.length > 0) {
+          container.innerHTML = `<div class="articles-grid">${data.articles.map(renderArticleCard).join('')}</div>`;
+        } else {
+          container.innerHTML = `
+            <div class="empty-state">
+              <i class="fas fa-box-open"></i>
+              <h3>Aucun article</h3>
+              <p>Commencez par ajouter votre premier article</p>
+              <button class="btn-primary" onclick="openAddModal()">
+                <i class="fas fa-plus"></i> Ajouter un article
+              </button>
+            </div>
+          `;
+        }
+      } catch (error) {
+        container.innerHTML = `
+          <div class="empty-state">
+            <i class="fas fa-exclamation-triangle" style="color: #ef4444;"></i>
+            <h3>Erreur de connexion</h3>
+            <p>Impossible de charger les articles. Vérifiez que le serveur backend est lancé.</p>
+            <button class="btn-primary" onclick="loadArticles()">
+              <i class="fas fa-refresh"></i> Réessayer
+            </button>
+          </div>
+        `;
+      }
+    }
+
+    function renderArticleCard(article) {
+      const stockClass = article.stock <= 0 ? 'stock-critical' : (article.stock <= 5 ? 'stock-low' : 'stock-ok');
+      const stockText = article.stock <= 0 ? 'Rupture' : (article.stock <= 5 ? `${article.stock} (faible)` : article.stock);
+      
+      return `
+        <div class="article-card">
+          <div class="article-image">
+            ${article.image_url ? `<img src="${article.image_url}" alt="${article.nom}" style="width:100%;height:100%;object-fit:cover;">` : '<i class="fas fa-image"></i>'}
+            ${article.flash_sale.active ? '<span class="flash-badge">🔥 -' + article.flash_sale.discount + '%</span>' : ''}
+          </div>
+          <div class="article-content">
+            <span class="article-category">${article.categorie || 'Sans catégorie'}</span>
+            <h3 class="article-name">${article.nom}</h3>
+            <div class="article-price">
+              <span class="price-current">${article.prix.toLocaleString()} Ar</span>
+              ${article.flash_sale.active ? `<span class="price-original">${article.prix_original.toLocaleString()} Ar</span>` : ''}
+            </div>
+            <div class="article-stock">
+              <span class="stock-indicator ${stockClass}"></span>
+              <span>Stock: ${stockText}</span>
+            </div>
+            <div class="article-actions">
+              <button class="btn-edit-article" onclick="editArticle(${article.id})">
+                <i class="fas fa-edit"></i> Modifier
+              </button>
+              <button class="btn-flash-article ${article.flash_sale.active ? 'active' : ''}" onclick="toggleFlash(${article.id}, ${!article.flash_sale.active})">
+                <i class="fas fa-bolt"></i> ${article.flash_sale.active ? 'Désactiver' : 'Flash'}
+              </button>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    // =============================================
+    // MODAL AJOUTER/MODIFIER
+    // =============================================
+    function openAddModal() {
+      currentArticleId = null;
+      document.getElementById('modalTitle').innerHTML = '<i class="fas fa-plus" style="color: #f68db5; margin-right: 10px;"></i>Ajouter un article';
+      document.getElementById('articleForm').reset();
+      document.getElementById('btnDelete').style.display = 'none';
+      
+      // Réinitialiser l'affichage de l'image
+      document.getElementById('imagePreview').style.display = 'none';
+      document.getElementById('previewImg').src = '';
+      document.getElementById('articleImage').style.display = 'none';
+      document.getElementById('imageUpload').value = '';
+      
+      document.getElementById('articleModal').classList.add('active');
+    }
+
+    async function editArticle(id) {
+      currentArticleId = id;
+      
+      try {
+        const response = await fetch(`${API_URL}/articles/${id}`);
+        const data = await response.json();
+        
+        if (data.success) {
+          const article = data.article;
+          
+          document.getElementById('modalTitle').innerHTML = '<i class="fas fa-edit" style="color: #f68db5; margin-right: 10px;"></i>Modifier l\'article';
+          document.getElementById('articleId').value = article.id;
+          document.getElementById('articleNom').value = article.nom;
+          document.getElementById('articleDescription').value = article.description || '';
+          document.getElementById('articleCategorie').value = article.categorie || '';
+          document.getElementById('articleStock').value = article.stock;
+          document.getElementById('articlePrix').value = article.prix_original;
+          document.getElementById('articlePrixPromo').value = article.prix_promo || '';
+          document.getElementById('articleFlash').checked = article.flash_sale.active;
+          document.getElementById('btnDelete').style.display = 'block';
+          
+          // Gérer l'image existante
+          const previewImg = document.getElementById('previewImg');
+          const previewDiv = document.getElementById('imagePreview');
+          const urlInput = document.getElementById('articleImage');
+          
+          if (article.image_url) {
+            previewImg.src = article.image_url;
+            previewDiv.style.display = 'block';
+            urlInput.style.display = 'none';
+          } else {
+            previewDiv.style.display = 'none';
+            urlInput.style.display = 'none';
+          }
+          
+          document.getElementById('articleModal').classList.add('active');
+        }
+      } catch (error) {
+        showNotification('Erreur lors du chargement de l\'article', 'error');
+      }
+    }
+
+    function closeModal() {
+      document.getElementById('articleModal').classList.remove('active');
+    }
+
+    async function saveArticle() {
+      if (!authToken) {
+        showNotification('Vous devez être connecté', 'error');
+        return;
+      }
+      
+      // Récupérer l'image (base64 ou URL)
+      const previewImg = document.getElementById('previewImg');
+      const imageUrl = document.getElementById('articleImage');
+      let finalImageUrl = null;
+      
+      if (previewImg.src && previewImg.src.startsWith('data:')) {
+        // Image uploadée depuis le PC (base64)
+        finalImageUrl = previewImg.src;
+      } else if (imageUrl.value) {
+        // URL fournie
+        finalImageUrl = imageUrl.value;
+      }
+      
+      const articleData = {
+        nom: document.getElementById('articleNom').value,
+        description: document.getElementById('articleDescription').value || null,
+        categorie: document.getElementById('articleCategorie').value || null,
+        stock_quantite: parseInt(document.getElementById('articleStock').value),
+        prix_reel: parseInt(document.getElementById('articlePrix').value),
+        prix_promo: document.getElementById('articlePrixPromo').value ? parseInt(document.getElementById('articlePrixPromo').value) : null,
+        image_url: finalImageUrl,
+        flash_active: document.getElementById('articleFlash').checked
+      };
+      
+      if (!articleData.nom || !articleData.prix_reel) {
+        showNotification('Veuillez remplir les champs obligatoires', 'error');
+        return;
+      }
+      
+      try {
+        const url = currentArticleId ? `${API_URL}/articles/${currentArticleId}` : `${API_URL}/articles`;
+        const method = currentArticleId ? 'PUT' : 'POST';
+        
+        const response = await fetch(url, {
+          method,
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${authToken}`
+          },
+          body: JSON.stringify(articleData)
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+          showNotification(currentArticleId ? 'Article modifié avec succès' : 'Article ajouté avec succès', 'success');
+          closeModal();
+          await loadArticles();
+        } else {
+          showNotification(data.error || 'Erreur lors de l\'enregistrement', 'error');
+        }
+      } catch (error) {
+        showNotification('Erreur de connexion au serveur', 'error');
+      }
+    }
+
+    async function deleteArticle() {
+      if (!currentArticleId || !authToken) return;
+      
+      if (!confirm('Êtes-vous sûr de vouloir supprimer cet article ?')) return;
+      
+      try {
+        const response = await fetch(`${API_URL}/articles/${currentArticleId}`, {
+          method: 'DELETE',
+          headers: {
+            'Authorization': `Bearer ${authToken}`
+          }
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+          showNotification('Article supprimé', 'success');
+          closeModal();
+          await loadArticles();
+        } else {
+          showNotification(data.error || 'Erreur lors de la suppression', 'error');
+        }
+      } catch (error) {
+        showNotification('Erreur de connexion au serveur', 'error');
+      }
+    }
+
+    async function toggleFlash(id, activate) {
+      if (!authToken) {
+        showNotification('Vous devez être connecté', 'error');
+        return;
+      }
+      
+      try {
+        const response = await fetch(`${API_URL}/articles/${id}/flash`, {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${authToken}`
+          },
+          body: JSON.stringify({ flash_active: activate })
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+          showNotification(activate ? 'Vente flash activée 🔥' : 'Vente flash désactivée', 'success');
+          await loadArticles();
+        } else {
+          showNotification(data.error || 'Erreur', 'error');
+        }
+      } catch (error) {
+        showNotification('Erreur de connexion au serveur', 'error');
+      }
+    }
+
+    // =============================================
+    // GESTION DES IMAGES
+    // =============================================
+    function handleImageUpload(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      
+      // Vérifier que c'est bien une image
+      if (!file.type.startsWith('image/')) {
+        showNotification('Veuillez sélectionner une image valide', 'error');
+        return;
+      }
+      
+      // Vérifier la taille (max 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        showNotification('L\'image est trop grande (max 5MB)', 'error');
+        return;
+      }
+      
+      // Lire le fichier et le convertir en base64
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const previewImg = document.getElementById('previewImg');
+        const previewDiv = document.getElementById('imagePreview');
+        const urlInput = document.getElementById('articleImage');
+        
+        previewImg.src = e.target.result;
+        previewDiv.style.display = 'block';
+        urlInput.style.display = 'none';
+        urlInput.value = '';
+        
+        showNotification('Image chargée avec succès', 'success');
+      };
+      reader.readAsDataURL(file);
+    }
+    
+    function toggleUrlInput() {
+      const urlInput = document.getElementById('articleImage');
+      const previewDiv = document.getElementById('imagePreview');
+      const fileInput = document.getElementById('imageUpload');
+      
+      if (urlInput.style.display === 'none') {
+        urlInput.style.display = 'block';
+        previewDiv.style.display = 'none';
+        fileInput.value = '';
+        document.getElementById('previewImg').src = '';
+      } else {
+        urlInput.style.display = 'none';
+      }
+    }
+    
+    function removeImage() {
+      const previewDiv = document.getElementById('imagePreview');
+      const previewImg = document.getElementById('previewImg');
+      const fileInput = document.getElementById('imageUpload');
+      const urlInput = document.getElementById('articleImage');
+      
+      previewDiv.style.display = 'none';
+      previewImg.src = '';
+      fileInput.value = '';
+      urlInput.value = '';
+      urlInput.style.display = 'none';
+    }
+
+    // =============================================
+    // UTILITAIRES
+    // =============================================
+    function showNotification(message, type = 'info') {
+      const existing = document.querySelector('.notification');
+      if (existing) existing.remove();
+      
+      const notification = document.createElement('div');
+      notification.className = `notification ${type}`;
+      notification.innerHTML = `
+        <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'}"></i>
+        <span>${message}</span>
+      `;
+      
+      document.body.appendChild(notification);
+      
+      setTimeout(() => notification.remove(), 4000);
+    }
+
+    function toggleTutorial() {
+      const content = document.getElementById('tutorialContent');
+      content.classList.toggle('active');
+    }
+
+    function setupSidebar() {
+      const toggle = document.getElementById('mobileMenuToggle');
+      const sidebar = document.getElementById('adminSidebar');
+      const overlay = document.getElementById('sidebarOverlay');
+      const close = document.getElementById('sidebarClose');
+      
+      toggle.addEventListener('click', () => {
+        sidebar.classList.add('active');
+        overlay.classList.add('active');
+      });
+      
+      [close, overlay].forEach(el => {
+        el.addEventListener('click', () => {
+          sidebar.classList.remove('active');
+          overlay.classList.remove('active');
+        });
+      });
+    }
+
+    // Logout
+    document.getElementById('logoutBtn').addEventListener('click', (e) => {
+      e.preventDefault();
+      localStorage.removeItem('ascartel_token');
+      sessionStorage.removeItem('ascartel_token');
+      window.location.href = 'login.html';
+    });
+  </script>
+</body>
+</html>

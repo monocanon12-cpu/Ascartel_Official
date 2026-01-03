@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard Admin • Boutique Aina</title>
+  
+  <!-- SEO Meta Tags -->
+  <meta name="description" content="Tableau de bord administrateur - Boutique Aina" />
+  <meta name="robots" content="noindex, nofollow" />
+  
+  <!-- Preconnect -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  
+  <!-- Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+  
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="design-system.css" />
+  <link rel="stylesheet" href="admin.css" />
+  <link rel="stylesheet" href="dark-mode.css" />
+  
+  <script src="dark-mode.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="admin-body">
+  <!-- Mobile Menu Toggle -->
+  <button class="mobile-menu-toggle" id="mobileMenuToggle" aria-label="Ouvrir le menu">
+    <i class="fas fa-bars"></i>
+  </button>
+
+  <!-- Sidebar Overlay (Mobile) -->
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <!-- Sidebar -->
+  <aside class="admin-sidebar" id="adminSidebar">
+    <div class="sidebar-header">
+      <div class="admin-logo">
+        <i class="fas fa-store"></i>
+        <span>Aina Admin</span>
+      </div>
+      <button class="sidebar-close" id="sidebarClose" aria-label="Fermer le menu">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    
+    <nav class="sidebar-nav">
+      <ul class="nav-list">
+        <li class="nav-item active">
+          <a href="admin-dashboard.html" class="nav-link">
+            <i class="fas fa-chart-line"></i>
+            <span>Dashboard</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="admin-articles.html" class="nav-link">
+            <i class="fas fa-boxes-stacked"></i>
+            <span>Gestion Stock</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="admin-import-bulk.html" class="nav-link">
+            <i class="fas fa-cloud-upload-alt"></i>
+            <span>Import en Masse</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="#ventes" class="nav-link">
+            <i class="fas fa-shopping-cart"></i>
+            <span>Ventes</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="#collaborateurs" class="nav-link">
+            <i class="fas fa-users"></i>
+            <span>Collaborateurs</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="#parametres" class="nav-link">
+            <i class="fas fa-cog"></i>
+            <span>Paramètres</span>
+          </a>
+        </li>
+      </ul>
+    </nav>
+    
+    <div class="sidebar-footer">
+      <div class="admin-profile">
+        <div class="profile-avatar">
+          <i class="fas fa-user"></i>
+        </div>
+        <div class="profile-info">
+          <span class="profile-name">Admin</span>
+          <span class="profile-role">Administrateur</span>
+        </div>
+      </div>
+      <a href="#" class="logout-btn" id="logoutBtn">
+        <i class="fas fa-sign-out-alt"></i>
+        <span>Déconnexion</span>
+      </a>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="admin-main">
+    <!-- Header -->
+    <header class="admin-header">
+      <div class="header-left">
+        <h1 class="page-title">Tableau de Bord</h1>
+        <p class="page-subtitle">Bienvenue, voici un aperçu de votre boutique</p>
+      </div>
+      <div class="header-right">
+        <div class="header-date">
+          <i class="fas fa-calendar-alt"></i>
+          <span id="currentDate"></span>
+        </div>
+        <button class="notification-btn" aria-label="Notifications">
+          <i class="fas fa-bell"></i>
+          <span class="notification-badge">3</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Statistics Section -->
+    <section class="stats-section">
+      <h2 class="section-title">
+        <i class="fas fa-chart-pie"></i>
+        Statistiques
+      </h2>
+      <div class="stats-grid">
+        <!-- Total Ventes -->
+        <div class="stat-card stat-sales">
+          <div class="stat-icon">
+            <i class="fas fa-euro-sign"></i>
+          </div>
+          <div class="stat-content">
+            <h3 class="stat-value">125 450 €</h3>
+            <p class="stat-label">Total Ventes</p>
+            <span class="stat-trend positive">
+              <i class="fas fa-arrow-up"></i> +12.5% ce mois
+            </span>
+          </div>
+        </div>
+        
+        <!-- Commandes -->
+        <div class="stat-card stat-orders">
+          <div class="stat-icon">
+            <i class="fas fa-shopping-bag"></i>
+          </div>
+          <div class="stat-content">
+            <h3 class="stat-value">1 248</h3>
+            <p class="stat-label">Commandes</p>
+            <span class="stat-trend positive">
+              <i class="fas fa-arrow-up"></i> +8.3% ce mois
+            </span>
+          </div>
+        </div>
+        
+        <!-- Stock Critique -->
+        <div class="stat-card stat-critical">
+          <div class="stat-icon">
+            <i class="fas fa-exclamation-triangle"></i>
+          </div>
+          <div class="stat-content">
+            <h3 class="stat-value">7</h3>
+            <p class="stat-label">Stock Critique</p>
+            <span class="stat-trend negative">
+              <i class="fas fa-arrow-down"></i> Attention requise
+            </span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Stock Management Section -->
+    <section class="stock-section" id="gestion-stock">
+      <div class="section-header">
+        <h2 class="section-title">
+          <i class="fas fa-boxes-stacked"></i>
+          Gestion de Stock
+        </h2>
+        <button class="btn-primary">
+          <i class="fas fa-plus"></i>
+          Ajouter un produit
+        </button>
+      </div>
+      
+      <div class="table-container">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>Nom du produit</th>
+              <th>Catégorie</th>
+              <th>Quantité</th>
+              <th>Prix</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td data-label="Produit">
+                <div class="product-cell">
+                  <div class="product-thumb">
+                    <i class="fas fa-tshirt"></i>
+                  </div>
+                  <span>Robe Élégante Rose</span>
+                </div>
+              </td>
+              <td data-label="Catégorie"><span class="category-badge">Robes</span></td>
+              <td data-label="Quantité"><span class="stock-badge stock-ok">45</span></td>
+              <td data-label="Prix">89 000 Ar</td>
+              <td data-label="Actions">
+                <button class="btn-edit" aria-label="Modifier">
+                  <i class="fas fa-edit"></i>
+                  Modifier
+                </button>
+              </td>
+            </tr>
+            <tr>
+              <td data-label="Produit">
+                <div class="product-cell">
+                  <div class="product-thumb">
+                    <i class="fas fa-tshirt"></i>
+                  </div>
+                  <span>Top Fleuri Été</span>
+                </div>
+              </td>
+              <td data-label="Catégorie"><span class="category-badge">Tops</span></td>
+              <td data-label="Quantité"><span class="stock-badge stock-low">8</span></td>
+              <td data-label="Prix">35 000 Ar</td>
+              <td data-label="Actions">
+                <button class="btn-edit" aria-label="Modifier">
+                  <i class="fas fa-edit"></i>
+                  Modifier
+                </button>
+              </td>
+            </tr>
+            <tr>
+              <td data-label="Produit">
+                <div class="product-cell">
+                  <div class="product-thumb">
+                    <i class="fas fa-tshirt"></i>
+                  </div>
+                  <span>Pantalon Slim Noir</span>
+                </div>
+              </td>
+              <td data-label="Catégorie"><span class="category-badge">Pantalons</span></td>
+              <td data-label="Quantité"><span class="stock-badge stock-critical">3</span></td>
+              <td data-label="Prix">65 000 Ar</td>
+              <td data-label="Actions">
+                <button class="btn-edit" aria-label="Modifier">
+                  <i class="fas fa-edit"></i>
+                  Modifier
+                </button>
+              </td>
+            </tr>
+            <tr>
+              <td data-label="Produit">
+                <div class="product-cell">
+                  <div class="product-thumb">
+                    <i class="fas fa-gem"></i>
+                  </div>
+                  <span>Collier Perles Dorées</span>
+                </div>
+              </td>
+              <td data-label="Catégorie"><span class="category-badge">Accessoires</span></td>
+              <td data-label="Quantité"><span class="stock-badge stock-ok">120</span></td>
+              <td data-label="Prix">25 000 Ar</td>
+              <td data-label="Actions">
+                <button class="btn-edit" aria-label="Modifier">
+                  <i class="fas fa-edit"></i>
+                  Modifier
+                </button>
+              </td>
+            </tr>
+            <tr>
+              <td data-label="Produit">
+                <div class="product-cell">
+                  <div class="product-thumb">
+                    <i class="fas fa-tshirt"></i>
+                  </div>
+                  <span>Jupe Plissée Beige</span>
+                </div>
+              </td>
+              <td data-label="Catégorie"><span class="category-badge">Jupes</span></td>
+              <td data-label="Quantité"><span class="stock-badge stock-critical">2</span></td>
+              <td data-label="Prix">55 000 Ar</td>
+              <td data-label="Actions">
+                <button class="btn-edit" aria-label="Modifier">
+                  <i class="fas fa-edit"></i>
+                  Modifier
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Recent Sales Section -->
+    <section class="sales-section" id="ventes">
+      <h2 class="section-title">
+        <i class="fas fa-receipt"></i>
+        Ventes Récentes
+      </h2>
+      <div class="sales-list">
+        <div class="sale-item">
+          <div class="sale-icon">
+            <i class="fas fa-shopping-bag"></i>
+          </div>
+          <div class="sale-info">
+            <h4 class="sale-title">Commande #1248</h4>
+            <p class="sale-customer">Marie Rakoto - 3 articles</p>
+          </div>
+          <div class="sale-details">
+            <span class="sale-amount">145 000 Ar</span>
+            <span class="sale-time">Il y a 15 min</span>
+          </div>
+          <span class="sale-status status-completed">Complétée</span>
+        </div>
+        
+        <div class="sale-item">
+          <div class="sale-icon">
+            <i class="fas fa-shopping-bag"></i>
+          </div>
+          <div class="sale-info">
+            <h4 class="sale-title">Commande #1247</h4>
+            <p class="sale-customer">Jean Andria - 1 article</p>
+          </div>
+          <div class="sale-details">
+            <span class="sale-amount">89 000 Ar</span>
+            <span class="sale-time">Il y a 45 min</span>
+          </div>
+          <span class="sale-status status-pending">En cours</span>
+        </div>
+        
+        <div class="sale-item">
+          <div class="sale-icon">
+            <i class="fas fa-shopping-bag"></i>
+          </div>
+          <div class="sale-info">
+            <h4 class="sale-title">Commande #1246</h4>
+            <p class="sale-customer">Sophie Rabe - 5 articles</p>
+          </div>
+          <div class="sale-details">
+            <span class="sale-amount">275 000 Ar</span>
+            <span class="sale-time">Il y a 2h</span>
+          </div>
+          <span class="sale-status status-completed">Complétée</span>
+        </div>
+        
+        <div class="sale-item">
+          <div class="sale-icon">
+            <i class="fas fa-shopping-bag"></i>
+          </div>
+          <div class="sale-info">
+            <h4 class="sale-title">Commande #1245</h4>
+            <p class="sale-customer">Paul Razafy - 2 articles</p>
+          </div>
+          <div class="sale-details">
+            <span class="sale-amount">120 000 Ar</span>
+            <span class="sale-time">Il y a 3h</span>
+          </div>
+          <span class="sale-status status-shipped">Expédiée</span>
+        </div>
+        
+        <div class="sale-item">
+          <div class="sale-icon">
+            <i class="fas fa-shopping-bag"></i>
+          </div>
+          <div class="sale-info">
+            <h4 class="sale-title">Commande #1244</h4>
+            <p class="sale-customer">Lova Rina - 4 articles</p>
+          </div>
+          <div class="sale-details">
+            <span class="sale-amount">198 000 Ar</span>
+            <span class="sale-time">Il y a 5h</span>
+          </div>
+          <span class="sale-status status-completed">Complétée</span>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    // Set current date
+    const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+    document.getElementById('currentDate').textContent = new Date().toLocaleDateString('fr-FR', options);
+    
+    // Mobile menu toggle
+    const mobileMenuToggle = document.getElementById('mobileMenuToggle');
+    const adminSidebar = document.getElementById('adminSidebar');
+    const sidebarOverlay = document.getElementById('sidebarOverlay');
+    const sidebarClose = document.getElementById('sidebarClose');
+    
+    function openSidebar() {
+      adminSidebar.classList.add('active');
+      sidebarOverlay.classList.add('active');
+      document.body.style.overflow = 'hidden';
+    }
+    
+    function closeSidebar() {
+      adminSidebar.classList.remove('active');
+      sidebarOverlay.classList.remove('active');
+      document.body.style.overflow = '';
+    }
+    
+    mobileMenuToggle.addEventListener('click', openSidebar);
+    sidebarClose.addEventListener('click', closeSidebar);
+    sidebarOverlay.addEventListener('click', closeSidebar);
+    
+    // Active nav link
+    document.querySelectorAll('.nav-link').forEach(link => {
+      link.addEventListener('click', function() {
+        document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+        this.parentElement.classList.add('active');
+        closeSidebar();
+      });
+    });
+    
+    // Logout functionality
+    document.getElementById('logoutBtn').addEventListener('click', function(e) {
+      e.preventDefault();
+      
+      // Clear user session data
+      localStorage.removeItem('ainaUser');
+      sessionStorage.removeItem('ainaUser');
+      
+      // Redirect to login page
+      window.location.href = 'login.html';
+    });
+    
+    // Check if user is logged in
+    const savedUser = localStorage.getItem('ainaUser') || sessionStorage.getItem('ainaUser');
+    if (!savedUser) {
+      window.location.href = 'login.html';
+    }
+  </script>
+</body>
+</html>

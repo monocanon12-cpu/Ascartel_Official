@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Votre panier • Boutique Aina</title>
+  <meta name="description" content="Consultez votre panier et finalisez votre commande sur Boutique Aina." />
+  <meta name="robots" content="noindex, nofollow" />
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+  <link rel="stylesheet" href="design-system.css" />
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="panier.css" />
+</head>
+<body>
+  <!-- Header -->
+  <header class="cart-header">
+    <div class="cart-header-content">
+      <a href="index.html" class="logo"><span class="logo-text">Aina</span></a>
+      <div class="cart-steps">
+        <div class="step active">
+          <span class="step-number">1</span>
+          <span class="step-label">Panier</span>
+        </div>
+        <div class="step-line"></div>
+        <div class="step">
+          <span class="step-number">2</span>
+          <span class="step-label">Livraison</span>
+        </div>
+        <div class="step-line"></div>
+        <div class="step">
+          <span class="step-number">3</span>
+          <span class="step-label">Paiement</span>
+        </div>
+        <div class="step-line"></div>
+        <div class="step">
+          <span class="step-number">4</span>
+          <span class="step-label">Confirmation</span>
+        </div>
+      </div>
+      <a href="index.html" class="continue-shopping-link">
+        <i class="fas fa-arrow-left"></i> Continuer mes achats
+      </a>
+    </div>
+  </header>
+
+  <main class="cart-page">
+    <div class="cart-container">
+      <!-- Panier avec articles -->
+      <div class="cart-main" id="cartMain">
+        <div class="cart-title">
+          <h1><i class="fas fa-shopping-bag"></i> Votre panier</h1>
+          <span class="cart-count-badge" id="cartCountBadge">3 articles</span>
+        </div>
+
+        <!-- Liste des produits -->
+        <div class="cart-items" id="cartItems">
+          <!-- Item 1 -->
+          <div class="cart-item" data-id="1">
+            <div class="item-image">
+              <img src="https://via.placeholder.com/120x150" alt="Robe d'été légère">
+            </div>
+            <div class="item-details">
+              <div class="item-info">
+                <h3 class="item-name">Robe d'été légère</h3>
+                <p class="item-variant">Taille: M | Couleur: Rose</p>
+                <p class="item-ref">Réf: AIN-2024-001</p>
+              </div>
+              <div class="item-actions-mobile">
+                <button class="item-wishlist" title="Ajouter aux favoris">
+                  <i class="far fa-heart"></i>
+                </button>
+                <button class="item-remove" title="Supprimer">
+                  <i class="fas fa-trash-alt"></i>
+                </button>
+              </div>
+            </div>
+            <div class="item-quantity">
+              <button class="qty-btn minus" data-action="decrease">
+                <i class="fas fa-minus"></i>
+              </button>
+              <input type="number" value="1" min="1" max="10" class="qty-input">
+              <button class="qty-btn plus" data-action="increase">
+                <i class="fas fa-plus"></i>
+              </button>
+            </div>
+            <div class="item-price">
+              <span class="price-current">29 990 Ar</span>
+            </div>
+            <div class="item-actions">
+              <button class="item-wishlist" title="Ajouter aux favoris">
+                <i class="far fa-heart"></i>
+              </button>
+              <button class="item-remove" title="Supprimer">
+                <i class="fas fa-trash-alt"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- Item 2 -->
+          <div class="cart-item" data-id="2">
+            <div class="item-image">
+              <img src="https://via.placeholder.com/120x150" alt="Jean taille haute">
+              <span class="item-badge sale">-20%</span>
+            </div>
+            <div class="item-details">
+              <div class="item-info">
+                <h3 class="item-name">Jean taille haute</h3>
+                <p class="item-variant">Taille: 38 | Couleur: Bleu</p>
+                <p class="item-ref">Réf: AIN-2024-042</p>
+              </div>
+              <div class="item-actions-mobile">
+                <button class="item-wishlist" title="Ajouter aux favoris">
+                  <i class="far fa-heart"></i>
+                </button>
+                <button class="item-remove" title="Supprimer">
+                  <i class="fas fa-trash-alt"></i>
+                </button>
+              </div>
+            </div>
+            <div class="item-quantity">
+              <button class="qty-btn minus" data-action="decrease">
+                <i class="fas fa-minus"></i>
+              </button>
+              <input type="number" value="1" min="1" max="10" class="qty-input">
+              <button class="qty-btn plus" data-action="increase">
+                <i class="fas fa-plus"></i>
+              </button>
+            </div>
+            <div class="item-price">
+              <span class="price-original">59 990 Ar</span>
+              <span class="price-current sale">47 990 Ar</span>
+            </div>
+            <div class="item-actions">
+              <button class="item-wishlist" title="Ajouter aux favoris">
+                <i class="far fa-heart"></i>
+              </button>
+              <button class="item-remove" title="Supprimer">
+                <i class="fas fa-trash-alt"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- Item 3 -->
+          <div class="cart-item" data-id="3">
+            <div class="item-image">
+              <img src="https://via.placeholder.com/120x150" alt="Top en dentelle">
+            </div>
+            <div class="item-details">
+              <div class="item-info">
+                <h3 class="item-name">Top en dentelle</h3>
+                <p class="item-variant">Taille: S | Couleur: Blanc</p>
+                <p class="item-ref">Réf: AIN-2024-018</p>
+              </div>
+              <div class="item-actions-mobile">
+                <button class="item-wishlist" title="Ajouter aux favoris">
+                  <i class="far fa-heart"></i>
+                </button>
+                <button class="item-remove" title="Supprimer">
+                  <i class="fas fa-trash-alt"></i>
+                </button>
+              </div>
+            </div>
+            <div class="item-quantity">
+              <button class="qty-btn minus" data-action="decrease">
+                <i class="fas fa-minus"></i>
+              </button>
+              <input type="number" value="2" min="1" max="10" class="qty-input">
+              <button class="qty-btn plus" data-action="increase">
+                <i class="fas fa-plus"></i>
+              </button>
+            </div>
+            <div class="item-price">
+              <span class="price-current">24 990 Ar</span>
+              <span class="price-subtotal">× 2 = 49 980 Ar</span>
+            </div>
+            <div class="item-actions">
+              <button class="item-wishlist" title="Ajouter aux favoris">
+                <i class="far fa-heart"></i>
+              </button>
+              <button class="item-remove" title="Supprimer">
+                <i class="fas fa-trash-alt"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Code promo -->
+        <div class="promo-code-section">
+          <div class="promo-code-form">
+            <input type="text" placeholder="Code promo ou carte cadeau" class="promo-input" id="promoInput">
+            <button class="promo-btn" id="promoBtn">Appliquer</button>
+          </div>
+          <p class="promo-message" id="promoMessage"></p>
+        </div>
+      </div>
+
+      <!-- Résumé de commande -->
+      <aside class="cart-summary">
+        <h2>Résumé de la commande</h2>
+        
+        <div class="summary-lines">
+          <div class="summary-line">
+            <span>Sous-total (4 articles)</span>
+            <span id="subtotal">127 960 Ar</span>
+          </div>
+          <div class="summary-line discount" id="discountLine" style="display: none;">
+            <span>Réduction</span>
+            <span class="discount-amount" id="discountAmount">-0 Ar</span>
+          </div>
+          <div class="summary-line">
+            <span>Livraison estimée</span>
+            <span id="shippingCost">Gratuite</span>
+          </div>
+        </div>
+
+        <div class="summary-total">
+          <span>Total</span>
+          <span id="totalAmount">127 960 Ar</span>
+        </div>
+
+        <div class="summary-savings" id="savingsNote">
+          <i class="fas fa-piggy-bank"></i>
+          Vous économisez <strong>11 990 Ar</strong> sur cette commande !
+        </div>
+
+        <button class="checkout-btn" id="checkoutBtn">
+          <i class="fas fa-lock"></i>
+          Passer la commande
+        </button>
+
+        <div class="payment-methods-summary">
+          <p>Paiements acceptés</p>
+          <div class="payment-icons">
+            <i class="fab fa-cc-visa"></i>
+            <i class="fab fa-cc-mastercard"></i>
+            <span class="payment-text">MVola</span>
+            <span class="payment-text">Orange</span>
+          </div>
+        </div>
+
+        <div class="trust-badges-summary">
+          <div class="trust-item">
+            <i class="fas fa-shield-alt"></i>
+            <span>Paiement 100% sécurisé</span>
+          </div>
+          <div class="trust-item">
+            <i class="fas fa-undo"></i>
+            <span>Retours gratuits sous 14 jours</span>
+          </div>
+          <div class="trust-item">
+            <i class="fas fa-truck"></i>
+            <span>Livraison gratuite dès 50 000 Ar</span>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Panier vide -->
+      <div class="cart-empty" id="cartEmpty" style="display: none;">
+        <div class="empty-icon">
+          <i class="fas fa-shopping-bag"></i>
+        </div>
+        <h2>Votre panier est vide</h2>
+        <p>Découvrez nos dernières collections et ajoutez vos coups de cœur !</p>
+        <a href="index.html#products" class="empty-btn">
+          <i class="fas fa-shopping-cart"></i> Voir les produits
+        </a>
+      </div>
+    </div>
+
+    <!-- Cross-sell section -->
+    <section class="cart-crosssell">
+      <div class="crosssell-container">
+        <h2><i class="fas fa-heart"></i> Complétez votre panier</h2>
+        <div class="crosssell-products">
+          <div class="crosssell-item">
+            <img src="https://via.placeholder.com/150x180" alt="Produit suggéré">
+            <h4>Écharpe en soie</h4>
+            <p class="crosssell-price">19 990 Ar</p>
+            <button class="crosssell-add">+ Ajouter</button>
+          </div>
+          <div class="crosssell-item">
+            <img src="https://via.placeholder.com/150x180" alt="Produit suggéré">
+            <h4>Sac à main</h4>
+            <p class="crosssell-price">45 990 Ar</p>
+            <button class="crosssell-add">+ Ajouter</button>
+          </div>
+          <div class="crosssell-item">
+            <img src="https://via.placeholder.com/150x180" alt="Produit suggéré">
+            <h4>Bracelet doré</h4>
+            <p class="crosssell-price">12 990 Ar</p>
+            <button class="crosssell-add">+ Ajouter</button>
+          </div>
+          <div class="crosssell-item">
+            <img src="https://via.placeholder.com/150x180" alt="Produit suggéré">
+            <h4>Lunettes de soleil</h4>
+            <p class="crosssell-price">24 990 Ar</p>
+            <button class="crosssell-add">+ Ajouter</button>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer simplifié -->
+  <footer class="cart-footer">
+    <div class="cart-footer-content">
+      <p>&copy; 2024 Boutique Aina. Tous droits réservés.</p>
+      <div class="cart-footer-links">
+        <a href="cgv.html">CGV</a>
+        <a href="confidentialite.html">Confidentialité</a>
+        <a href="contact.html">Aide</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Gestion du panier
+    document.addEventListener('DOMContentLoaded', function() {
+      const cartItems = document.querySelectorAll('.cart-item');
+      
+      // Gestion quantité
+      document.querySelectorAll('.qty-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+          const input = this.parentElement.querySelector('.qty-input');
+          let value = parseInt(input.value);
+          
+          if (this.dataset.action === 'increase' && value < 10) {
+            input.value = value + 1;
+          } else if (this.dataset.action === 'decrease' && value > 1) {
+            input.value = value - 1;
+          }
+          
+          updateCart();
+        });
+      });
+      
+      // Supprimer article
+      document.querySelectorAll('.item-remove').forEach(btn => {
+        btn.addEventListener('click', function() {
+          const item = this.closest('.cart-item');
+          item.style.animation = 'slideOut 0.3s ease forwards';
+          setTimeout(() => {
+            item.remove();
+            updateCart();
+            checkEmptyCart();
+          }, 300);
+        });
+      });
+      
+      // Code promo
+      document.getElementById('promoBtn').addEventListener('click', function() {
+        const code = document.getElementById('promoInput').value.trim().toUpperCase();
+        const message = document.getElementById('promoMessage');
+        const discountLine = document.getElementById('discountLine');
+        
+        if (code === 'AINA10') {
+          message.textContent = '✓ Code promo appliqué : -10%';
+          message.className = 'promo-message success';
+          discountLine.style.display = 'flex';
+          document.getElementById('discountAmount').textContent = '-12 796 Ar';
+        } else if (code === '') {
+          message.textContent = 'Veuillez entrer un code promo';
+          message.className = 'promo-message error';
+        } else {
+          message.textContent = '✗ Code promo invalide';
+          message.className = 'promo-message error';
+        }
+      });
+      
+      function updateCart() {
+        // Mettre à jour les totaux (simplifié)
+        const items = document.querySelectorAll('.cart-item');
+        document.getElementById('cartCountBadge').textContent = items.length + ' articles';
+      }
+      
+      function checkEmptyCart() {
+        const items = document.querySelectorAll('.cart-item');
+        if (items.length === 0) {
+          document.getElementById('cartMain').style.display = 'none';
+          document.querySelector('.cart-summary').style.display = 'none';
+          document.getElementById('cartEmpty').style.display = 'flex';
+          document.querySelector('.cart-crosssell').style.display = 'none';
+        }
+      }
+    });
+  </script>
+</body>
+</html>

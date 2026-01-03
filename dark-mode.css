@@ -1,0 +1,194 @@
+/* =============================================
+   ASCARTEL - Dark Mode Styles
+   ============================================= */
+
+:root {
+  --bg-primary: #ffffff;
+  --bg-secondary: #f9fafb;
+  --text-primary: #111827;
+  --text-secondary: #6b7280;
+  --border-color: #e5e7eb;
+  --shadow-color: rgba(0, 0, 0, 0.1);
+  --card-bg: #ffffff;
+  --input-bg: #ffffff;
+  --animation-duration: 0.3s;
+}
+
+/* Dark Mode Variables */
+body.dark-mode,
+html.dark-mode {
+  --bg-primary: #0f172a;
+  --bg-secondary: #1e293b;
+  --text-primary: #f1f5f9;
+  --text-secondary: #94a3b8;
+  --border-color: #334155;
+  --shadow-color: rgba(0, 0, 0, 0.3);
+  --card-bg: #1e293b;
+  --input-bg: #0f172a;
+}
+
+/* Global Dark Mode Styles */
+body.dark-mode {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+}
+
+body.dark-mode .header,
+body.dark-mode .main-header {
+  background-color: var(--bg-secondary);
+  border-bottom-color: var(--border-color);
+}
+
+body.dark-mode .product-card,
+body.dark-mode .flash-product-card,
+body.dark-mode .recommendation-card {
+  background-color: var(--card-bg);
+  border-color: var(--border-color);
+}
+
+body.dark-mode .product-card:hover,
+body.dark-mode .flash-product-card:hover {
+  box-shadow: 0 8px 24px var(--shadow-color);
+}
+
+body.dark-mode input,
+body.dark-mode select,
+body.dark-mode textarea {
+  background-color: var(--input-bg);
+  color: var(--text-primary);
+  border-color: var(--border-color);
+}
+
+body.dark-mode .nav-link {
+  color: var(--text-primary);
+}
+
+body.dark-mode .nav-link:hover {
+  color: var(--primary-color);
+}
+
+body.dark-mode .footer {
+  background-color: var(--bg-secondary);
+  border-top-color: var(--border-color);
+}
+
+body.dark-mode .dropdown-menu {
+  background-color: var(--card-bg);
+  border-color: var(--border-color);
+}
+
+body.dark-mode .filter-btn {
+  background-color: var(--bg-secondary);
+  color: var(--text-primary);
+  border-color: var(--border-color);
+}
+
+body.dark-mode .filter-btn.active {
+  background-color: var(--primary-color);
+  color: white;
+}
+
+body.dark-mode .promo-bar,
+body.dark-mode .countdown-bar {
+  background-color: var(--bg-secondary);
+}
+
+/* Admin Dark Mode */
+body.dark-mode .sidebar {
+  background-color: var(--bg-secondary);
+  border-right-color: var(--border-color);
+}
+
+body.dark-mode .main-content {
+  background-color: var(--bg-primary);
+}
+
+body.dark-mode .stats-card,
+body.dark-mode .card {
+  background-color: var(--card-bg);
+  border-color: var(--border-color);
+}
+
+body.dark-mode .table {
+  background-color: var(--card-bg);
+}
+
+body.dark-mode .table th {
+  background-color: var(--bg-secondary);
+  color: var(--text-primary);
+}
+
+body.dark-mode .table td {
+  color: var(--text-primary);
+  border-color: var(--border-color);
+}
+
+body.dark-mode .modal-content {
+  background-color: var(--card-bg);
+  color: var(--text-primary);
+}
+
+/* High Contrast Mode */
+body.high-contrast {
+  --text-primary: #000000;
+  --text-secondary: #333333;
+  --border-color: #000000;
+}
+
+body.dark-mode.high-contrast {
+  --text-primary: #ffffff;
+  --text-secondary: #cccccc;
+  --border-color: #ffffff;
+}
+
+body.high-contrast * {
+  border-width: 2px !important;
+}
+
+/* Dark Mode Toggle Button */
+.dark-mode-toggle {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: var(--primary-color);
+  color: white;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  transition: all 0.3s ease;
+  z-index: 9999;
+}
+
+.dark-mode-toggle:hover {
+  transform: scale(1.1);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+}
+
+.dark-mode-toggle i {
+  transition: transform 0.3s ease;
+}
+
+body.dark-mode .dark-mode-toggle {
+  background: #64748b;
+}
+
+/* Smooth Transitions */
+body,
+.header,
+.product-card,
+.nav-link,
+input,
+select,
+textarea,
+.filter-btn {
+  transition: background-color var(--animation-duration) ease,
+              color var(--animation-duration) ease,
+              border-color var(--animation-duration) ease;
+}

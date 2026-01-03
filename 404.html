@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Page non trouvée • Boutique Aina</title>
+  <meta name="robots" content="noindex, nofollow" />
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+  <link rel="stylesheet" href="design-system.css" />
+  <link rel="stylesheet" href="style.css" />
+  
+  <style>
+    .error-page {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 2rem;
+      background: linear-gradient(135deg, var(--color-bg-secondary) 0%, var(--color-white) 100%);
+    }
+    
+    .error-icon {
+      font-size: 8rem;
+      color: var(--primary);
+      margin-bottom: 2rem;
+      animation: float 3s ease-in-out infinite;
+    }
+    
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-20px); }
+    }
+    
+    .error-code {
+      font-size: 6rem;
+      font-weight: 700;
+      color: var(--color-text-primary);
+      line-height: 1;
+      margin-bottom: 1rem;
+    }
+    
+    .error-title {
+      font-size: 1.75rem;
+      font-weight: 600;
+      color: var(--color-text-primary);
+      margin-bottom: 1rem;
+    }
+    
+    .error-message {
+      font-size: 1.1rem;
+      color: var(--color-text-secondary);
+      max-width: 500px;
+      margin-bottom: 2rem;
+      line-height: 1.6;
+    }
+    
+    .error-actions {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    
+    .error-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.875rem 1.75rem;
+      border-radius: var(--radius-lg);
+      font-weight: 600;
+      font-size: 1rem;
+      text-decoration: none;
+      transition: all 0.3s ease;
+    }
+    
+    .error-btn-primary {
+      background: var(--primary);
+      color: white;
+    }
+    
+    .error-btn-primary:hover {
+      background: var(--primary-dark);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 15px rgba(246, 141, 181, 0.4);
+    }
+    
+    .error-btn-secondary {
+      background: white;
+      color: var(--color-text-primary);
+      border: 2px solid var(--color-border);
+    }
+    
+    .error-btn-secondary:hover {
+      border-color: var(--primary);
+      color: var(--primary-dark);
+    }
+    
+    .error-suggestions {
+      margin-top: 3rem;
+      padding-top: 2rem;
+      border-top: 1px solid var(--color-border);
+    }
+    
+    .error-suggestions h3 {
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+      color: var(--color-text-secondary);
+    }
+    
+    .suggestion-links {
+      display: flex;
+      gap: 1.5rem;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    
+    .suggestion-links a {
+      color: var(--primary-dark);
+      text-decoration: none;
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+    
+    .suggestion-links a:hover {
+      color: var(--primary);
+      text-decoration: underline;
+    }
+    
+    .error-logo {
+      position: absolute;
+      top: 2rem;
+      left: 2rem;
+    }
+    
+    .error-logo a {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--primary-dark);
+      text-decoration: none;
+    }
+    
+    @media (max-width: 576px) {
+      .error-code {
+        font-size: 4rem;
+      }
+      
+      .error-title {
+        font-size: 1.5rem;
+      }
+      
+      .error-icon {
+        font-size: 5rem;
+      }
+      
+      .error-actions {
+        flex-direction: column;
+        width: 100%;
+      }
+      
+      .error-btn {
+        width: 100%;
+        justify-content: center;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="error-logo">
+    <a href="index.html">Aina</a>
+  </div>
+  
+  <div class="error-page">
+    <i class="fas fa-shopping-bag error-icon"></i>
+    <div class="error-code">404</div>
+    <h1 class="error-title">Oups ! Page non trouvée</h1>
+    <p class="error-message">
+      La page que vous recherchez semble avoir disparu dans notre stock... 
+      Mais ne vous inquiétez pas, nous avons plein d'autres articles à vous proposer !
+    </p>
+    
+    <div class="error-actions">
+      <a href="index.html" class="error-btn error-btn-primary">
+        <i class="fas fa-home"></i>
+        Retour à l'accueil
+      </a>
+      <a href="index.html#products" class="error-btn error-btn-secondary">
+        <i class="fas fa-shopping-cart"></i>
+        Voir nos produits
+      </a>
+    </div>
+    
+    <div class="error-suggestions">
+      <h3>Pages populaires</h3>
+      <div class="suggestion-links">
+        <a href="index.html#products">Nouveautés</a>
+        <a href="index.html#products">Femme</a>
+        <a href="index.html#products">Homme</a>
+        <a href="index.html#products">Promotions</a>
+        <a href="contact.html">Contact</a>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
