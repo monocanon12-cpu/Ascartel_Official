@@ -80,6 +80,45 @@
   <script src="firebase-config.js"></script>
   <script src="firebase-auth.js"></script>
   <script>
+    // Initialiser Firebase
+    let firebaseReady = false;
+    firebaseAuth.init().then(() => {
+      firebaseReady = true;
+      console.log('✅ Firebase prêt');
+    });
+
+    // Connexion Google
+    document.getElementById('googleLoginBtn').addEventListener('click', async () => {
+      if (!firebaseReady) {
+        showNotification('Firebase en cours de chargement...', 'error');
+        return;
+      }
+      
+      const result = await firebaseAuth.signInWithGoogle();
+      if (result.success) {
+        showNotification('✅ Connexion Google réussie !', 'success');
+        setTimeout(() => window.location.href = 'dashboard-client.html', 1000);
+      } else {
+        showNotification('Erreur: ' + result.error, 'error');
+      }
+    });
+
+    // Connexion Facebook
+    document.getElementById('facebookLoginBtn').addEventListener('click', async () => {
+      if (!firebaseReady) {
+        showNotification('Firebase en cours de chargement...', 'error');
+        return;
+      }
+      
+      const result = await firebaseAuth.signInWithFacebook();
+      if (result.success) {
+        showNotification('✅ Connexion Facebook réussie !', 'success');
+        setTimeout(() => window.location.href = 'dashboard-client.html', 1000);
+      } else {
+        showNotification('Erreur: ' + result.error, 'error');
+      }
+    });
+
     const form = document.querySelector('.auth-form');
     const submitBtn = form.querySelector('.btn');
 
