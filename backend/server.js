@@ -135,6 +135,46 @@ app.get('/api/health', (req, res) => {
   });
 });
 
+// Route pour peupler la base (ADMIN ONLY - à supprimer après utilisation)
+app.post('/api/seed-database', (req, res) => {
+  try {
+    const db = require('./config/database');
+    
+    // Vérifier si déjà peuplé
+    const count = db.prepare('SELECT COUNT(*) as count FROM articles').get();
+    if (count.count > 0) {
+      return res.json({ success: false, message: 'Base déjà peuplée', count: count.count });
+    }
+    
+    // Produits de démo
+    const products = [
+      { nom: "Robe d'été fleurie", description: "Robe légère et élégante", genre: "Femme", categorie: "Robes", prix_reel: 45000, prix_promo: 35000, stock_quantite: 15, image_url: "https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=500", flash_active: 1 },
+      { nom: "Jean slim noir", description: "Jean confortable coupe slim", genre: "Femme", categorie: "Pantalons", prix_reel: 38000, stock_quantite: 20, image_url: "https://images.unsplash.com/photo-1541099649105-f69ad21f3246?w=500" },
+      { nom: "T-shirt basique blanc", description: "T-shirt en coton 100%", genre: "Unisexe", categorie: "Hauts", prix_reel: 15000, stock_quantite: 50, image_url: "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=500" },
+      { nom: "Chemise à carreaux", description: "Chemise décontractée", genre: "Homme", categorie: "Chemises", prix_reel: 32000, prix_promo: 25000, stock_quantite: 12, image_url: "https://images.unsplash.com/photo-1596755094514-f87e34085b2c?w=500", flash_active: 1 },
+      { nom: "Sneakers blanches", description: "Baskets tendance", genre: "Unisexe", categorie: "Chaussures", prix_reel: 55000, stock_quantite: 8, image_url: "https://images.unsplash.com/photo-1549298916-b41d501d3772?w=500" },
+      { nom: "Sac à main cuir", description: "Sac élégant en cuir", genre: "Femme", categorie: "Accessoires", prix_reel: 68000, prix_promo: 55000, stock_quantite: 6, image_url: "https://images.unsplash.com/photo-1584917865442-de89df76afd3?w=500", flash_active: 1 },
+      { nom: "Montre classique", description: "Montre élégante", genre: "Homme", categorie: "Accessoires", prix_reel: 85000, stock_quantite: 10, image_url: "https://images.unsplash.com/photo-1524805444758-089113d48a6d?w=500" },
+      { nom: "Veste en jean", description: "Veste décontractée", genre: "Unisexe", categorie: "Vestes", prix_reel: 52000, stock_quantite: 14, image_url: "https://images.unsplash.com/photo-1551028719-00167b16eac5?w=500" }
+    ];
+    
+    const stmt = db.prepare(`
+      INSERT INTO articles (nom, description, genre, categorie, prix_reel, prix_promo, stock_quantite, image_url, flash_active)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `);
+    
+    products.forEach(p => {
+      stmt.run(p.nom, p.description, p.genre, p.categorie, p.prix_reel, p.prix_promo || null, p.stock_quantite, p.image_url, p.flash_active || 0);
+    });
+    
+    const newCount = db.prepare('SELECT COUNT(*) as count FROM articles').get();
+    res.json({ success: true, message: 'Base peuplée avec succès', count: newCount.count });
+  } catch (error) {
+    logger.error('Seed error:', error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
 // =============================================
 // GESTION DES ERREURS
 // =============================================
