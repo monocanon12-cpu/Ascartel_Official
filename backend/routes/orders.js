@@ -9,17 +9,33 @@ const router = express.Router();
 // POST /api/orders - Créer une commande (public, mais vérifie les horaires)
 router.post('/', requireOpenStore, (req, res) => {
   try {
-    const { customer_name, customer_email, customer_phone, items } = req.body;
+    const { customer_name, customer_email, customer_phone, items, total_amount, shipping_cost, shipping_type, payment_method, address, addressId } = req.body;
 
-    if (!customer_name || !items || !Array.isArray(items) || items.length === 0) {
+    if (!items || !Array.isArray(items) || items.length === 0) {
       return res.status(400).json({
         success: false,
-        error: 'Nom du client et articles requis'
+        error: 'Articles requis'
       });
     }
 
+    // Utiliser les données d'adresse fournies ou récupérer depuis addressId
+    let customerName = customer_name;
+    let customerEmail = customer_email;
+    let customerPhone = customer_phone;
+
+    if (addressId) {
+      const savedAddress = db.prepare('SELECT * FROM addresses WHERE id = ?').get(addressId);
+      if (savedAddress) {
+        customerName = `${savedAddress.prenom} ${savedAddress.nom}`;
+        customerPhone = savedAddress.telephone;
+      }
+    } else if (address) {
+      customerName = `${address.prenom} ${address.nom}`;
+      customerPhone = address.telephone;
+    }
+
     // Vérifier le stock et calculer le total
-    let totalAmount = 0;
+    let calculatedTotal = 0;
     const orderItems = [];
 
     for (const item of items) {
@@ -50,14 +66,17 @@ router.post('/', requireOpenStore, (req, res) => {
         unit_price: unitPrice
       });
 
-      totalAmount += unitPrice * item.quantity;
+      calculatedTotal += unitPrice * item.quantity;
     }
+
+    // Ajouter les frais de livraison
+    const finalTotal = total_amount || (calculatedTotal + (shipping_cost || 0));
 
     // Créer la commande
     const orderResult = db.prepare(`
       INSERT INTO orders (customer_name, customer_email, customer_phone, total_amount, status)
       VALUES (?, ?, ?, ?, 'pending')
-    `).run(customer_name, customer_email || null, customer_phone || null, totalAmount);
+    `).run(customerName, customerEmail || null, customerPhone || null, finalTotal);
 
     const orderId = orderResult.lastInsertRowid;
 
@@ -82,10 +101,12 @@ router.post('/', requireOpenStore, (req, res) => {
       message: 'Commande créée avec succès',
       order: {
         id: orderId,
-        customer_name,
-        total_amount: totalAmount,
+        customer_name: customerName,
+        total_amount: finalTotal,
         items: orderItems,
-        status: 'pending'
+        status: 'pending',
+        shipping_type: shipping_type || 'standard',
+        payment_method: payment_method || 'cash_on_delivery'
       }
     });
 
