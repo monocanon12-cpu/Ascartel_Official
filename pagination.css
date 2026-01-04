@@ -1,0 +1,91 @@
+/* ============================================
+   PAGINATION - ASCARTEL
+   ============================================ */
+
+#paginationContainer {
+  margin-top: 3rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.pagination {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.pagination-btn {
+  min-width: 40px;
+  height: 40px;
+  padding: 0 0.75rem;
+  border: 1px solid var(--border-color);
+  background: var(--card-bg);
+  color: var(--text-primary);
+  border-radius: 6px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pagination-btn:hover:not(:disabled):not(.active) {
+  border-color: var(--primary-color);
+  background: rgba(246, 141, 181, 0.1);
+  color: var(--primary-color);
+}
+
+.pagination-btn.active {
+  background: linear-gradient(135deg, #f9c5d5, #f68db5);
+  color: white;
+  border-color: transparent;
+  font-weight: 600;
+}
+
+.pagination-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.pagination-dots {
+  padding: 0 0.5rem;
+  color: var(--text-secondary);
+  font-weight: 600;
+}
+
+.pagination-info {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  text-align: center;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .pagination {
+    gap: 0.375rem;
+  }
+
+  .pagination-btn {
+    min-width: 36px;
+    height: 36px;
+    padding: 0 0.5rem;
+    font-size: 0.8125rem;
+  }
+}
+
+/* Dark mode */
+body.dark-mode .pagination-btn {
+  background: var(--card-bg);
+  border-color: var(--border-color);
+  color: var(--text-primary);
+}
+
+body.dark-mode .pagination-btn:hover:not(:disabled):not(.active) {
+  background: rgba(246, 141, 181, 0.15);
+}

@@ -259,12 +259,19 @@ document.addEventListener('DOMContentLoaded', function() {
   // Initialiser le système de filtres
   let filtersSystem = null;
   let sortSystem = null;
+  let pagination = null;
   
   if (typeof FiltersSystem !== 'undefined') {
     filtersSystem = new FiltersSystem();
     
     // Callback quand les filtres changent
     filtersSystem.onFilterChange = (filteredProducts) => {
+      // Réinitialiser la pagination à la page 1
+      if (pagination) {
+        pagination.currentPage = 1;
+        pagination.setTotalItems(filteredProducts.length);
+      }
+      
       // Appliquer le tri si disponible
       if (sortSystem) {
         sortSystem.setProducts(filteredProducts);
@@ -292,12 +299,37 @@ document.addEventListener('DOMContentLoaded', function() {
     };
   }
   
+  // Initialiser la pagination
+  if (typeof Pagination !== 'undefined') {
+    pagination = new Pagination({
+      itemsPerPage: 20,
+      containerId: 'paginationContainer'
+    });
+    
+    // Callback quand la page change
+    pagination.onPageChange = (page) => {
+      // Recharger les produits pour la nouvelle page
+      if (filtersSystem) {
+        const filtered = filtersSystem.getFilteredProducts();
+        renderFilteredProducts(filtered);
+      }
+    };
+  }
+  
   // Fonction pour rendre les produits filtrés
   function renderFilteredProducts(products) {
     const grid = document.getElementById('productsGrid');
     if (!grid) return;
     
-    if (products.length === 0) {
+    // Appliquer la pagination
+    let displayProducts = products;
+    if (pagination) {
+      const start = pagination.getOffset();
+      const end = start + pagination.itemsPerPage;
+      displayProducts = products.slice(start, end);
+    }
+    
+    if (displayProducts.length === 0) {
       grid.innerHTML = `
         <div style="grid-column: 1/-1; text-align: center; padding: 3rem;">
           <i class="fas fa-search" style="font-size: 3rem; color: #d1d5db; margin-bottom: 1rem;"></i>

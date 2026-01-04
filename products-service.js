@@ -222,6 +222,11 @@ class ProductsState {
         if (typeof sortSystem !== 'undefined' && sortSystem) {
           sortSystem.setProducts(data.articles);
         }
+        
+        // Mettre à jour la pagination si disponible
+        if (typeof pagination !== 'undefined' && pagination) {
+          pagination.setTotalItems(data.articles.length);
+        }
 
         if (isEmpty) {
           this.renderEmpty();
