@@ -3,6 +3,10 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#f68db5">
+  <link rel="manifest" href="/manifest.json">
+  <link rel="apple-touch-icon" href="/icon-192.png">
+  
   <title>Boutique Aina • Mode tendance et abordable à Madagascar</title>
   
   <!-- SEO Meta Tags -->
@@ -607,6 +611,17 @@
   <script src="sort.js"></script>
   <script src="pagination.js"></script>
   <script src="animations.js"></script>
+  <script src="performance.js"></script>
+  <script>
+    // Enregistrer le Service Worker
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js')
+          .then(reg => console.log('✅ Service Worker enregistré', reg))
+          .catch(err => console.log('❌ Erreur Service Worker', err));
+      });
+    }
+  </script>
   <script src="chatbot.js"></script>
   <script src="script.js"></script>
   <script src="products-service.js"></script>
