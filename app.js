@@ -92,7 +92,7 @@ document.addEventListener('DOMContentLoaded', function() {
   // WISHLIST - Liste de souhaits
   // =============================================
   const wishlist = {
-    items: JSON.parse(localStorage.getItem('wishlist')) || [],
+    items: JSON.parse(localStorage.getItem('ascartel_wishlist')) || [],
     
     add(productId, productData) {
       if (!this.items.find(item => item.id === productId)) {
@@ -121,7 +121,7 @@ document.addEventListener('DOMContentLoaded', function() {
     },
     
     save() {
-      localStorage.setItem('wishlist', JSON.stringify(this.items));
+      localStorage.setItem('ascartel_wishlist', JSON.stringify(this.items));
     },
     
     updateUI() {
