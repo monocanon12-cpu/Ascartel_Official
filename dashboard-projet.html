@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AsCartel - Dashboard Projet</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      overflow: hidden;
+    }
+
+    .header {
+      background: linear-gradient(135deg, #f68db5 0%, #e85d9a 100%);
+      color: white;
+      padding: 30px;
+      text-align: center;
+    }
+
+    .header h1 {
+      font-size: 2.5rem;
+      margin-bottom: 10px;
+    }
+
+    .header p {
+      opacity: 0.9;
+      font-size: 1.1rem;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+      padding: 30px;
+      background: #f8f9fa;
+    }
+
+    .stat-card {
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      text-align: center;
+    }
+
+    .stat-card h3 {
+      color: #6b7280;
+      font-size: 0.9rem;
+      margin-bottom: 10px;
+      text-transform: uppercase;
+    }
+
+    .stat-card .value {
+      font-size: 2rem;
+      font-weight: bold;
+      color: #f68db5;
+    }
+
+    .timer {
+      background: #1a1a2e;
+      color: white;
+      padding: 20px 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .timer-display {
+      font-size: 2rem;
+      font-weight: bold;
+      font-family: 'Courier New', monospace;
+    }
+
+    .timer-controls button {
+      background: #f68db5;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      margin-left: 10px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: all 0.3s;
+    }
+
+    .timer-controls button:hover {
+      background: #e85d9a;
+      transform: scale(1.05);
+    }
+
+    .content {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 30px;
+      padding: 30px;
+    }
+
+    .section {
+      background: #f8f9fa;
+      padding: 25px;
+      border-radius: 12px;
+    }
+
+    .section h2 {
+      color: #1a1a2e;
+      margin-bottom: 20px;
+      font-size: 1.5rem;
+      border-bottom: 3px solid #f68db5;
+      padding-bottom: 10px;
+    }
+
+    .checklist {
+      list-style: none;
+    }
+
+    .checklist li {
+      background: white;
+      padding: 15px;
+      margin-bottom: 10px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .checklist li:hover {
+      transform: translateX(5px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    .checklist li.done {
+      background: #d1fae5;
+      text-decoration: line-through;
+      opacity: 0.7;
+    }
+
+    .checklist input[type="checkbox"] {
+      width: 20px;
+      height: 20px;
+      margin-right: 15px;
+      cursor: pointer;
+    }
+
+    .prompt-box {
+      background: #1a1a2e;
+      color: #00ff00;
+      padding: 20px;
+      border-radius: 8px;
+      font-family: 'Courier New', monospace;
+      font-size: 0.9rem;
+      margin-bottom: 15px;
+      position: relative;
+      max-height: 300px;
+      overflow-y: auto;
+    }
+
+    .copy-btn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: #f68db5;
+      color: white;
+      border: none;
+      padding: 8px 15px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.85rem;
+    }
+
+    .copy-btn:hover {
+      background: #e85d9a;
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 30px;
+      background: #e5e7eb;
+      border-radius: 15px;
+      overflow: hidden;
+      margin-bottom: 20px;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #f68db5, #e85d9a);
+      transition: width 0.5s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: bold;
+    }
+
+    .priority-badge {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-size: 0.75rem;
+      font-weight: bold;
+      margin-left: 10px;
+    }
+
+    .priority-critical {
+      background: #fee2e2;
+      color: #dc2626;
+    }
+
+    .priority-high {
+      background: #fed7aa;
+      color: #ea580c;
+    }
+
+    .priority-medium {
+      background: #fef3c7;
+      color: #d97706;
+    }
+
+    @media (max-width: 968px) {
+      .content {
+        grid-template-columns: 1fr;
+      }
+      
+      .stats {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Header -->
+    <div class="header">
+      <h1>🚀 AsCartel E-Commerce</h1>
+      <p>Dashboard de Développement - Suivi de Projet</p>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats">
+      <div class="stat-card">
+        <h3>Progression</h3>
+        <div class="value" id="progressPercent">0%</div>
+      </div>
+      <div class="stat-card">
+        <h3>Tâches Complétées</h3>
+        <div class="value"><span id="completedTasks">0</span>/<span id="totalTasks">0</span></div>
+      </div>
+      <div class="stat-card">
+        <h3>Temps Total</h3>
+        <div class="value" id="totalTime">0h 00m</div>
+      </div>
+      <div class="stat-card">
+        <h3>Session Actuelle</h3>
+        <div class="value" id="sessionTime">0h 00m</div>
+      </div>
+    </div>
+
+    <!-- Timer -->
+    <div class="timer">
+      <div>
+        <strong>⏱️ Timer Session:</strong>
+        <span class="timer-display" id="timerDisplay">00:00:00</span>
+      </div>
+      <div class="timer-controls">
+        <button onclick="startTimer()">▶️ Démarrer</button>
+        <button onclick="pauseTimer()">⏸️ Pause</button>
+        <button onclick="resetTimer()">🔄 Reset</button>
+      </div>
+    </div>
+
+    <!-- Content -->
+    <div class="content">
+      <!-- Checklist -->
+      <div class="section">
+        <h2>📋 Checklist Priorités</h2>
+        
+        <div class="progress-bar">
+          <div class="progress-fill" id="progressBar" style="width: 0%">0%</div>
+        </div>
+
+        <h3 style="margin: 20px 0 10px 0; color: #dc2626;">🔴 PRIORITÉ CRITIQUE</h3>
+        <ul class="checklist" id="criticalTasks">
+          <li><input type="checkbox" onchange="updateProgress()"><span>Connexion Backend → Frontend (API produits)</span><span class="priority-badge priority-critical">CRITIQUE</span></li>
+          <li><input type="checkbox" onchange="updateProgress()"><span>Affichage grille produits avec loading/error states</span><span class="priority-badge priority-critical">CRITIQUE</span></li>
+          <li><input type="checkbox" onchange="updateProgress()"><span>Page produit détaillée complète</span><span class="priority-badge priority-critical">CRITIQUE</span></li>
+          <li><input type="checkbox" onchange="updateProgress()"><span>Système panier fonctionnel (add/remove/update)</span><span class="priority-badge priority-critical">CRITIQUE</span></li>
+          <li><input type="checkbox" onchange="updateProgress()"><span>Badge compteur panier header</span><span class="priority-badge priority-critical">CRITIQUE</span></li>
+          <li><input type="checkbox" onchange="updateProgress()"><span>Page panier complète</span><span class="priority-badge priority-critical">CRITIQUE</span></li>
+          <li><input type="checkbox" onchange="updateProgress()"><span>Fixer tous les liens morts (navigation)</span><span class="priority-badge priority-critical">CRITIQUE</span></li>
+          <li><input type="checkbox" onchange="updateProgress()"><span>Système recherche avec autocomplete</span><span class="priority-badge priority-critical">CRITIQUE</span></li>
+        </ul>
+
+        <h3 style="margin: 20px 0 10px 0; color: #ea580c;">🟠 PRIORITÉ HAUTE</h3>
+        <ul class="checklist" id="highTasks">
+          <li><input type="checkbox" onchange="updateProgress()"><span>Backend auth routes (register/login/reset)</span><span class="priority-badge priority-high">HAUTE</span></li>
+          <li><input type="checkbox" onchange="updateProgress()"><span>Formulaire inscription + validation</span><span class="priority-badge priority-high">HAUTE</span></li>
+          <li><input type="checkbox" onchange="updateProgress()"><span>Formulaire connexion + mot de passe oublié</span><span class="priority-badge priority-high">HAUTE</span></li>
+          <li><input type="checkbox" onchange="updateProgress()"><span>Espace client (dashboard)</span><span class="priority-badge priority-high">HAUTE</span></li>
+          <li><input type="checkbox" onchange="updateProgress()"><span>Gestion adresses livraison</span><span class="priority-badge priority-high">HAUTE</span></li>
+          <li><input type="checkbox" onchange="updateProgress()"><span>Checkout étape 1 : Récap panier</span><span class="priority-badge priority-high">HAUTE</span></li>
+          <li><input type="checkbox" onchange="updateProgress()"><span>Checkout étape 2 : Adresse livraison</span><span class="priority-badge priority-high">HAUTE</span></li>
+          <li><input type="checkbox" onchange="updateProgress()"><span>Checkout étape 3 : Paiement à la livraison</span><span class="priority-badge priority-high">HAUTE</span></li>
+          <li><input type="checkbox" onchange="updateProgress()"><span>Checkout étape 4 : Confirmation</span><span class="priority-badge priority-high">HAUTE</span></li>
+          <li><input type="checkbox" onchange="updateProgress()"><span>Système wishlist complet</span><span class="priority-badge priority-high">HAUTE</span></li>
+        </ul>
+
+        <h3 style="margin: 20px 0 10px 0; color: #d97706;">🟡 PRIORITÉ MOYENNE</h3>
+        <ul class="checklist" id="mediumTasks">
+          <li><input type="checkbox" onchange="updateProgress()"><span>Filtres avancés sidebar</span><span class="priority-badge priority-medium">MOYENNE</span></li>
+          <li><input type="checkbox" onchange="updateProgress()"><span>Système avis clients</span><span class="priority-badge priority-medium">MOYENNE</span></li>
+          <li><input type="checkbox" onchange="updateProgress()"><span>Newsletter inscription</span><span class="priority-badge priority-medium">MOYENNE</span></li>
+          <li><input type="checkbox" onchange="updateProgress()"><span>Emails transactionnels</span><span class="priority-badge priority-medium">MOYENNE</span></li>
+          <li><input type="checkbox" onchange="updateProgress()"><span>Admin dashboard</span><span class="priority-badge priority-medium">MOYENNE</span></li>
+        </ul>
+      </div>
+
+      <!-- Prompts -->
+      <div class="section">
+        <h2>💬 Prompts Rapides</h2>
+        
+        <h3 style="margin-bottom: 10px;">🔴 Connexion API Produits</h3>
+        <div class="prompt-box">
+          <button class="copy-btn" onclick="copyPrompt(this)">📋 Copier</button>
+Crée le service API frontend pour charger les produits depuis https://ascartel-backend.onrender.com/api/articles
+
+Requirements:
+- Custom hook useProducts() avec React Query
+- États: loading, error, empty, success
+- Pagination 20 produits/page
+- Cache 5 minutes
+- Retry 3 tentatives si échec
+- Affichage grille avec skeleton loading
+- Error state avec bouton réessayer
+        </div>
+
+        <h3 style="margin-bottom: 10px;">🔴 Système Panier</h3>
+        <div class="prompt-box">
+          <button class="copy-btn" onclick="copyPrompt(this)">📋 Copier</button>
+Implémente un système panier complet avec Zustand ou Context API
+
+State structure:
+{
+  items: [{produit_id, nom, image, prix, taille, couleur, quantite, stock_disponible}],
+  total: number,
+  nombre_items: number
+}
+
+Actions:
+- addToCart(produit, taille, couleur, quantite)
+- removeFromCart(produit_id)
+- updateQuantity(produit_id, nouvelle_quantite)
+- clearCart()
+
+Persistence: localStorage avec expiration 7 jours
+Badge compteur header avec animation bounce
+        </div>
+
+        <h3 style="margin-bottom: 10px;">🟠 Authentification</h3>
+        <div class="prompt-box">
+          <button class="copy-btn" onclick="copyPrompt(this)">📋 Copier</button>
+Crée le système d'authentification complet
+
+Backend routes nécessaires:
+- POST /api/auth/register (email, password, nom, prenom, telephone)
+- POST /api/auth/login (email, password)
+- POST /api/auth/logout
+- GET /api/auth/me
+- POST /api/auth/forgot-password
+- POST /api/auth/reset-password
+
+Frontend:
+- Formulaire inscription avec validation temps réel
+- Formulaire connexion avec "Se souvenir de moi"
+- Modal mot de passe oublié
+- Sécurité: bcrypt, JWT 7 jours, rate limiting
+        </div>
+
+        <h3 style="margin-bottom: 10px;">🟠 Checkout Paiement Livraison</h3>
+        <div class="prompt-box">
+          <button class="copy-btn" onclick="copyPrompt(this)">📋 Copier</button>
+Implémente le checkout avec PAIEMENT À LA LIVRAISON uniquement
+
+Étape 3 Paiement:
+- Option unique: "Paiement à la livraison"
+- Message: "Vous paierez en espèces à la réception de votre commande"
+- Calcul frais livraison:
+  * Gratuit si total >= 50 000 Ar
+  * Standard 5-7 jours: 5000 Ar
+  * Express 2-3 jours: 8000 Ar
+- Checkbox CGV obligatoire
+- Bouton "Confirmer la commande"
+- Pas d'intégration MVola/Stripe/etc.
+        </div>
+
+        <h3 style="margin-bottom: 10px;">🎯 Prompt Personnalisé</h3>
+        <div class="prompt-box" contenteditable="true" style="min-height: 100px;">
+Écris ton prompt ici et clique sur Copier...
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Timer
+    let timerInterval;
+    let seconds = 0;
+    let isRunning = false;
+    let totalSeconds = parseInt(localStorage.getItem('totalSeconds') || '0');
+
+    function startTimer() {
+      if (!isRunning) {
+        isRunning = true;
+        timerInterval = setInterval(() => {
+          seconds++;
+          totalSeconds++;
+          updateTimerDisplay();
+          updateTotalTime();
+          localStorage.setItem('totalSeconds', totalSeconds);
+        }, 1000);
+      }
+    }
+
+    function pauseTimer() {
+      isRunning = false;
+      clearInterval(timerInterval);
+    }
+
+    function resetTimer() {
+      pauseTimer();
+      seconds = 0;
+      updateTimerDisplay();
+    }
+
+    function updateTimerDisplay() {
+      const h = Math.floor(seconds / 3600);
+      const m = Math.floor((seconds % 3600) / 60);
+      const s = seconds % 60;
+      document.getElementById('timerDisplay').textContent = 
+        `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+      
+      const sh = Math.floor(seconds / 3600);
+      const sm = Math.floor((seconds % 3600) / 60);
+      document.getElementById('sessionTime').textContent = `${sh}h ${String(sm).padStart(2, '0')}m`;
+    }
+
+    function updateTotalTime() {
+      const h = Math.floor(totalSeconds / 3600);
+      const m = Math.floor((totalSeconds % 3600) / 60);
+      document.getElementById('totalTime').textContent = `${h}h ${String(m).padStart(2, '0')}m`;
+    }
+
+    // Progress
+    function updateProgress() {
+      const checkboxes = document.querySelectorAll('.checklist input[type="checkbox"]');
+      const total = checkboxes.length;
+      const completed = Array.from(checkboxes).filter(cb => cb.checked).length;
+      const percent = Math.round((completed / total) * 100);
+
+      document.getElementById('progressBar').style.width = percent + '%';
+      document.getElementById('progressBar').textContent = percent + '%';
+      document.getElementById('progressPercent').textContent = percent + '%';
+      document.getElementById('completedTasks').textContent = completed;
+      document.getElementById('totalTasks').textContent = total;
+
+      // Toggle done class
+      checkboxes.forEach(cb => {
+        const li = cb.parentElement;
+        if (cb.checked) {
+          li.classList.add('done');
+        } else {
+          li.classList.remove('done');
+        }
+      });
+
+      // Save state
+      const state = Array.from(checkboxes).map(cb => cb.checked);
+      localStorage.setItem('checklistState', JSON.stringify(state));
+    }
+
+    // Copy prompt
+    function copyPrompt(btn) {
+      const promptBox = btn.parentElement;
+      const text = promptBox.textContent.replace('📋 Copier', '').trim();
+      navigator.clipboard.writeText(text).then(() => {
+        btn.textContent = '✅ Copié!';
+        setTimeout(() => {
+          btn.textContent = '📋 Copier';
+        }, 2000);
+      });
+    }
+
+    // Load saved state
+    window.addEventListener('load', () => {
+      const savedState = JSON.parse(localStorage.getItem('checklistState') || '[]');
+      const checkboxes = document.querySelectorAll('.checklist input[type="checkbox"]');
+      checkboxes.forEach((cb, i) => {
+        if (savedState[i]) {
+          cb.checked = true;
+        }
+      });
+      updateProgress();
+      updateTotalTime();
+    });
+  </script>
+</body>
+</html>
