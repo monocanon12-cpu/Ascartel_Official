@@ -3,68 +3,78 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Test API ASCARTEL - Pour Débutants</title>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <title>Test API Produits - AsCartel</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
   <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-    
+    * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
-      font-family: 'Poppins', sans-serif;
-      background: #f5f5f5;
-      padding: 20px;
-      line-height: 1.6;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #f9c5d5 0%, #f68db5 100%);
+      min-height: 100vh;
+      padding: 40px 20px;
     }
-    
     .container {
-      max-width: 900px;
+      max-width: 1200px;
       margin: 0 auto;
+      background: white;
+      border-radius: 20px;
+      padding: 40px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
     }
-    
     h1 {
       color: #1a1a2e;
       margin-bottom: 10px;
     }
-    
-    .intro {
-      background: #e8f5e9;
-      border-left: 4px solid #4caf50;
+    .status {
       padding: 15px;
-      margin-bottom: 30px;
-      border-radius: 0 8px 8px 0;
+      border-radius: 10px;
+      margin: 20px 0;
+      font-weight: 600;
     }
-    
-    .section {
-      background: white;
+    .status.success { background: #d1fae5; color: #065f46; }
+    .status.error { background: #fee2e2; color: #991b1b; }
+    .status.loading { background: #dbeafe; color: #1e40af; }
+    .products-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 25px;
+      margin-top: 30px;
+    }
+    .product-card {
+      background: #f8f9fa;
       border-radius: 12px;
-      padding: 20px;
-      margin-bottom: 20px;
+      overflow: hidden;
       box-shadow: 0 2px 10px rgba(0,0,0,0.1);
     }
-    
-    .section h2 {
+    .product-image {
+      width: 100%;
+      height: 300px;
+      object-fit: cover;
+      background: #e5e7eb;
+    }
+    .product-info {
+      padding: 15px;
+    }
+    .product-name {
+      font-weight: 600;
       color: #1a1a2e;
-      margin-bottom: 15px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
+      margin-bottom: 5px;
     }
-    
-    .section h2 .icon {
-      background: #f68db5;
+    .product-price {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: #f68db5;
+    }
+    .flash-badge {
+      background: #ef4444;
       color: white;
-      width: 35px;
-      height: 35px;
-      border-radius: 8px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      padding: 5px 10px;
+      border-radius: 5px;
+      font-size: 0.8rem;
+      display: inline-block;
+      margin-bottom: 10px;
     }
-    
-    .btn {
+    button {
       background: #f68db5;
       color: white;
       border: none;
@@ -72,484 +82,143 @@
       border-radius: 8px;
       cursor: pointer;
       font-size: 1rem;
-      font-weight: 500;
-      margin: 5px;
-      transition: all 0.3s;
-    }
-    
-    .btn:hover {
-      background: #e85d9a;
-      transform: translateY(-2px);
-    }
-    
-    .btn-blue {
-      background: #3b82f6;
-    }
-    
-    .btn-blue:hover {
-      background: #2563eb;
-    }
-    
-    .btn-green {
-      background: #22c55e;
-    }
-    
-    .btn-green:hover {
-      background: #16a34a;
-    }
-    
-    .result-box {
-      background: #1a1a2e;
-      color: #a0aec0;
-      padding: 15px;
-      border-radius: 8px;
-      margin-top: 15px;
-      font-family: monospace;
-      font-size: 0.9rem;
-      max-height: 400px;
-      overflow-y: auto;
-      white-space: pre-wrap;
-      word-break: break-word;
-    }
-    
-    .result-box .success {
-      color: #4ade80;
-    }
-    
-    .result-box .error {
-      color: #f87171;
-    }
-    
-    .result-box .info {
-      color: #60a5fa;
-    }
-    
-    .login-form {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin-bottom: 15px;
-    }
-    
-    .login-form input {
-      padding: 10px 15px;
-      border: 2px solid #e5e7eb;
-      border-radius: 8px;
-      font-size: 1rem;
-      flex: 1;
-      min-width: 200px;
-    }
-    
-    .login-form input:focus {
-      outline: none;
-      border-color: #f68db5;
-    }
-    
-    .status-badge {
-      display: inline-block;
-      padding: 5px 12px;
-      border-radius: 20px;
-      font-size: 0.85rem;
-      font-weight: 500;
-    }
-    
-    .status-connected {
-      background: #dcfce7;
-      color: #16a34a;
-    }
-    
-    .status-disconnected {
-      background: #fee2e2;
-      color: #dc2626;
-    }
-    
-    .explanation {
-      background: #fef3c7;
-      border-left: 4px solid #f59e0b;
-      padding: 12px;
-      margin: 15px 0;
-      border-radius: 0 8px 8px 0;
-      font-size: 0.9rem;
-    }
-    
-    .code-example {
-      background: #f8f9fa;
-      border: 1px solid #e5e7eb;
-      padding: 12px;
-      border-radius: 8px;
-      font-family: monospace;
-      font-size: 0.85rem;
-      margin: 10px 0;
-      overflow-x: auto;
-    }
-    
-    .articles-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-      gap: 15px;
-      margin-top: 15px;
-    }
-    
-    .article-card {
-      background: #f8f9fa;
-      border-radius: 10px;
-      padding: 15px;
-      border: 1px solid #e5e7eb;
-    }
-    
-    .article-card h4 {
-      color: #1a1a2e;
-      margin-bottom: 8px;
-    }
-    
-    .article-card .price {
-      font-size: 1.2rem;
-      font-weight: 700;
-      color: #f68db5;
-    }
-    
-    .article-card .old-price {
-      text-decoration: line-through;
-      color: #9ca3af;
-      font-size: 0.9rem;
-      margin-left: 8px;
-    }
-    
-    .article-card .flash-badge {
-      background: #ef4444;
-      color: white;
-      padding: 3px 8px;
-      border-radius: 4px;
-      font-size: 0.75rem;
       font-weight: 600;
+      margin-right: 10px;
     }
-    
-    .article-card .stock {
-      font-size: 0.85rem;
-      color: #6b7280;
-      margin-top: 8px;
-    }
+    button:hover { background: #e85d9a; }
   </style>
 </head>
 <body>
   <div class="container">
-    <h1>🧪 Test API ASCARTEL</h1>
-    <p style="color: #6b7280; margin-bottom: 20px;">Page de démonstration pour comprendre comment fonctionne l'API</p>
+    <h1>🧪 Test API Produits AsCartel</h1>
+    <p style="color: #6b7280; margin-bottom: 20px;">Vérification de la connexion Backend → Frontend</p>
     
-    <div class="intro">
-      <strong>💡 C'est quoi une API ?</strong><br>
-      Une API (Application Programming Interface) permet à votre site web (frontend) de communiquer avec le serveur (backend) pour récupérer ou envoyer des données. C'est comme un serveur de restaurant : vous passez commande (requête), et il vous apporte les plats (données).
+    <div>
+      <button onclick="testAPI()"><i class="fas fa-sync"></i> Tester l'API</button>
+      <button onclick="testLocal()"><i class="fas fa-laptop"></i> Test Local</button>
+      <button onclick="testProd()"><i class="fas fa-cloud"></i> Test Production</button>
     </div>
-
-    <!-- Section 1: Statut -->
-    <div class="section">
-      <h2><span class="icon">1</span> Vérifier si l'API fonctionne</h2>
-      <p>Cliquez sur le bouton pour voir si le serveur backend répond :</p>
-      
-      <div class="explanation">
-        <strong>🔍 Ce qui se passe :</strong> On envoie une requête GET à <code>http://localhost:3000/api/health</code>
-      </div>
-      
-      <button class="btn" onclick="testHealth()">Tester la connexion API</button>
-      <div id="healthResult" class="result-box">En attente du test...</div>
+    
+    <div id="status" class="status loading">
+      <i class="fas fa-spinner fa-spin"></i> En attente...
     </div>
-
-    <!-- Section 2: Articles -->
-    <div class="section">
-      <h2><span class="icon">2</span> Récupérer les articles</h2>
-      <p>Récupérez la liste des articles depuis la base de données :</p>
-      
-      <div class="explanation">
-        <strong>🔍 Ce qui se passe :</strong> On envoie une requête GET à <code>http://localhost:3000/api/articles</code>
-      </div>
-      
-      <button class="btn btn-blue" onclick="getArticles()">Voir tous les articles</button>
-      <button class="btn btn-green" onclick="getFlashSales()">Voir les ventes flash 🔥</button>
-      
-      <div id="articlesDisplay" class="articles-grid"></div>
-      <div id="articlesResult" class="result-box" style="display: none;"></div>
-    </div>
-
-    <!-- Section 3: Connexion Admin -->
-    <div class="section">
-      <h2><span class="icon">3</span> Connexion Admin</h2>
-      <p>Connectez-vous en tant qu'administrateur pour accéder aux fonctions protégées :</p>
-      
-      <div class="explanation">
-        <strong>🔐 Identifiants Admin :</strong><br>
-        Email: <code>master@ascartel.com</code><br>
-        Mot de passe: <code>ASCARTEL_MASTER_2025</code>
-      </div>
-      
-      <div class="login-form">
-        <input type="email" id="loginEmail" placeholder="Email" value="master@ascartel.com">
-        <input type="password" id="loginPassword" placeholder="Mot de passe" value="ASCARTEL_MASTER_2025">
-        <button class="btn btn-green" onclick="login()">Se connecter</button>
-      </div>
-      
-      <p>Statut: <span id="loginStatus" class="status-badge status-disconnected">Non connecté</span></p>
-      <div id="loginResult" class="result-box">En attente de connexion...</div>
-    </div>
-
-    <!-- Section 4: Actions Admin -->
-    <div class="section">
-      <h2><span class="icon">4</span> Actions Admin (après connexion)</h2>
-      <p>Ces actions nécessitent d'être connecté en tant qu'Admin :</p>
-      
-      <div class="explanation">
-        <strong>⚠️ Important :</strong> Vous devez d'abord vous connecter (étape 3) pour que ces boutons fonctionnent.
-      </div>
-      
-      <button class="btn" onclick="getSettings()">Voir les paramètres</button>
-      <button class="btn btn-blue" onclick="toggleStore(true)">Ouvrir la boutique</button>
-      <button class="btn" style="background: #ef4444;" onclick="toggleStore(false)">Fermer la boutique</button>
-      
-      <div id="adminResult" class="result-box">Connectez-vous d'abord...</div>
-    </div>
-
-    <!-- Section 5: Statut Boutique -->
-    <div class="section">
-      <h2><span class="icon">5</span> Statut de la boutique (public)</h2>
-      <p>Vérifiez si la boutique est ouverte (selon les horaires) :</p>
-      
-      <button class="btn btn-blue" onclick="getStoreStatus()">Vérifier le statut</button>
-      <div id="storeResult" class="result-box">Cliquez pour vérifier...</div>
-    </div>
-
-    <!-- Section: Code -->
-    <div class="section">
-      <h2><span class="icon">📝</span> Exemple de code à copier</h2>
-      <p>Voici comment faire un appel API dans votre code JavaScript :</p>
-      
-      <div class="code-example">
-<pre>// Récupérer les articles
-async function chargerArticles() {
-  const response = await fetch('http://localhost:3000/api/articles');
-  const data = await response.json();
-  
-  console.log(data.articles); // Liste des articles
-  
-  // Afficher chaque article
-  data.articles.forEach(article => {
-    console.log(article.nom, article.prix);
-  });
-}</pre>
-      </div>
-    </div>
+    
+    <div id="info" style="background: #f3f4f6; padding: 15px; border-radius: 8px; margin: 20px 0; font-family: monospace; font-size: 0.9rem;"></div>
+    
+    <div id="productsGrid" class="products-grid"></div>
   </div>
 
+  <script src="config.js"></script>
   <script>
-    // URL de l'API Backend
-    const API_URL = 'http://localhost:3000/api';
+    async function testAPI() {
+      const apiUrl = CONFIG.apiUrl;
+      showStatus('loading', `Test de connexion à ${apiUrl}...`);
+      
+      try {
+        const response = await fetch(`${apiUrl}/articles`);
+        const data = await response.json();
+        
+        if (data.success) {
+          showStatus('success', `✅ Connexion réussie ! ${data.count} produits trouvés`);
+          showInfo(apiUrl, data.count);
+          displayProducts(data.articles);
+        } else {
+          showStatus('error', '❌ Erreur API: ' + (data.error || 'Erreur inconnue'));
+        }
+      } catch (error) {
+        showStatus('error', '❌ Erreur de connexion: ' + error.message);
+        showInfo(apiUrl, 0, error.message);
+      }
+    }
     
-    // Token de connexion (stocké après login)
-    let authToken = null;
-
-    // =============================================
-    // FONCTIONS DE TEST
-    // =============================================
-
-    // 1. Tester si l'API répond
-    async function testHealth() {
-      const resultBox = document.getElementById('healthResult');
-      resultBox.innerHTML = '<span class="info">⏳ Envoi de la requête...</span>';
+    async function testLocal() {
+      const apiUrl = 'http://localhost:3000/api';
+      showStatus('loading', 'Test connexion locale...');
       
       try {
-        const response = await fetch(`${API_URL}/health`);
-        const data = await response.json();
-        
-        resultBox.innerHTML = `<span class="success">✅ API CONNECTÉE !</span>\n\n` +
-          `Message: ${data.message}\n` +
-          `Version: ${data.version}\n` +
-          `Heure serveur: ${data.timestamp}`;
-      } catch (error) {
-        resultBox.innerHTML = `<span class="error">❌ ERREUR: L'API ne répond pas</span>\n\n` +
-          `Vérifiez que le serveur backend est lancé.\n` +
-          `Commande: cd backend && npm start`;
-      }
-    }
-
-    // 2. Récupérer les articles
-    async function getArticles() {
-      const resultBox = document.getElementById('articlesResult');
-      const displayBox = document.getElementById('articlesDisplay');
-      resultBox.style.display = 'none';
-      displayBox.innerHTML = '<p>⏳ Chargement...</p>';
-      
-      try {
-        const response = await fetch(`${API_URL}/articles`);
+        const response = await fetch(`${apiUrl}/articles`);
         const data = await response.json();
         
         if (data.success) {
-          displayArticles(data.articles, displayBox);
+          showStatus('success', `✅ Local OK ! ${data.count} produits`);
+          showInfo(apiUrl, data.count);
+          displayProducts(data.articles);
+        } else {
+          showStatus('error', '❌ Erreur locale');
         }
       } catch (error) {
-        displayBox.innerHTML = `<p style="color: red;">❌ Erreur: ${error.message}</p>`;
+        showStatus('error', '❌ Backend local non démarré. Lancez: cd backend && npm start');
+        showInfo(apiUrl, 0, error.message);
       }
     }
-
-    // 2b. Récupérer les ventes flash
-    async function getFlashSales() {
-      const displayBox = document.getElementById('articlesDisplay');
-      displayBox.innerHTML = '<p>⏳ Chargement des ventes flash...</p>';
+    
+    async function testProd() {
+      const apiUrl = 'https://ascartel-backend.onrender.com/api';
+      showStatus('loading', 'Test connexion production...');
       
       try {
-        const response = await fetch(`${API_URL}/articles/flash-sales`);
+        const response = await fetch(`${apiUrl}/articles`);
         const data = await response.json();
         
         if (data.success) {
-          displayArticles(data.articles, displayBox, true);
+          showStatus('success', `✅ Production OK ! ${data.count} produits`);
+          showInfo(apiUrl, data.count);
+          displayProducts(data.articles);
+        } else {
+          showStatus('error', '❌ Erreur production');
         }
       } catch (error) {
-        displayBox.innerHTML = `<p style="color: red;">❌ Erreur: ${error.message}</p>`;
+        showStatus('error', '❌ Serveur production inaccessible');
+        showInfo(apiUrl, 0, error.message);
       }
     }
-
-    // Afficher les articles en cartes
-    function displayArticles(articles, container, isFlash = false) {
-      if (articles.length === 0) {
-        container.innerHTML = '<p>Aucun article trouvé.</p>';
+    
+    function showStatus(type, message) {
+      const status = document.getElementById('status');
+      status.className = `status ${type}`;
+      status.innerHTML = message;
+    }
+    
+    function showInfo(url, count, error = null) {
+      const info = document.getElementById('info');
+      info.innerHTML = `
+        <strong>URL:</strong> ${url}<br>
+        <strong>Produits:</strong> ${count}<br>
+        <strong>Timestamp:</strong> ${new Date().toLocaleString()}<br>
+        ${error ? `<strong style="color: #ef4444;">Erreur:</strong> ${error}` : ''}
+      `;
+    }
+    
+    function displayProducts(products) {
+      const grid = document.getElementById('productsGrid');
+      
+      if (!products || products.length === 0) {
+        grid.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: #6b7280; padding: 40px;">Aucun produit disponible</p>';
         return;
       }
       
-      container.innerHTML = articles.map(article => `
-        <div class="article-card">
-          ${article.flash_sale.active ? '<span class="flash-badge">🔥 FLASH -' + article.flash_sale.discount + '%</span>' : ''}
-          <h4>${article.nom}</h4>
-          <p>${article.categorie || 'Sans catégorie'}</p>
-          <p>
-            <span class="price">${article.prix.toLocaleString()} Ar</span>
-            ${article.flash_sale.active ? `<span class="old-price">${article.prix_original.toLocaleString()} Ar</span>` : ''}
-          </p>
-          <p class="stock">Stock: ${article.stock} ${article.stock_faible ? '⚠️ Stock faible' : ''}</p>
+      grid.innerHTML = products.map(p => `
+        <div class="product-card">
+          <img src="${p.image_url || 'https://via.placeholder.com/300x400'}" 
+               alt="${p.nom}" 
+               class="product-image"
+               onerror="this.src='https://via.placeholder.com/300x400/f3f4f6/999?text=Image'">
+          <div class="product-info">
+            ${p.flash_sale && p.flash_sale.active ? `<span class="flash-badge">-${p.flash_sale.discount}%</span>` : ''}
+            <h3 class="product-name">${p.nom}</h3>
+            <p style="color: #6b7280; font-size: 0.85rem; margin: 5px 0;">${p.categorie || ''} ${p.genre ? '• ' + p.genre : ''}</p>
+            <p class="product-price">${p.prix.toLocaleString()} Ar</p>
+            ${p.prix_original && p.prix_original > p.prix ? `<p style="color: #9ca3af; text-decoration: line-through; font-size: 0.9rem;">${p.prix_original.toLocaleString()} Ar</p>` : ''}
+            <p style="color: #6b7280; font-size: 0.85rem; margin-top: 5px;">Stock: ${p.stock}</p>
+          </div>
         </div>
       `).join('');
     }
-
-    // 3. Connexion
-    async function login() {
-      const email = document.getElementById('loginEmail').value;
-      const password = document.getElementById('loginPassword').value;
-      const resultBox = document.getElementById('loginResult');
-      const statusBadge = document.getElementById('loginStatus');
-      
-      resultBox.innerHTML = '<span class="info">⏳ Connexion en cours...</span>';
-      
-      try {
-        const response = await fetch(`${API_URL}/auth/login`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({ email, password })
-        });
-        
-        const data = await response.json();
-        
-        if (data.success) {
-          authToken = data.token;
-          statusBadge.textContent = `Connecté: ${data.user.name} (${data.user.role})`;
-          statusBadge.className = 'status-badge status-connected';
-          
-          resultBox.innerHTML = `<span class="success">✅ CONNEXION RÉUSSIE !</span>\n\n` +
-            `Utilisateur: ${data.user.name}\n` +
-            `Email: ${data.user.email}\n` +
-            `Rôle: ${data.user.role}\n\n` +
-            `Token JWT (pour les requêtes protégées):\n${data.token.substring(0, 50)}...`;
-        } else {
-          resultBox.innerHTML = `<span class="error">❌ ÉCHEC: ${data.error}</span>`;
-        }
-      } catch (error) {
-        resultBox.innerHTML = `<span class="error">❌ Erreur: ${error.message}</span>`;
-      }
-    }
-
-    // 4. Actions Admin
-    async function getSettings() {
-      const resultBox = document.getElementById('adminResult');
-      
-      if (!authToken) {
-        resultBox.innerHTML = '<span class="error">❌ Vous devez d\'abord vous connecter !</span>';
-        return;
-      }
-      
-      resultBox.innerHTML = '<span class="info">⏳ Récupération des paramètres...</span>';
-      
-      try {
-        const response = await fetch(`${API_URL}/settings`, {
-          headers: {
-            'Authorization': `Bearer ${authToken}`
-          }
-        });
-        
-        const data = await response.json();
-        
-        if (data.success) {
-          resultBox.innerHTML = `<span class="success">✅ PARAMÈTRES RÉCUPÉRÉS</span>\n\n` +
-            JSON.stringify(data.settings, null, 2);
-        } else {
-          resultBox.innerHTML = `<span class="error">❌ ${data.error}</span>`;
-        }
-      } catch (error) {
-        resultBox.innerHTML = `<span class="error">❌ Erreur: ${error.message}</span>`;
-      }
-    }
-
-    async function toggleStore(open) {
-      const resultBox = document.getElementById('adminResult');
-      
-      if (!authToken) {
-        resultBox.innerHTML = '<span class="error">❌ Vous devez d\'abord vous connecter !</span>';
-        return;
-      }
-      
-      try {
-        const response = await fetch(`${API_URL}/settings/store`, {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${authToken}`
-          },
-          body: JSON.stringify({ open })
-        });
-        
-        const data = await response.json();
-        
-        if (data.success) {
-          resultBox.innerHTML = `<span class="success">✅ ${data.message}</span>`;
-        } else {
-          resultBox.innerHTML = `<span class="error">❌ ${data.error}</span>`;
-        }
-      } catch (error) {
-        resultBox.innerHTML = `<span class="error">❌ Erreur: ${error.message}</span>`;
-      }
-    }
-
-    // 5. Statut boutique
-    async function getStoreStatus() {
-      const resultBox = document.getElementById('storeResult');
-      resultBox.innerHTML = '<span class="info">⏳ Vérification...</span>';
-      
-      try {
-        const response = await fetch(`${API_URL}/settings/status`);
-        const data = await response.json();
-        
-        if (data.success) {
-          const store = data.store;
-          resultBox.innerHTML = `<span class="${store.open ? 'success' : 'error'}">${store.open ? '✅ BOUTIQUE OUVERTE' : '❌ BOUTIQUE FERMÉE'}</span>\n\n` +
-            `Message: ${store.message}\n` +
-            `Horaires: ${store.hours.opening}h - ${store.hours.closing}h\n` +
-            `Heure actuelle: ${store.currentHour}h`;
-        }
-      } catch (error) {
-        resultBox.innerHTML = `<span class="error">❌ Erreur: ${error.message}</span>`;
-      }
-    }
-
+    
     // Test automatique au chargement
-    window.onload = function() {
-      testHealth();
-    };
+    window.addEventListener('load', () => {
+      testAPI();
+    });
   </script>
 </body>
 </html>

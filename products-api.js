@@ -87,7 +87,7 @@ function renderProducts(articles) {
           }
           <div class="product-actions">
             <button class="quick-view" onclick="viewProduct(${article.id})">Voir plus</button>
-            <button class="add-to-cart" data-product-id="${article.id}" ${article.stock <= 0 ? 'disabled' : ''}>
+            <button class="add-to-cart" onclick="addToCart(${article.id}, '${article.nom.replace(/'/g, "\\'")}'', ${article.prix}, '${article.image_url || ''}')" ${article.stock <= 0 ? 'disabled' : ''}>
               ${article.stock <= 0 ? 'Indisponible' : 'Ajouter au panier'}
             </button>
           </div>
@@ -217,9 +217,7 @@ function getGenreIcon(genre) {
 }
 
 function viewProduct(productId) {
-  // Rediriger vers la page produit (à implémenter)
-  console.log('Voir produit:', productId);
-  alert(`Fonctionnalité à venir : Voir le produit #${productId}`);
+  window.location.href = `produit-detail.html?id=${productId}`;
 }
 
 // =============================================

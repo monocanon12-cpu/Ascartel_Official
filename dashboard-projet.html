@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AsCartel - Dashboard Projet</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #f9c5d5 0%, #f68db5 100%);
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      overflow: hidden;
+    }
+
+    .header {
+      background: linear-gradient(135deg, #f68db5 0%, #e85d9a 100%);
+      color: white;
+      padding: 30px;
+      text-align: center;
+    }
+
+    .header h1 {
+      font-size: 2.5rem;
+      margin-bottom: 10px;
+    }
+
+    .header p {
+      opacity: 0.9;
+      font-size: 1.1rem;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+      padding: 30px;
+      background: #f8f9fa;
+    }
+
+    .stat-card {
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      text-align: center;
+    }
+
+    .stat-card h3 {
+      color: #6b7280;
+      font-size: 0.9rem;
+      margin-bottom: 10px;
+      text-transform: uppercase;
+    }
+
+    .stat-card .value {
+      font-size: 2rem;
+      font-weight: bold;
+      color: #f68db5;
+    }
+
+    .timer {
+      background: #1a1a2e;
+      color: white;
+      padding: 20px 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .timer-display {
+      font-size: 2rem;
+      font-weight: bold;
+      font-family: 'Courier New', monospace;
+    }
+
+    .timer-controls button {
+      background: #f68db5;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      margin-left: 10px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: all 0.3s;
+    }
+
+    .timer-controls button:hover {
+      background: #e85d9a;
+      transform: scale(1.05);
+    }
+
+    .content {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 30px;
+      padding: 30px;
+    }
+
+    .section {
+      background: #f8f9fa;
+      padding: 25px;
+      border-radius: 12px;
+    }
+
+    .section h2 {
+      color: #1a1a2e;
+      margin-bottom: 20px;
+      font-size: 1.5rem;
+      border-bottom: 3px solid #f68db5;
+      padding-bottom: 10px;
+    }
+
+    .checklist {
+      list-style: none;
+    }
+
+    .checklist li {
+      background: white;
+      padding: 15px;
+      margin-bottom: 10px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .checklist li:hover {
+      transform: translateX(5px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    .checklist li.done {
+      background: #d1fae5;
+      text-decoration: line-through;
+      opacity: 0.7;
+    }
+
+    .checklist input[type="checkbox"] {
+      width: 20px;
+      height: 20px;
+      margin-right: 15px;
+      cursor: pointer;
+    }
+
+    .prompt-box {
+      background: #1a1a2e;
+      color: #00ff00;
+      padding: 20px;
+      border-radius: 8px;
+      font-family: 'Courier New', monospace;
+      font-size: 0.9rem;
+      margin-bottom: 15px;
+      position: relative;
+      max-height: 300px;
+      overflow-y: auto;
+    }
+
+    .copy-btn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: #f68db5;
+      color: white;
+      border: none;
+      padding: 8px 15px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.85rem;
+    }
+
+    .copy-btn:hover {
+      background: #e85d9a;
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 30px;
+      background: #e5e7eb;
+      border-radius: 15px;
+      overflow: hidden;
+      margin-bottom: 20px;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #f68db5, #e85d9a);
+      transition: width 0.5s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: bold;
+    }
+
+    .priority-badge {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-size: 0.75rem;
+      font-weight: bold;
+      margin-left: 10px;
+    }
+
+    .priority-critical {
+      background: #fee2e2;
+      color: #dc2626;
+    }
+
+    .priority-high {
+      background: #fed7aa;
+      color: #ea580c;
+    }
+
+    .priority-medium {
+      background: #fef3c7;
+      color: #d97706;
+    }
+
+    @media (max-width: 968px) {
+      .content {
+        grid-template-columns: 1fr;
+      }
+      
+      .stats {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>🚀 AsCartel E-Commerce</h1>
+      <p>Dashboard de Développement - Suivi de Projet</p>
+    </div>
+
+    <div class="stats">
+      <div class="stat-card">
+        <h3>Progression</h3>
+        <div class="value" id="progressPercent">0%</div>
+      </div>
+      <div class="stat-card">
+        <h3>Tâches Complétées</h3>
+        <div class="value"><span id="completedTasks">0</span>/<span id="totalTasks">0</span></div>
+      </div>
+      <div class="stat-card">
+        <h3>Temps Total</h3>
+        <div class="value" id="totalTime">0h 00m</div>
+      </div>
+      <div class="stat-card">
+        <h3>Session Actuelle</h3>
+        <div class="value" id="sessionTime">0h 00m</div>
+      </div>
+    </div>
+
+    <div class="timer">
+      <div>
+        <strong>⏱️ Timer Session:</strong>
+        <span class="timer-display" id="timerDisplay">00:00:00</span>
+      </div>
+      <div class="timer-controls">
+        <button onclick="startTimer()">▶️ Démarrer</button>
+        <button onclick="pauseTimer()">⏸️ Pause</button>
+        <button onclick="resetTimer()">🔄 Reset</button>
+      </div>
+    </div>
+
+    <div class="content">
+      <div class="section">
+        <h2>📋 Checklist Priorités</h2>
+        
+        <div class="progress-bar">
+          <div class="progress-fill" id="progressBar" style="width: 0%">0%</div>
+        </div>
+
+        <h3 style="margin: 20px 0 10px 0; color: #dc2626;">🔴 PHASE 1 : FONDATIONS (CRITIQUE)</h3>
+        <ul class="checklist" id="phase1">
+          <li><input type="checkbox" onchange="updateProgress()"><span>1.1 Connexion Backend → Frontend (API produits)</span><span class="priority-badge priority-critical">CRITIQUE</span></li>
+          <li><input type="checkbox" onchange="updateProgress()"><span>1.2 Affichage grille produits avec loading/error states</span><span class="priority-badge priority-critical">CRITIQUE</span></li>
+          <li><input type="checkbox" onchange="updateProgress()"><span>1.3 Page produit détaillée complète (images, tailles, couleurs)</span><span class="priority-badge priority-critical">CRITIQUE</span></li>
+          <li><input type="checkbox" onchange="updateProgress()"><span>1.4 Système panier fonctionnel (add/remove/update quantité)</span><span class="priority-badge priority-critical">CRITIQUE</span></li>
+          <li><input type="checkbox" onchange="updateProgress()"><span>1.5 Badge compteur panier dans header avec animation</span><span class="priority-badge priority-critical">CRITIQUE</span></li>
+          <li><input type="checkbox" onchange="updateProgress()"><span>1.6 Page panier complète avec calcul total</span><span class="priority-badge priority-critical">CRITIQUE</span></li>
+          <li><input type="checkbox" onchange="updateProgress()"><span>1.7 Fixer tous les liens morts (navigation cohérente)</span><span class="priority-badge priority-critical">CRITIQUE</span></li>
+        </ul>
+
+        <h3 style="margin: 20px 0 10px 0; color: #ea580c;">🟠 PHASE 2 : AUTHENTIFICATION (HAUTE)</h3>
+        <ul class="checklist" id="phase2">
+          <li><input type="checkbox" onchange="updateProgress()"><span>2.1 Backend routes auth (register/login/logout/me)</span><span class="priority-badge priority-high">HAUTE</span></li>
+          <li><input type="checkbox" onchange="updateProgress()"><span>2.2 Formulaire inscription avec validation temps réel</span><span class="priority-badge priority-high">HAUTE</span></li>
+          <li><input type="checkbox" onchange="updateProgress()"><span>2.3 Formulaire connexion + "Se souvenir de moi"</span><span class="priority-badge priority-high">HAUTE</span></li>
+          <li><input type="checkbox" onchange="updateProgress()"><span>2.4 Modal mot de passe oublié + reset password</span><span class="priority-badge priority-high">HAUTE</span></li>
+          <li><input type="checkbox" onchange="updateProgress()"><span>2.5 Espace client (dashboard avec stats/commandes)</span><span class="priority-badge priority-high">HAUTE</span></li>
+          <li><input type="checkbox" onchange="updateProgress()"><span>2.6 Gestion adresses livraison (CRUD)</span><span class="priority-badge priority-high">HAUTE</span></li>
+        </ul>
+
+        <h3 style="margin: 20px 0 10px 0; color: #ea580c;">🟠 PHASE 3 : CHECKOUT (HAUTE)</h3>
+        <ul class="checklist" id="phase3">
+          <li><input type="checkbox" onchange="updateProgress()"><span>3.1 Checkout étape 1 : Récapitulatif panier</span><span class="priority-badge priority-high">HAUTE</span></li>
+          <li><input type="checkbox" onchange="updateProgress()"><span>3.2 Checkout étape 2 : Adresse de livraison</span><span class="priority-badge priority-high">HAUTE</span></li>
+          <li><input type="checkbox" onchange="updateProgress()"><span>3.3 Checkout étape 3 : Paiement à la livraison UNIQUEMENT</span><span class="priority-badge priority-high">HAUTE</span></li>
+          <li><input type="checkbox" onchange="updateProgress()"><span>3.4 Calcul frais livraison (gratuit ≥50k, standard 5k, express 8k)</span><span class="priority-badge priority-high">HAUTE</span></li>
+          <li><input type="checkbox" onchange="updateProgress()"><span>3.5 Checkout étape 4 : Confirmation + numéro commande</span><span class="priority-badge priority-high">HAUTE</span></li>
+          <li><input type="checkbox" onchange="updateProgress()"><span>3.6 Backend route POST /api/orders (créer commande)</span><span class="priority-badge priority-high">HAUTE</span></li>
+        </ul>
+
+        <h3 style="margin: 20px 0 10px 0; color: #d97706;">🟡 PHASE 4 : FONCTIONNALITÉS (MOYENNE)</h3>
+        <ul class="checklist" id="phase4">
+          <li><input type="checkbox" onchange="updateProgress()"><span>4.1 Système recherche avec autocomplete</span><span class="priority-badge priority-medium">MOYENNE</span></li>
+          <li><input type="checkbox" onchange="updateProgress()"><span>4.2 Filtres avancés sidebar (prix, taille, couleur, catégorie)</span><span class="priority-badge priority-medium">MOYENNE</span></li>
+          <li><input type="checkbox" onchange="updateProgress()"><span>4.3 Système wishlist complet (add/remove/page dédiée)</span><span class="priority-badge priority-medium">MOYENNE</span></li>
+          <li><input type="checkbox" onchange="updateProgress()"><span>4.4 Système avis clients (notation + commentaires)</span><span class="priority-badge priority-medium">MOYENNE</span></li>
+          <li><input type="checkbox" onchange="updateProgress()"><span>4.5 Newsletter inscription (footer + popup)</span><span class="priority-badge priority-medium">MOYENNE</span></li>
+        </ul>
+
+        <h3 style="margin: 20px 0 10px 0; color: #10b981;">🟢 PHASE 5 : ADMIN & EMAILS (BASSE)</h3>
+        <ul class="checklist" id="phase5">
+          <li><input type="checkbox" onchange="updateProgress()"><span>5.1 Admin dashboard (stats, graphiques)</span><span class="priority-badge priority-medium">MOYENNE</span></li>
+          <li><input type="checkbox" onchange="updateProgress()"><span>5.2 Admin gestion produits (CRUD complet)</span><span class="priority-badge priority-medium">MOYENNE</span></li>
+          <li><input type="checkbox" onchange="updateProgress()"><span>5.3 Admin gestion commandes (statuts, suivi)</span><span class="priority-badge priority-medium">MOYENNE</span></li>
+          <li><input type="checkbox" onchange="updateProgress()"><span>5.4 Emails transactionnels (confirmation commande)</span><span class="priority-badge priority-medium">MOYENNE</span></li>
+          <li><input type="checkbox" onchange="updateProgress()"><span>5.5 Emails marketing (newsletter, promotions)</span><span class="priority-badge priority-medium">MOYENNE</span></li>
+        </ul>
+      </div>
+
+      <div class="section">
+        <h2>💬 Prompts Rapides</h2>
+        
+        <h3 style="margin-bottom: 10px;">🔴 Connexion API Produits</h3>
+        <div class="prompt-box">
+          <button class="copy-btn" onclick="copyPrompt(this)">📋 Copier</button>
+Crée le service API frontend pour charger les produits depuis https://ascartel-backend.onrender.com/api/articles
+
+Requirements:
+- Custom hook useProducts() avec React Query
+- États: loading, error, empty, success
+- Pagination 20 produits/page
+- Cache 5 minutes
+- Retry 3 tentatives si échec
+- Affichage grille avec skeleton loading
+- Error state avec bouton réessayer
+        </div>
+
+        <h3 style="margin-bottom: 10px;">🔴 Système Panier</h3>
+        <div class="prompt-box">
+          <button class="copy-btn" onclick="copyPrompt(this)">📋 Copier</button>
+Implémente un système panier complet avec Zustand ou Context API
+
+State structure:
+{
+  items: [{produit_id, nom, image, prix, taille, couleur, quantite, stock_disponible}],
+  total: number,
+  nombre_items: number
+}
+
+Actions:
+- addToCart(produit, taille, couleur, quantite)
+- removeFromCart(produit_id)
+- updateQuantity(produit_id, nouvelle_quantite)
+- clearCart()
+
+Persistence: localStorage avec expiration 7 jours
+Badge compteur header avec animation bounce
+        </div>
+
+        <h3 style="margin-bottom: 10px;">🟠 Authentification</h3>
+        <div class="prompt-box">
+          <button class="copy-btn" onclick="copyPrompt(this)">📋 Copier</button>
+Crée le système d'authentification complet
+
+Backend routes nécessaires:
+- POST /api/auth/register (email, password, nom, prenom, telephone)
+- POST /api/auth/login (email, password)
+- POST /api/auth/logout
+- GET /api/auth/me
+- POST /api/auth/forgot-password
+- POST /api/auth/reset-password
+
+Frontend:
+- Formulaire inscription avec validation temps réel
+- Formulaire connexion avec "Se souvenir de moi"
+- Modal mot de passe oublié
+- Sécurité: bcrypt, JWT 7 jours, rate limiting
+        </div>
+
+        <h3 style="margin-bottom: 10px;">🟠 Checkout Paiement Livraison</h3>
+        <div class="prompt-box">
+          <button class="copy-btn" onclick="copyPrompt(this)">📋 Copier</button>
+Implémente le checkout 4 étapes avec PAIEMENT À LA LIVRAISON uniquement
+
+Étape 1 - Récapitulatif:
+- Liste produits panier (image, nom, taille, couleur, quantité, prix)
+- Sous-total
+- Bouton "Continuer vers la livraison"
+
+Étape 2 - Adresse:
+- Formulaire: nom, prénom, téléphone, adresse, ville, code postal
+- Sélection adresse sauvegardée si connecté
+- Validation temps réel
+
+Étape 3 - Paiement:
+- Option UNIQUE: "Paiement à la livraison" (cash)
+- Message: "Vous paierez en espèces à la réception"
+- Calcul frais livraison:
+  * GRATUIT si total >= 50 000 Ar
+  * Standard 5-7 jours: 5 000 Ar
+  * Express 2-3 jours: 8 000 Ar
+- Total final = sous-total + frais livraison
+- Checkbox CGV obligatoire
+- PAS de MVola, Stripe, ou autre paiement en ligne
+
+Étape 4 - Confirmation:
+- Numéro commande généré
+- Récap complet
+- Message succès
+- Bouton "Suivre ma commande"
+        </div>
+
+        <h3 style="margin-bottom: 10px;">🔍 Système Recherche</h3>
+        <div class="prompt-box">
+          <button class="copy-btn" onclick="copyPrompt(this)">📋 Copier</button>
+Crée un système de recherche avancé avec autocomplete
+
+Fonctionnalités:
+- Barre recherche header avec icône loupe
+- Autocomplete dès 2 caractères
+- Recherche dans: nom produit, description, catégorie
+- Affichage suggestions (max 5) avec image miniature
+- Highlight du texte recherché
+- Navigation clavier (↑↓ Enter Escape)
+- Debounce 300ms pour optimiser
+- Page résultats avec filtres
+- "Aucun résultat" avec suggestions alternatives
+        </div>
+
+        <h3 style="margin-bottom: 10px;">💝 Système Wishlist</h3>
+        <div class="prompt-box">
+          <button class="copy-btn" onclick="copyPrompt(this)">📋 Copier</button>
+Implémente le système wishlist (favoris)
+
+Fonctionnalités:
+- Bouton cœur sur chaque produit (vide/plein)
+- Animation au clic
+- Badge compteur header
+- Persistence localStorage
+- Page wishlist dédiée (/wishlist.html)
+- Grille produits favoris
+- Bouton "Ajouter au panier" direct
+- Bouton "Retirer des favoris"
+- Message si vide: "Aucun favori"
+- Sync avec backend si connecté
+        </div>
+
+        <h3 style="margin-bottom: 10px;">🎯 Filtres Avancés</h3>
+        <div class="prompt-box">
+          <button class="copy-btn" onclick="copyPrompt(this)">📋 Copier</button>
+Crée une sidebar de filtres avancés pour la page produits
+
+Filtres:
+- Catégorie (checkboxes)
+- Prix (slider range avec min/max)
+- Taille (S, M, L, XL, XXL)
+- Couleur (pastilles colorées cliquables)
+- Disponibilité (En stock uniquement)
+- Nouveautés (checkbox)
+- Promotions (checkbox)
+
+Comportement:
+- Filtres cumulatifs (AND)
+- Compteur résultats en temps réel
+- Bouton "Réinitialiser les filtres"
+- URL params pour partage (?category=robes&price=0-50000)
+- Responsive: drawer mobile, sidebar desktop
+        </div>
+
+        <h3 style="margin-bottom: 10px;">⭐ Avis Clients</h3>
+        <div class="prompt-box">
+          <button class="copy-btn" onclick="copyPrompt(this)">📋 Copier</button>
+Implémente le système d'avis clients
+
+Page produit:
+- Section avis avec note moyenne (étoiles)
+- Nombre total d'avis
+- Répartition notes (5★: 45%, 4★: 30%, etc.)
+- Liste avis (avatar, nom, date, note, commentaire)
+- Pagination 10 avis/page
+- Tri: Plus récents, Plus utiles, Meilleures notes
+
+Formulaire avis:
+- Réservé aux clients ayant acheté
+- Note 1-5 étoiles (cliquable)
+- Titre avis (optionnel)
+- Commentaire (min 20 caractères)
+- Upload photos (max 3)
+- Validation avant publication
+
+Backend:
+- Table reviews (user_id, produit_id, note, commentaire, date)
+- Calcul note moyenne automatique
+- Modération admin
+        </div>
+
+        <h3 style="margin-bottom: 10px;">📧 Newsletter</h3>
+        <div class="prompt-box">
+          <button class="copy-btn" onclick="copyPrompt(this)">📋 Copier</button>
+Implémente le système newsletter
+
+Formulaire footer:
+- Input email avec validation
+- Bouton "S'inscrire"
+- Message succès/erreur
+- Protection double opt-in
+
+Popup newsletter:
+- Apparaît après 30 secondes
+- Titre accrocheur + réduction 10%
+- Checkbox "Ne plus afficher"
+- Cookie 30 jours
+
+Backend:
+- Table subscribers (email, date, active)
+- Route POST /api/newsletter/subscribe
+- Email confirmation avec lien activation
+- Désabonnement facile (lien footer emails)
+
+Intégration:
+- Mailchimp ou Sendinblue API
+- Envoi automatique nouveautés/promos
+        </div>
+
+        <h3 style="margin-bottom: 10px;">👨‍💼 Admin Dashboard</h3>
+        <div class="prompt-box">
+          <button class="copy-btn" onclick="copyPrompt(this)">📋 Copier</button>
+Crée le dashboard admin complet
+
+Page d'accueil admin:
+- Stats cards: CA du jour, commandes, produits, clients
+- Graphique ventes 30 derniers jours (Chart.js)
+- Top 5 produits vendus
+- Dernières commandes (tableau)
+- Alertes: stock faible, commandes en attente
+
+Gestion produits:
+- Tableau tous produits (image, nom, prix, stock, statut)
+- Recherche/filtres
+- Actions: Modifier, Dupliquer, Supprimer
+- Formulaire ajout/édition:
+  * Nom, description, prix, prix promo
+  * Catégorie, genre
+  * Tailles disponibles (multi-select)
+  * Couleurs disponibles
+  * Stock par taille
+  * Upload images (drag & drop, max 5)
+  * Statut: Actif/Brouillon/Rupture
+
+Gestion commandes:
+- Tableau toutes commandes
+- Filtres: statut, date, montant
+- Détail commande (produits, client, adresse)
+- Changement statut: En attente → Préparation → Expédiée → Livrée
+- Impression bon de livraison
+
+Sécurité:
+- Route /admin protégée (middleware isAdmin)
+- Logs actions admin
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let timerInterval;
+    let seconds = 0;
+    let isRunning = false;
+    let totalSeconds = parseInt(localStorage.getItem('totalSeconds') || '0');
+
+    function startTimer() {
+      if (!isRunning) {
+        isRunning = true;
+        timerInterval = setInterval(() => {
+          seconds++;
+          totalSeconds++;
+          updateTimerDisplay();
+          updateTotalTime();
+          localStorage.setItem('totalSeconds', totalSeconds);
+        }, 1000);
+      }
+    }
+
+    function pauseTimer() {
+      isRunning = false;
+      clearInterval(timerInterval);
+    }
+
+    function resetTimer() {
+      pauseTimer();
+      seconds = 0;
+      updateTimerDisplay();
+    }
+
+    function updateTimerDisplay() {
+      const h = Math.floor(seconds / 3600);
+      const m = Math.floor((seconds % 3600) / 60);
+      const s = seconds % 60;
+      document.getElementById('timerDisplay').textContent = 
+        `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+      
+      const sh = Math.floor(seconds / 3600);
+      const sm = Math.floor((seconds % 3600) / 60);
+      document.getElementById('sessionTime').textContent = `${sh}h ${String(sm).padStart(2, '0')}m`;
+    }
+
+    function updateTotalTime() {
+      const h = Math.floor(totalSeconds / 3600);
+      const m = Math.floor((totalSeconds % 3600) / 60);
+      document.getElementById('totalTime').textContent = `${h}h ${String(m).padStart(2, '0')}m`;
+    }
+
+    function updateProgress() {
+      const checkboxes = document.querySelectorAll('.checklist input[type="checkbox"]');
+      const total = checkboxes.length;
+      const completed = Array.from(checkboxes).filter(cb => cb.checked).length;
+      const percent = Math.round((completed / total) * 100);
+
+      document.getElementById('progressBar').style.width = percent + '%';
+      document.getElementById('progressBar').textContent = percent + '%';
+      document.getElementById('progressPercent').textContent = percent + '%';
+      document.getElementById('completedTasks').textContent = completed;
+      document.getElementById('totalTasks').textContent = total;
+
+      checkboxes.forEach(cb => {
+        const li = cb.parentElement;
+        if (cb.checked) {
+          li.classList.add('done');
+        } else {
+          li.classList.remove('done');
+        }
+      });
+
+      const state = Array.from(checkboxes).map(cb => cb.checked);
+      localStorage.setItem('checklistState', JSON.stringify(state));
+    }
+
+    function copyPrompt(btn) {
+      const promptBox = btn.parentElement;
+      const text = promptBox.textContent.replace('📋 Copier', '').trim();
+      navigator.clipboard.writeText(text).then(() => {
+        btn.textContent = '✅ Copié!';
+        setTimeout(() => {
+          btn.textContent = '📋 Copier';
+        }, 2000);
+      });
+    }
+
+    window.addEventListener('load', () => {
+      const savedState = JSON.parse(localStorage.getItem('checklistState') || '[]');
+      const checkboxes = document.querySelectorAll('.checklist input[type="checkbox"]');
+      checkboxes.forEach((cb, i) => {
+        if (savedState[i]) {
+          cb.checked = true;
+        }
+      });
+      updateProgress();
+      updateTotalTime();
+    });
+  </script>
+</body>
+</html>
