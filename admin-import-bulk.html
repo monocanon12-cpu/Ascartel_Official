@@ -737,15 +737,15 @@
             <div class="form-group-compact">
               <label>Nom du produit <span class="required">*</span></label>
               <input type="text" class="form-control-compact" 
-                     placeholder="Ex: Robe Élégante Rose" 
+                     placeholder="Nom du produit" 
                      value="${product.nom}"
                      onchange="updateProduct(${product.id}, 'nom', this.value)">
             </div>
             
             <div class="form-group-compact">
-              <label>Description</label>
+              <label>Taille</label>
               <textarea class="form-control-compact" 
-                        placeholder="Description du produit..."
+                        placeholder="Ex: S, M, L, XL ou 38, 40, 42..."
                         onchange="updateProduct(${product.id}, 'description', this.value)">${product.description}</textarea>
             </div>
             
@@ -774,6 +774,7 @@
                   <option value="Jupes" ${product.categorie === 'Jupes' ? 'selected' : ''}>Jupes</option>
                   <option value="Chemises" ${product.categorie === 'Chemises' ? 'selected' : ''}>Chemises</option>
                   <option value="Vestes" ${product.categorie === 'Vestes' ? 'selected' : ''}>Vestes</option>
+                  <option value="Ensemble" ${product.categorie === 'Ensemble' ? 'selected' : ''}>Ensemble</option>
                   <option value="Accessoires" ${product.categorie === 'Accessoires' ? 'selected' : ''}>Accessoires</option>
                   <option value="Chaussures" ${product.categorie === 'Chaussures' ? 'selected' : ''}>Chaussures</option>
                   <option value="Sacs" ${product.categorie === 'Sacs' ? 'selected' : ''}>Sacs</option>
