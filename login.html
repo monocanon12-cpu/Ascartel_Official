@@ -23,6 +23,10 @@
   <link rel="stylesheet" href="design-system.css" />
   <link rel="stylesheet" href="style.css" />
   <link rel="stylesheet" href="auth.css" />
+  
+  <!-- Firebase Configuration -->
+  <script src="firebase-config.js"></script>
+  <script type="module" src="firebase-auth.js"></script>
 </head>
 <body>
   <div class="auth-container">
@@ -56,11 +60,11 @@
         </div>
         
         <div class="social-login">
-          <button type="button" class="social-btn google-btn">
+          <button type="button" class="social-btn google-btn" id="googleLoginBtn">
             <span>Se connecter avec Google</span>
             <img src="https://www.google.com/favicon.ico" alt="Google" class="social-logo">
           </button>
-          <button type="button" class="social-btn facebook-btn">
+          <button type="button" class="social-btn facebook-btn" id="facebookLoginBtn">
             <span>Se connecter avec Facebook</span>
             <img src="https://static.xx.fbcdn.net/rsrc.php/yD/r/d4ZIVX-5C-b.ico" alt="Facebook" class="social-logo">
           </button>
@@ -73,7 +77,21 @@
     </div>
   </div>
   
-  <script>
+  <script type="module">
+    // Initialiser Firebase au chargement
+    let authInitialized = false;
+    
+    window.addEventListener('load', async () => {
+      if (typeof firebaseAuth !== 'undefined') {
+        authInitialized = await firebaseAuth.init();
+        if (authInitialized) {
+          console.log('✅ Firebase prêt');
+        } else {
+          console.log('⚠️ Firebase non configuré - Mode démo');
+        }
+      }
+    });
+    
     // Identifiants de test pour simulation
     const TEST_USERS = {
       'admin@monsite.com': {
@@ -87,10 +105,16 @@
         role: 'collaborateur',
         redirect: 'admin-dashboard.html',
         name: 'Vendeur'
+      },
+      'master@ascartel.com': {
+        password: 'ASCARTEL_MASTER_2025',
+        role: 'admin',
+        redirect: 'admin-dashboard.html',
+        name: 'Admin Master'
       }
     };
 
-    // Gestion de la connexion
+    // Gestion de la connexion email/password
     document.querySelector('.auth-form').addEventListener('submit', function(e) {
       e.preventDefault();
       
@@ -132,6 +156,58 @@
       }
     });
     
+    // Connexion Google
+    document.getElementById('googleLoginBtn')?.addEventListener('click', async function() {
+      this.disabled = true;
+      this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Connexion...';
+      
+      if (!authInitialized || typeof firebaseAuth === 'undefined') {
+        showNotification('Firebase non configuré. Suivez le guide FIREBASE-SETUP.md', 'error');
+        this.disabled = false;
+        this.innerHTML = '<span>Se connecter avec Google</span><img src="https://www.google.com/favicon.ico" alt="Google" class="social-logo">';
+        return;
+      }
+      
+      const result = await firebaseAuth.signInWithGoogle();
+      
+      if (result.success) {
+        showNotification('Connexion Google réussie !', 'success');
+        setTimeout(() => {
+          window.location.href = 'index.html';
+        }, 1000);
+      } else {
+        showNotification('Erreur: ' + result.error, 'error');
+        this.disabled = false;
+        this.innerHTML = '<span>Se connecter avec Google</span><img src="https://www.google.com/favicon.ico" alt="Google" class="social-logo">';
+      }
+    });
+    
+    // Connexion Facebook
+    document.getElementById('facebookLoginBtn')?.addEventListener('click', async function() {
+      this.disabled = true;
+      this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Connexion...';
+      
+      if (!authInitialized || typeof firebaseAuth === 'undefined') {
+        showNotification('Firebase non configuré. Suivez le guide FIREBASE-SETUP.md', 'error');
+        this.disabled = false;
+        this.innerHTML = '<span>Se connecter avec Facebook</span><img src="https://static.xx.fbcdn.net/rsrc.php/yD/r/d4ZIVX-5C-b.ico" alt="Facebook" class="social-logo">';
+        return;
+      }
+      
+      const result = await firebaseAuth.signInWithFacebook();
+      
+      if (result.success) {
+        showNotification('Connexion Facebook réussie !', 'success');
+        setTimeout(() => {
+          window.location.href = 'index.html';
+        }, 1000);
+      } else {
+        showNotification('Erreur: ' + result.error, 'error');
+        this.disabled = false;
+        this.innerHTML = '<span>Se connecter avec Facebook</span><img src="https://static.xx.fbcdn.net/rsrc.php/yD/r/d4ZIVX-5C-b.ico" alt="Facebook" class="social-logo">';
+      }
+    });
+    
     // Fonction de notification
     function showNotification(message, type) {
       // Supprimer notification existante
@@ -150,13 +226,6 @@
       // Auto-suppression après 5s
       setTimeout(() => notification.remove(), 5000);
     }
-    
-    // Gestion des boutons de connexion sociale
-    document.querySelectorAll('.social-btn').forEach(btn => {
-      btn.addEventListener('click', function() {
-        showNotification('Connexion sociale bientôt disponible', 'error');
-      });
-    });
     
     // Vérifier si déjà connecté
     const savedUser = localStorage.getItem('ainaUser') || sessionStorage.getItem('ainaUser');
