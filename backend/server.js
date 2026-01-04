@@ -51,6 +51,7 @@ const allowedOrigins = [
   'http://127.0.0.1:8080',
   'http://localhost:3000',
   'https://ascartel-official.pages.dev',
+  'https://ascartel.monocanon12.workers.dev',
   'https://flourishing-kitten-4a42c7.netlify.app',
   'https://monocanon12-cpu.github.io'
 ];
@@ -60,7 +61,7 @@ app.use(cors({
     // Autoriser les requêtes sans origin (mobile apps, curl, etc.)
     if (!origin) return callback(null, true);
     
-    if (allowedOrigins.indexOf(origin) !== -1 || origin.includes('.pages.dev')) {
+    if (allowedOrigins.indexOf(origin) !== -1 || origin.includes('.pages.dev') || origin.includes('.workers.dev')) {
       callback(null, true);
     } else {
       callback(new Error('Not allowed by CORS'));
