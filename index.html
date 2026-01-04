@@ -48,6 +48,7 @@
   <link rel="stylesheet" href="products-states.css" />
   <link rel="stylesheet" href="search.css" />
   <link rel="stylesheet" href="filters.css" />
+  <link rel="stylesheet" href="sort.css" />
   <link rel="stylesheet" href="ux-enhancements.css" />
   <link rel="stylesheet" href="cookies.css" />
   <link rel="stylesheet" href="mobile-enhancements.css" />
@@ -380,6 +381,23 @@
 
         <!-- Contenu principal -->
         <div class="filters-content">
+          <!-- Tri -->
+          <div class="sort-container">
+            <label for="sortSelect" class="sort-label">
+              <i class="fas fa-sort-amount-down"></i> Trier par
+            </label>
+            <select id="sortSelect">
+              <option value="default">Par défaut</option>
+              <option value="price-asc">Prix croissant</option>
+              <option value="price-desc">Prix décroissant</option>
+              <option value="name-asc">Nom A-Z</option>
+              <option value="name-desc">Nom Z-A</option>
+              <option value="newest">Nouveautés</option>
+              <option value="popular">Popularité</option>
+              <option value="discount">Réductions</option>
+            </select>
+          </div>
+
           <div class="products-grid" id="productsGrid">
             <!-- Les produits seront chargés dynamiquement -->
           </div>
@@ -581,6 +599,7 @@
   <script src="cart.js"></script>
   <script src="search.js"></script>
   <script src="filters.js"></script>
+  <script src="sort.js"></script>
   <script src="chatbot.js"></script>
   <script src="script.js"></script>
   <script src="products-service.js"></script>

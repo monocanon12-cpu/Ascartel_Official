@@ -258,14 +258,19 @@ document.addEventListener('DOMContentLoaded', function() {
   
   // Initialiser le système de filtres
   let filtersSystem = null;
+  let sortSystem = null;
   
   if (typeof FiltersSystem !== 'undefined') {
     filtersSystem = new FiltersSystem();
     
     // Callback quand les filtres changent
     filtersSystem.onFilterChange = (filteredProducts) => {
-      // Mettre à jour l'affichage des produits
-      renderFilteredProducts(filteredProducts);
+      // Appliquer le tri si disponible
+      if (sortSystem) {
+        sortSystem.setProducts(filteredProducts);
+      } else {
+        renderFilteredProducts(filteredProducts);
+      }
       
       // Mettre à jour le compteur de filtres actifs
       const activeCount = filtersSystem.getActiveFiltersCount();
@@ -274,6 +279,16 @@ document.addEventListener('DOMContentLoaded', function() {
         countElement.textContent = activeCount;
         countElement.style.display = activeCount > 0 ? 'inline-block' : 'none';
       }
+    };
+  }
+  
+  // Initialiser le système de tri
+  if (typeof ProductSort !== 'undefined') {
+    sortSystem = new ProductSort();
+    
+    // Callback quand le tri change
+    sortSystem.onSortChange = (sortedProducts) => {
+      renderFilteredProducts(sortedProducts);
     };
   }
   

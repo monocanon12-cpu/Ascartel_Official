@@ -217,6 +217,11 @@ class ProductsState {
         if (typeof filtersSystem !== 'undefined' && filtersSystem) {
           filtersSystem.setProducts(data.articles);
         }
+        
+        // Mettre à jour le système de tri si disponible
+        if (typeof sortSystem !== 'undefined' && sortSystem) {
+          sortSystem.setProducts(data.articles);
+        }
 
         if (isEmpty) {
           this.renderEmpty();
