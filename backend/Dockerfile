@@ -20,6 +20,9 @@ COPY . .
 # Créer les dossiers nécessaires
 RUN mkdir -p data logs
 
+# Initialiser la base de données
+RUN node scripts/init-db.js
+
 # Exposer le port
 EXPOSE 3000
 
