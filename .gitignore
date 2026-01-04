@@ -1,6 +1,6 @@
 # Dépendances Node.js
 node_modules/
-package-lock.json
+# package-lock.json - Commenté pour Render
 
 # Base de données SQLite
 backend/data/*.db
