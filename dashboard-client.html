@@ -336,7 +336,7 @@
             <i class="fas fa-shopping-bag"></i>
           </div>
         </div>
-        <p class="stat-value">0</p>
+        <p class="stat-value" id="ordersCount">0</p>
         <p class="stat-label">Commandes</p>
       </div>
       
@@ -346,7 +346,7 @@
             <i class="fas fa-heart"></i>
           </div>
         </div>
-        <p class="stat-value">0</p>
+        <p class="stat-value" id="favoritesCount">0</p>
         <p class="stat-label">Favoris</p>
       </div>
       
@@ -356,7 +356,7 @@
             <i class="fas fa-star"></i>
           </div>
         </div>
-        <p class="stat-value">0</p>
+        <p class="stat-value" id="pointsCount">0</p>
         <p class="stat-label">Points fidélité</p>
       </div>
     </div>
@@ -422,7 +422,7 @@
     
     async function loadProducts() {
       const grid = document.getElementById('productsGrid');
-      grid.innerHTML = '<p style="text-align: center; color: #6b7280;">Chargement des produits...</p>';
+      grid.innerHTML = '<p style="text-align: center; color: #6b7280; padding: 40px;"><i class="fas fa-spinner fa-spin" style="font-size: 2rem; margin-bottom: 10px; display: block;"></i>Chargement des produits...</p>';
       
       try {
         const API_URL = CONFIG.mode === 'api' ? CONFIG.apiUrl : null;
@@ -431,6 +431,7 @@
         
         if (API_URL) {
           const response = await fetch(`${API_URL}/articles`);
+          if (!response.ok) throw new Error('Erreur API');
           const data = await response.json();
           products = data.success ? data.articles : [];
         } else {
@@ -438,22 +439,27 @@
         }
         
         if (products.length === 0) {
-          grid.innerHTML = '<p style="text-align: center; color: #6b7280;">Aucun produit disponible pour le moment.</p>';
+          grid.innerHTML = '<p style="text-align: center; color: #6b7280; padding: 40px;">Aucun produit disponible pour le moment.</p>';
           return;
         }
+        
+        // Limiter à 12 produits pour le dashboard
+        products = products.slice(0, 12);
         
         grid.innerHTML = products.map(product => `
           <div class="product-card">
             ${product.flash_sale && product.flash_sale.active ? `<span class="flash-badge">-${product.flash_sale.discount}%</span>` : ''}
-            <img src="${product.image_url || 'https://via.placeholder.com/300x400'}" alt="${product.nom}" class="product-image">
+            <img src="${product.image_url || 'https://via.placeholder.com/300x400'}" alt="${product.nom}" class="product-image" onerror="this.src='https://via.placeholder.com/300x400/f3f4f6/999?text=Image+non+disponible'">
             <div class="product-info">
               <h3 class="product-name">${product.nom}</h3>
+              ${product.categorie ? `<p style="color: #6b7280; font-size: 0.85rem; margin: 5px 0;">${product.categorie}</p>` : ''}
               <p class="product-price">${product.prix.toLocaleString()} Ar</p>
+              ${product.prix_original && product.prix_original > product.prix ? `<p style="color: #9ca3af; text-decoration: line-through; font-size: 0.9rem;">${product.prix_original.toLocaleString()} Ar</p>` : ''}
               <div class="product-actions">
-                <button class="btn-add-cart" onclick="addToCart(${product.id})">
+                <button class="btn-add-cart" onclick="addToCart(${product.id}, '${product.nom}', ${product.prix})">
                   <i class="fas fa-shopping-cart"></i> Ajouter
                 </button>
-                <button class="btn-favorite" onclick="toggleFavorite(${product.id})">
+                <button class="btn-favorite" onclick="toggleFavorite(${product.id}, '${product.nom}', ${product.prix}, '${product.image_url || ''}')">
                   <i class="far fa-heart"></i>
                 </button>
               </div>
@@ -461,19 +467,170 @@
           </div>
         `).join('');
         
+        // Mettre à jour l'affichage des favoris
+        updateFavoritesUI();
+        
       } catch (error) {
         console.error('Erreur chargement produits:', error);
-        grid.innerHTML = '<p style="text-align: center; color: #ef4444;">Erreur de chargement des produits.</p>';
+        grid.innerHTML = '<p style="text-align: center; color: #ef4444; padding: 40px;"><i class="fas fa-exclamation-triangle" style="font-size: 2rem; margin-bottom: 10px; display: block;"></i>Erreur de chargement des produits.<br><small>Vérifiez votre connexion ou réessayez plus tard.</small></p>';
       }
     }
     
-    function addToCart(productId) {
-      alert('Produit ajouté au panier ! (ID: ' + productId + ')');
+    function addToCart(productId, productName, productPrice) {
+      // Récupérer le panier existant
+      let cart = JSON.parse(localStorage.getItem('cart') || '[]');
+      
+      // Vérifier si le produit existe déjà
+      const existingItem = cart.find(item => item.id === productId);
+      
+      if (existingItem) {
+        existingItem.quantity++;
+      } else {
+        cart.push({
+          id: productId,
+          name: productName,
+          price: productPrice,
+          quantity: 1
+        });
+      }
+      
+      // Sauvegarder
+      localStorage.setItem('cart', JSON.stringify(cart));
+      
+      // Mettre à jour le compteur
+      updateCartCount();
+      
+      // Notification
+      showNotification('Produit ajouté au panier !', 'success');
     }
     
-    function toggleFavorite(productId) {
-      alert('Ajouté aux favoris ! (ID: ' + productId + ')');
+    function toggleFavorite(productId, productName, productPrice, productImage) {
+      // Récupérer les favoris existants
+      let favorites = JSON.parse(localStorage.getItem('wishlist') || '[]');
+      
+      // Vérifier si le produit est déjà en favoris
+      const index = favorites.findIndex(item => item.id === productId);
+      
+      if (index > -1) {
+        // Retirer des favoris
+        favorites.splice(index, 1);
+        showNotification('Retiré des favoris', 'info');
+      } else {
+        // Ajouter aux favoris
+        favorites.push({
+          id: productId,
+          name: productName,
+          price: productPrice,
+          image: productImage
+        });
+        showNotification('Ajouté aux favoris !', 'success');
+      }
+      
+      // Sauvegarder
+      localStorage.setItem('wishlist', JSON.stringify(favorites));
+      
+      // Mettre à jour l'UI
+      updateFavoritesUI();
+      updateFavoritesCount();
     }
+    
+    function updateFavoritesUI() {
+      const favorites = JSON.parse(localStorage.getItem('wishlist') || '[]');
+      const favoriteIds = favorites.map(f => f.id);
+      
+      // Mettre à jour tous les boutons favoris
+      document.querySelectorAll('.btn-favorite').forEach(btn => {
+        const productId = parseInt(btn.getAttribute('onclick').match(/\d+/)[0]);
+        const icon = btn.querySelector('i');
+        
+        if (favoriteIds.includes(productId)) {
+          icon.className = 'fas fa-heart';
+          btn.style.color = '#ec4899';
+        } else {
+          icon.className = 'far fa-heart';
+          btn.style.color = '';
+        }
+      });
+    }
+    
+    function updateCartCount() {
+      const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+      const total = cart.reduce((sum, item) => sum + item.quantity, 0);
+      
+      const cartCount = document.querySelector('.cart-count');
+      if (cartCount) {
+        cartCount.textContent = total;
+        cartCount.style.display = total > 0 ? 'flex' : 'none';
+      }
+    }
+    
+    function updateFavoritesCount() {
+      const favorites = JSON.parse(localStorage.getItem('wishlist') || '[]');
+      const wishlistCount = document.querySelector('.wishlist-count');
+      
+      if (wishlistCount) {
+        wishlistCount.textContent = favorites.length;
+        wishlistCount.style.display = favorites.length > 0 ? 'flex' : 'none';
+      }
+      
+      // Mettre à jour le stat card
+      const favoritesCount = document.getElementById('favoritesCount');
+      if (favoritesCount) {
+        favoritesCount.textContent = favorites.length;
+      }
+    }
+    
+    function showNotification(message, type = 'success') {
+      const notification = document.createElement('div');
+      notification.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: ${type === 'success' ? '#10b981' : type === 'error' ? '#ef4444' : '#3b82f6'};
+        color: white;
+        padding: 15px 25px;
+        border-radius: 10px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        z-index: 10000;
+        animation: slideIn 0.3s ease;
+      `;
+      notification.textContent = message;
+      
+      document.body.appendChild(notification);
+      
+      setTimeout(() => {
+        notification.style.animation = 'slideOut 0.3s ease';
+        setTimeout(() => notification.remove(), 300);
+      }, 3000);
+    }
+    
+    // Initialiser les compteurs au chargement
+    updateCartCount();
+    updateFavoritesCount();
   </script>
+  
+  <style>
+    @keyframes slideIn {
+      from {
+        transform: translateX(400px);
+        opacity: 0;
+      }
+      to {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
+    
+    @keyframes slideOut {
+      from {
+        transform: translateX(0);
+        opacity: 1;
+      }
+      to {
+        transform: translateX(400px);
+        opacity: 0;
+      }
+    }
+  </style>
 </body>
 </html>

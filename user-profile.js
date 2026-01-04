@@ -31,22 +31,16 @@ class UserProfile {
     const userIcon = document.querySelector('.header-icons .icon-link[href="login.html"]');
     if (userIcon && this.user.photo) {
       userIcon.innerHTML = `<img src="${this.user.photo}" alt="${this.user.name}" class="user-avatar" style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover;">`;
-      userIcon.href = '#';
-      userIcon.onclick = (e) => {
-        e.preventDefault();
-        this.showUserMenu();
-      };
+      userIcon.href = 'dashboard-client.html';
+      userIcon.title = `Mon espace - ${this.user.name}`;
     }
 
     // Mettre à jour le bouton de connexion dans la promo bar
     const loginBtn = document.querySelector('.promo-bar .login-btn');
     if (loginBtn) {
-      loginBtn.innerHTML = `<img src="${this.user.photo || ''}" alt="${this.user.name}" style="width: 24px; height: 24px; border-radius: 50%; margin-right: 8px; vertical-align: middle;"> ${this.user.name}`;
-      loginBtn.href = '#';
-      loginBtn.onclick = (e) => {
-        e.preventDefault();
-        this.showUserMenu();
-      };
+      loginBtn.innerHTML = `<img src="${this.user.photo || ''}" alt="${this.user.name}" style="width: 24px; height: 24px; border-radius: 50%; margin-right: 8px; vertical-align: middle; object-fit: cover;"> ${this.user.name}`;
+      loginBtn.href = 'dashboard-client.html';
+      loginBtn.title = 'Mon espace';
     }
   }
 
