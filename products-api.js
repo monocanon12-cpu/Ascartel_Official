@@ -17,7 +17,6 @@ async function loadProducts(genre = 'all', flashOnly = false) {
     return;
   }
   
-  // Afficher un loader
   productsGrid.innerHTML = `
     <div style="grid-column: 1/-1; text-align: center; padding: 60px 20px;">
       <i class="fas fa-spinner fa-spin" style="font-size: 3rem; color: #f68db5; margin-bottom: 20px;"></i>
@@ -25,49 +24,39 @@ async function loadProducts(genre = 'all', flashOnly = false) {
     </div>
   `;
   
-  let products = [];
-  
-  // Essayer d'abord l'API, puis fallback vers standalone
-  if (USE_API) {
-    try {
-      console.log('🌐 Tentative de chargement depuis l\'API...');
-      const url = `${API_URL}/articles?limit=50`;
-      const response = await fetch(url, { timeout: 5000 });
-      const data = await response.json();
-      
-      if (data.success && data.articles && data.articles.length > 0) {
-        products = data.articles;
-        console.log('✅ Produits chargés depuis l\'API:', products.length);
-      } else {
-        throw new Error('Pas de produits dans l\'API');
-      }
-    } catch (error) {
-      console.warn('⚠️ API non disponible, utilisation des produits de démonstration');
-      products = CONFIG.demoProducts || [];
+  try {
+    let url = `${API_URL}/articles?limit=100`;
+    
+    if (genre !== 'all') {
+      url += `&genre=${encodeURIComponent(genre)}`;
     }
-  } else {
-    console.log('🎨 Mode standalone : utilisation des produits de démonstration');
-    products = CONFIG.demoProducts || [];
-  }
-  
-  // Filtrer par genre
-  if (genre !== 'all') {
-    products = products.filter(p => p.genre === genre);
-  }
-  
-  // Filtrer par ventes flash
-  if (flashOnly) {
-    products = products.filter(p => p.flash_sale && p.flash_sale.active);
-  }
-  
-  // Afficher les produits
-  setTimeout(() => {
-    if (products.length > 0) {
-      renderProducts(products);
+    
+    if (flashOnly) {
+      url += `&flash_only=true`;
+    }
+    
+    const response = await fetch(url);
+    const data = await response.json();
+    
+    if (data.success && data.articles && data.articles.length > 0) {
+      renderProducts(data.articles);
     } else {
       showEmptyState(genre);
     }
-  }, 300);
+    
+  } catch (error) {
+    console.error('❌ Erreur chargement produits:', error);
+    productsGrid.innerHTML = `
+      <div style="grid-column: 1/-1; text-align: center; padding: 80px 20px;">
+        <i class="fas fa-exclamation-triangle" style="font-size: 4rem; color: #ef4444; margin-bottom: 20px;"></i>
+        <h3 style="color: #374151; margin: 0 0 10px 0;">Impossible de charger les produits</h3>
+        <p style="color: #6b7280; margin: 0 0 30px 0;">Vérifiez que le serveur backend est démarré.</p>
+        <button class="cta-button" onclick="loadProducts('all')">
+          <i class="fas fa-redo"></i> Réessayer
+        </button>
+      </div>
+    `;
+  }
 }
 
 // =============================================

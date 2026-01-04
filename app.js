@@ -290,45 +290,52 @@ document.addEventListener('DOMContentLoaded', function() {
   }
   
   // =============================================
-  // FLASH SALE - Vente flash
+  // FLASH SALE - Chargé depuis l'API
   // =============================================
-  const flashProducts = [
-    { id: 'flash1', name: 'Robe élégante', originalPrice: 89.99, salePrice: 26.99, discount: 70, image: 'https://via.placeholder.com/200x280/fce7f3/333' },
-    { id: 'flash2', name: 'Veste tendance', originalPrice: 129.99, salePrice: 45.49, discount: 65, image: 'https://via.placeholder.com/200x280/dbeafe/333' },
-    { id: 'flash3', name: 'Jean slim', originalPrice: 69.99, salePrice: 27.99, discount: 60, image: 'https://via.placeholder.com/200x280/e5e7eb/333' },
-    { id: 'flash4', name: 'Pull cozy', originalPrice: 59.99, salePrice: 20.99, discount: 65, image: 'https://via.placeholder.com/200x280/fef3c7/333' },
-    { id: 'flash5', name: 'Blouse chic', originalPrice: 49.99, salePrice: 17.49, discount: 65, image: 'https://via.placeholder.com/200x280/d1fae5/333' }
-  ];
   
   const flashSaleContainer = document.getElementById('flashSaleProducts');
   
   if (flashSaleContainer) {
-    flashProducts.forEach(product => {
-      const card = document.createElement('div');
-      card.className = 'flash-product-card';
-      card.innerHTML = `
-        <div class="flash-discount-badge">-${product.discount}%</div>
-        <button class="wishlist-btn" data-product-id="${product.id}">
-          <i class="far fa-heart"></i>
-        </button>
-        <img src="${product.image}" alt="${product.name}">
-        <div class="flash-product-info">
-          <h4>${product.name}</h4>
-          <div class="flash-prices">
-            <span class="original">${(product.originalPrice * 1000).toFixed(0)} Ar</span>
-            <span class="sale">${(product.salePrice * 1000).toFixed(0)} Ar</span>
-          </div>
-          <div class="flash-progress">
-            <div class="progress-bar" style="width: ${Math.random() * 40 + 50}%"></div>
-            <span>Presque épuisé !</span>
-          </div>
-          <button class="flash-add-cart" data-product-id="${product.id}">
-            <i class="fas fa-shopping-cart"></i> Ajouter
-          </button>
-        </div>
-      `;
-      flashSaleContainer.appendChild(card);
-    });
+    // Charger les ventes flash depuis l'API
+    fetch(`${CONFIG.apiUrl}/articles/flash-sales`)
+      .then(res => res.json())
+      .then(data => {
+        if (data.success && data.flashSales && data.flashSales.length > 0) {
+          flashSaleContainer.innerHTML = '';
+          data.flashSales.forEach(product => {
+            const card = document.createElement('div');
+            card.className = 'flash-product-card';
+            card.innerHTML = `
+              <div class="flash-discount-badge">-${product.flash_sale.discount}%</div>
+              <button class="wishlist-btn" data-product-id="${product.id}">
+                <i class="far fa-heart"></i>
+              </button>
+              <img src="${product.image_url || 'https://via.placeholder.com/200x280'}" alt="${product.nom}">
+              <div class="flash-product-info">
+                <h4>${product.nom}</h4>
+                <div class="flash-prices">
+                  <span class="original">${product.prix_original.toLocaleString()} Ar</span>
+                  <span class="sale">${product.prix.toLocaleString()} Ar</span>
+                </div>
+                <div class="flash-progress">
+                  <div class="progress-bar" style="width: ${Math.min(100, (product.stock / 20) * 100)}%"></div>
+                  <span>${product.stock} restant(s)</span>
+                </div>
+                <button class="flash-add-cart" data-product-id="${product.id}">
+                  <i class="fas fa-shopping-cart"></i> Ajouter
+                </button>
+              </div>
+            `;
+            flashSaleContainer.appendChild(card);
+          });
+        } else {
+          flashSaleContainer.innerHTML = '<p style="text-align: center; color: #6b7280; padding: 20px;">Aucune vente flash pour le moment</p>';
+        }
+      })
+      .catch(error => {
+        console.error('Erreur chargement ventes flash:', error);
+        flashSaleContainer.innerHTML = '<p style="text-align: center; color: #ef4444; padding: 20px;">Erreur de chargement</p>';
+      });
   }
   
   // Timer Flash Sale
@@ -356,37 +363,44 @@ document.addEventListener('DOMContentLoaded', function() {
   setInterval(updateFlashTimer, 1000);
   
   // =============================================
-  // RECOMMANDATIONS
+  // RECOMMANDATIONS - Chargées depuis l'API
   // =============================================
-  const recommendations = [
-    { id: 'rec1', name: 'Robe d\'été fleurie', price: 34.99, image: 'https://via.placeholder.com/200x280/fce7f3/333', tag: 'Tendance' },
-    { id: 'rec2', name: 'Chemise classique', price: 29.99, image: 'https://via.placeholder.com/200x280/e0e7ff/333', tag: 'Populaire' },
-    { id: 'rec3', name: 'Short en jean', price: 24.99, image: 'https://via.placeholder.com/200x280/dbeafe/333', tag: 'Nouveau' },
-    { id: 'rec4', name: 'Top dentelle', price: 19.99, image: 'https://via.placeholder.com/200x280/fef3c7/333', tag: 'Bestseller' }
-  ];
   
   const recommendationsContainer = document.getElementById('recommendationsGrid');
   
   if (recommendationsContainer) {
-    recommendations.forEach(product => {
-      const card = document.createElement('div');
-      card.className = 'recommendation-card';
-      card.innerHTML = `
-        <div class="rec-tag">${product.tag}</div>
-        <button class="wishlist-btn" data-product-id="${product.id}">
-          <i class="far fa-heart"></i>
-        </button>
-        <img src="${product.image}" alt="${product.name}">
-        <div class="rec-info">
-          <h4>${product.name}</h4>
-          <span class="rec-price">${(product.price * 1000).toFixed(0)} Ar</span>
-          <button class="rec-add-cart" data-product-id="${product.id}">
-            <i class="fas fa-plus"></i> Ajouter au panier
-          </button>
-        </div>
-      `;
-      recommendationsContainer.appendChild(card);
-    });
+    fetch(`${CONFIG.apiUrl}/articles?limit=8`)
+      .then(res => res.json())
+      .then(data => {
+        if (data.success && data.articles && data.articles.length > 0) {
+          recommendationsContainer.innerHTML = '';
+          data.articles.slice(0, 4).forEach(product => {
+            const card = document.createElement('div');
+            card.className = 'recommendation-card';
+            card.innerHTML = `
+              <div class="rec-tag">Recommandé</div>
+              <button class="wishlist-btn" data-product-id="${product.id}">
+                <i class="far fa-heart"></i>
+              </button>
+              <img src="${product.image_url || 'https://via.placeholder.com/200x280'}" alt="${product.nom}">
+              <div class="rec-info">
+                <h4>${product.nom}</h4>
+                <span class="rec-price">${product.prix.toLocaleString()} Ar</span>
+                <button class="rec-add-cart" data-product-id="${product.id}">
+                  <i class="fas fa-plus"></i> Ajouter au panier
+                </button>
+              </div>
+            `;
+            recommendationsContainer.appendChild(card);
+          });
+        } else {
+          recommendationsContainer.innerHTML = '<p style="text-align: center; color: #6b7280; padding: 20px;">Aucune recommandation pour le moment</p>';
+        }
+      })
+      .catch(error => {
+        console.error('Erreur chargement recommandations:', error);
+        recommendationsContainer.innerHTML = '';
+      });
   }
   
   // =============================================
