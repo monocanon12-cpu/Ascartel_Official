@@ -6,7 +6,7 @@ const CONFIG = {
   // URL de l'API backend
   apiUrl: window.location.origin.includes('localhost') 
     ? 'http://localhost:3000/api' 
-    : 'https://votre-backend.onrender.com/api', // Remplacez par votre URL Render
+    : 'https://ascartel-backend.onrender.com/api',
   
   // Produits de démonstration (utilisés en mode standalone)
   demoProducts: [
