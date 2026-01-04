@@ -46,10 +46,26 @@ const authLimiter = rateLimit({
 app.use('/api/auth/login', authLimiter);
 
 // CORS - Autoriser les requêtes du frontend
+const allowedOrigins = [
+  'http://localhost:8080',
+  'http://127.0.0.1:8080',
+  'http://localhost:3000',
+  'https://ascartel-official.pages.dev',
+  'https://flourishing-kitten-4a42c7.netlify.app',
+  'https://monocanon12-cpu.github.io'
+];
+
 app.use(cors({
-  origin: process.env.NODE_ENV === 'production' 
-    ? [process.env.FRONTEND_URL || 'https://votre-domaine.com']
-    : ['http://localhost:8080', 'http://127.0.0.1:8080', 'http://localhost:3000'],
+  origin: function(origin, callback) {
+    // Autoriser les requêtes sans origin (mobile apps, curl, etc.)
+    if (!origin) return callback(null, true);
+    
+    if (allowedOrigins.indexOf(origin) !== -1 || origin.includes('.pages.dev')) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true
 }));
 
