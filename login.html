@@ -49,7 +49,7 @@
             <input type="checkbox" id="remember">
             Se souvenir de moi
           </label>
-          <a href="#">Mot de passe oublié ?</a>
+          <a href="#" id="forgotPasswordLink">Mot de passe oublié ?</a>
         </div>
         
         <button type="submit" class="btn">Se connecter</button>
@@ -70,205 +70,116 @@
         </div>
         
         <div class="auth-footer">
-          Pas encore de compte ? <a href="#">S'inscrire</a>
+          Pas encore de compte ? <a href="register.html">S'inscrire</a>
         </div>
       </form>
     </div>
   </div>
   
-  <script type="module">
-    // Import Firebase Auth module
-    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
-    import { getAuth, signInWithPopup, GoogleAuthProvider, FacebookAuthProvider, signOut, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+  <script src="config.js"></script>
+  <script src="firebase-config.js"></script>
+  <script src="firebase-auth.js"></script>
+  <script>
+    const form = document.querySelector('.auth-form');
+    const submitBtn = form.querySelector('.btn');
 
-    // Initialiser Firebase
-    let auth = null;
-    let googleProvider = null;
-    let facebookProvider = null;
-    let authInitialized = false;
-    
-    try {
-      const app = initializeApp(firebaseConfig);
-      auth = getAuth(app);
-      googleProvider = new GoogleAuthProvider();
-      facebookProvider = new FacebookAuthProvider();
-      authInitialized = true;
-      console.log('✅ Firebase initialisé');
-    } catch (error) {
-      console.error('❌ Erreur Firebase:', error);
-    }
-    
-    // Identifiants de test pour simulation
-    const TEST_USERS = {
-      'admin@monsite.com': {
-        password: 'Admin2025!',
-        role: 'admin',
-        redirect: 'admin-dashboard.html',
-        name: 'Administrateur'
-      },
-      'vendeur@monsite.com': {
-        password: 'Vente123',
-        role: 'collaborateur',
-        redirect: 'admin-dashboard.html',
-        name: 'Vendeur'
-      },
-      'master@ascartel.com': {
-        password: 'ASCARTEL_MASTER_2025',
-        role: 'admin',
-        redirect: 'admin-dashboard.html',
-        name: 'Admin Master'
-      }
-    };
-
-    // Gestion de la connexion email/password
-    document.querySelector('.auth-form').addEventListener('submit', function(e) {
+    // Connexion email/password via API
+    form.addEventListener('submit', async (e) => {
       e.preventDefault();
-      
-      const email = document.getElementById('email').value.trim().toLowerCase();
+
+      const email = document.getElementById('email').value;
       const password = document.getElementById('password').value;
       const remember = document.getElementById('remember').checked;
-      
-      // Vérification des identifiants
-      const user = TEST_USERS[email];
-      
-      if (user && user.password === password) {
-        // Connexion réussie
-        const userData = {
-          email: email,
-          role: user.role,
-          name: user.name,
-          loggedIn: true
-        };
-        
-        // Stocker les infos utilisateur
-        if (remember) {
-          localStorage.setItem('ainaUser', JSON.stringify(userData));
+
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Connexion...';
+
+      try {
+        const response = await fetch(`${CONFIG.apiUrl}/auth/login`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password })
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+          // Sauvegarder le token et l'utilisateur
+          const storage = remember ? localStorage : sessionStorage;
+          storage.setItem('ascartel_token', data.token);
+          storage.setItem('ascartel_user', JSON.stringify(data.user));
+
+          showNotification('✅ Connexion réussie ! Redirection...', 'success');
+
+          setTimeout(() => {
+            if (data.user.role === 'admin' || data.user.role === 'collaborateur') {
+              window.location.href = 'admin-dashboard.html';
+            } else {
+              window.location.href = 'dashboard-client.html';
+            }
+          }, 1000);
         } else {
-          sessionStorage.setItem('ainaUser', JSON.stringify(userData));
+          showNotification(data.error || 'Identifiants incorrects', 'error');
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'Se connecter';
         }
-        
-        // Afficher message de succès
-        showNotification('Connexion réussie ! Redirection...', 'success');
-        
-        // Redirection selon le rôle
-        setTimeout(() => {
-          window.location.href = user.redirect;
-        }, 1000);
-        
-      } else {
-        // Échec de connexion
-        showNotification('Email ou mot de passe incorrect', 'error');
-        document.getElementById('password').value = '';
-      }
-    });
-    
-    // Connexion Google
-    document.getElementById('googleLoginBtn')?.addEventListener('click', async function() {
-      this.disabled = true;
-      this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Connexion...';
-      
-      if (!authInitialized) {
-        showNotification('Erreur: Firebase non initialisé', 'error');
-        this.disabled = false;
-        this.innerHTML = '<span>Se connecter avec Google</span><img src="https://www.google.com/favicon.ico" alt="Google" class="social-logo">';
-        return;
-      }
-      
-      try {
-        const result = await signInWithPopup(auth, googleProvider);
-        const user = result.user;
-        
-        // Sauvegarder l'utilisateur
-        const userData = {
-          uid: user.uid,
-          email: user.email,
-          name: user.displayName,
-          photo: user.photoURL,
-          provider: 'google',
-          role: 'client',
-          loggedIn: true
-        };
-        localStorage.setItem('ainaUser', JSON.stringify(userData));
-        
-        showNotification('Connexion Google réussie !', 'success');
-        setTimeout(() => {
-          window.location.href = 'index.html';
-        }, 1000);
       } catch (error) {
-        console.error('Erreur Google:', error);
-        showNotification('Erreur: ' + error.message, 'error');
-        this.disabled = false;
-        this.innerHTML = '<span>Se connecter avec Google</span><img src="https://www.google.com/favicon.ico" alt="Google" class="social-logo">';
+        console.error('Erreur:', error);
+        showNotification('Erreur de connexion au serveur', 'error');
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Se connecter';
       }
     });
-    
-    // Connexion Facebook
-    document.getElementById('facebookLoginBtn')?.addEventListener('click', async function() {
-      this.disabled = true;
-      this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Connexion...';
+
+    // Mot de passe oublié
+    document.getElementById('forgotPasswordLink').addEventListener('click', async (e) => {
+      e.preventDefault();
       
-      if (!authInitialized) {
-        showNotification('Erreur: Firebase non initialisé', 'error');
-        this.disabled = false;
-        this.innerHTML = '<span>Se connecter avec Facebook</span><img src="https://static.xx.fbcdn.net/rsrc.php/yD/r/d4ZIVX-5C-b.ico" alt="Facebook" class="social-logo">';
-        return;
-      }
-      
+      const email = prompt('Entrez votre adresse email :');
+      if (!email) return;
+
       try {
-        const result = await signInWithPopup(auth, facebookProvider);
-        const user = result.user;
+        const response = await fetch(`${CONFIG.apiUrl}/auth/forgot-password`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email })
+        });
+
+        const data = await response.json();
         
-        // Sauvegarder l'utilisateur
-        const userData = {
-          uid: user.uid,
-          email: user.email,
-          name: user.displayName,
-          photo: user.photoURL,
-          provider: 'facebook',
-          role: 'client',
-          loggedIn: true
-        };
-        localStorage.setItem('ainaUser', JSON.stringify(userData));
-        
-        showNotification('Connexion Facebook réussie !', 'success');
-        setTimeout(() => {
-          window.location.href = 'index.html';
-        }, 1000);
+        if (data.success) {
+          showNotification(data.message, 'success');
+        } else {
+          showNotification(data.error, 'error');
+        }
       } catch (error) {
-        console.error('Erreur Facebook:', error);
-        showNotification('Erreur: ' + error.message, 'error');
-        this.disabled = false;
-        this.innerHTML = '<span>Se connecter avec Facebook</span><img src="https://static.xx.fbcdn.net/rsrc.php/yD/r/d4ZIVX-5C-b.ico" alt="Facebook" class="social-logo">';
+        showNotification('Erreur lors de l\'envoi', 'error');
       }
     });
-    
-    // Fonction de notification
+
     function showNotification(message, type) {
-      // Supprimer notification existante
       const existing = document.querySelector('.login-notification');
       if (existing) existing.remove();
-      
+
       const notification = document.createElement('div');
       notification.className = `login-notification ${type}`;
       notification.innerHTML = `
         <i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'}"></i>
         <span>${message}</span>
       `;
-      
-      document.querySelector('.auth-form').insertBefore(notification, document.querySelector('.auth-form h1').nextSibling);
-      
-      // Auto-suppression après 5s
+
+      form.insertBefore(notification, form.querySelector('h1').nextSibling);
       setTimeout(() => notification.remove(), 5000);
     }
-    
+
     // Vérifier si déjà connecté
-    const savedUser = localStorage.getItem('ainaUser') || sessionStorage.getItem('ainaUser');
+    const savedUser = localStorage.getItem('ascartel_user') || sessionStorage.getItem('ascartel_user');
     if (savedUser) {
       const user = JSON.parse(savedUser);
-      if (user.loggedIn && user.role === 'admin') {
+      if (user.role === 'admin' || user.role === 'collaborateur') {
         window.location.href = 'admin-dashboard.html';
-      } else if (user.loggedIn) {
-        window.location.href = 'index.html';
+      } else {
+        window.location.href = 'dashboard-client.html';
       }
     }
   </script>
