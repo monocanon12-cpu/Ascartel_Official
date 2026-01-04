@@ -73,49 +73,54 @@
     </div>
   </div>
   
-  <script src="firebase-config.js"></script>
-  <script src="firebase-auth.js"></script>
   <script>
-    // Initialiser Firebase
-    let firebaseReady = false;
-    firebaseAuth.init().then(() => {
-      firebaseReady = true;
-      console.log('✅ Firebase prêt');
-    });
+    // Config inline pour éviter les conflits
+    const CONFIG = { apiUrl: 'https://ascartel-backend.onrender.com/api' };
+  </script>
+  <script type="module">
+    // Import Firebase modules
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+    import { getAuth, signInWithPopup, GoogleAuthProvider } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
 
-    // Connexion Google
+    // Firebase config
+    const firebaseConfig = {
+      apiKey: "AIzaSyBZeZa13ZdgjfLdsxVDIU7rl_GNQXJ3f50",
+      authDomain: "ascartel-bdc28.firebaseapp.com",
+      projectId: "ascartel-bdc28",
+      storageBucket: "ascartel-bdc28.firebasestorage.app",
+      messagingSenderId: "262738114322",
+      appId: "1:262738114322:web:d6c008107102aaf8e7a5cb"
+    };
+
+    // Init Firebase
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const googleProvider = new GoogleAuthProvider();
+
+    // Google login
     document.getElementById('googleLoginBtn').addEventListener('click', async () => {
-      if (!firebaseReady) {
-        showNotification('Firebase en cours de chargement...', 'error');
-        return;
-      }
-      
-      const result = await firebaseAuth.signInWithGoogle();
-      if (result.success) {
+      try {
+        const result = await signInWithPopup(auth, googleProvider);
+        const user = result.user;
+        
+        localStorage.setItem('ascartel_user', JSON.stringify({
+          uid: user.uid,
+          email: user.email,
+          name: user.displayName,
+          photo: user.photoURL,
+          provider: 'google',
+          role: 'client'
+        }));
+
         showNotification('✅ Connexion Google réussie !', 'success');
         setTimeout(() => window.location.href = 'dashboard-client.html', 1000);
-      } else {
-        showNotification('Erreur: ' + result.error, 'error');
+      } catch (error) {
+        console.error('Erreur Google:', error);
+        showNotification('Erreur: ' + error.message, 'error');
       }
     });
-
-    // Connexion Facebook
-    document.getElementById('facebookLoginBtn').addEventListener('click', async () => {
-      if (!firebaseReady) {
-        showNotification('Firebase en cours de chargement...', 'error');
-        return;
-      }
-      
-      const result = await firebaseAuth.signInWithFacebook();
-      if (result.success) {
-        showNotification('✅ Connexion Facebook réussie !', 'success');
-        setTimeout(() => window.location.href = 'dashboard-client.html', 1000);
-      } else {
-        showNotification('Erreur: ' + result.error, 'error');
-      }
-    });
-
-    const form = document.querySelector('.auth-form');
+  </script>
+  <script>
     const submitBtn = form.querySelector('.btn');
 
     // Connexion email/password via API
