@@ -665,16 +665,11 @@
 
     function updateSummary() {
       const subtotal = cart.getTotalPrice();
-      const finalShipping = subtotal >= 50000 ? 0 : shippingCost;
-      const total = subtotal + finalShipping;
+      const total = subtotal + shippingCost;
 
       document.getElementById('subtotal').textContent = subtotal.toLocaleString() + ' Ar';
-      document.getElementById('shippingCost').textContent = finalShipping === 0 ? 'GRATUIT' : finalShipping.toLocaleString() + ' Ar';
+      document.getElementById('shippingCost').textContent = shippingCost.toLocaleString() + ' Ar';
       document.getElementById('total').textContent = total.toLocaleString() + ' Ar';
-      
-      if (subtotal >= 50000) {
-        document.getElementById('standardPrice').textContent = 'GRATUIT';
-      }
     }
 
     function goToStep(step) {
@@ -735,8 +730,7 @@
       const token = localStorage.getItem('ascartel_token') || sessionStorage.getItem('ascartel_token');
       const items = cart.getItems();
       const subtotal = cart.getTotalPrice();
-      const finalShipping = subtotal >= 50000 ? 0 : shippingCost;
-      const total = subtotal + finalShipping;
+      const total = subtotal + shippingCost;
 
       const orderPayload = {
         items: items.map(item => ({
@@ -745,7 +739,7 @@
           unit_price: item.prix
         })),
         total_amount: total,
-        shipping_cost: finalShipping,
+        shipping_cost: shippingCost,
         shipping_type: selectedShipping,
         payment_method: 'cash_on_delivery',
         ...orderData

@@ -108,21 +108,19 @@ function validateAndGoToStep3() {
 ```javascript
 function updateSummary() {
   const subtotal = cart.getTotalPrice();
-  const finalShipping = subtotal >= 50000 ? 0 : shippingCost;
-  const total = subtotal + finalShipping;
+  const total = subtotal + shippingCost;
   
   // Affichage:
   // - Sous-total
-  // - Livraison (GRATUIT si >= 50 000 Ar)
+  // - Livraison (TOUJOURS payante)
   // - Total final
 }
 ```
 
 ### Règles de calcul
-- ✅ **Si total >= 50 000 Ar : Livraison GRATUITE**
-- ✅ **Si total < 50 000 Ar :**
-  - Standard : 5 000 Ar
-  - Express : 8 000 Ar
+- ✅ **Standard (5-7 jours) : 5 000 Ar (TOUJOURS)**
+- ✅ **Express (2-3 jours) : 8 000 Ar (TOUJOURS)**
+- ✅ **PAS de livraison gratuite**
 
 ### Validation ✅
 - ✅ Checkbox CGV obligatoire
@@ -134,8 +132,8 @@ function updateSummary() {
 ### Tests
 - ✅ Panier 30 000 Ar + Standard : Total = 35 000 Ar ✅
 - ✅ Panier 30 000 Ar + Express : Total = 38 000 Ar ✅
-- ✅ Panier 60 000 Ar + Standard : Total = 60 000 Ar (gratuit) ✅
-- ✅ Panier 60 000 Ar + Express : Total = 60 000 Ar (gratuit) ✅
+- ✅ Panier 60 000 Ar + Standard : Total = 65 000 Ar ✅
+- ✅ Panier 60 000 Ar + Express : Total = 68 000 Ar ✅
 - ✅ CGV non cochées : Alerte affichée ✅
 - ✅ Changement livraison : Total mis à jour ✅
 
@@ -329,10 +327,10 @@ async function validateAndConfirm() {
 
 ### Scénarios testés
 1. ✅ **Panier vide** : Message affiché, pas de checkout
-2. ✅ **1 article < 50k** : Frais 5k standard, 8k express
-3. ✅ **1 article >= 50k** : Livraison gratuite
-4. ✅ **Plusieurs articles < 50k** : Frais appliqués
-5. ✅ **Plusieurs articles >= 50k** : Livraison gratuite
+2. ✅ **1 article 30k** : Frais 5k standard, 8k express
+3. ✅ **1 article 60k** : Frais 5k standard, 8k express
+4. ✅ **Plusieurs articles 40k** : Frais appliqués
+5. ✅ **Plusieurs articles 100k** : Frais appliqués
 6. ✅ **Utilisateur non connecté** : Formulaire adresse
 7. ✅ **Utilisateur connecté** : Adresses + formulaire
 8. ✅ **Sélection adresse sauvegardée** : Données récupérées
