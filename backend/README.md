@@ -1,122 +1,265 @@
-# ASCARTEL Backend API
+# 🚀 ASCARTEL Backend API
 
-API REST pour la gestion des articles, ventes flash et administration de la boutique ASCARTEL.
+Backend REST API pour la plateforme e-commerce ASCARTEL, optimisé pour la production.
 
-## 🚀 Installation
+## ✨ Fonctionnalités
+
+- ✅ **Authentification JWT** sécurisée
+- ✅ **Rate Limiting** anti-DDoS
+- ✅ **Helmet** protection headers HTTP
+- ✅ **Logging structuré** avec Winston
+- ✅ **Health Check** avancé
+- ✅ **Backup automatique** de la base de données
+- ✅ **Support Docker** et PM2
+- ✅ **CORS** configuré
+- ✅ **Validation** des données
+- ✅ **Gestion gracieuse** des arrêts
+
+## 🛠️ Installation
 
 ```bash
-cd backend
+# Installer les dépendances
 npm install
-npm run init-db  # Initialise la base de données
-npm start        # Démarre le serveur
+
+# Copier le fichier de configuration
+cp .env.example .env
+
+# Éditer .env et configurer vos variables
+nano .env
+
+# Initialiser la base de données
+npm run init-db
+
+# Démarrer en développement
+npm run dev
+
+# Démarrer en production
+npm start
 ```
 
-## 🔐 Identifiants
+## 📋 Scripts Disponibles
 
-| Rôle | Email | Mot de passe |
-|------|-------|--------------|
-| Admin | `master@ascartel.com` | `ASCARTEL_MASTER_2025` |
-| Collaborateur | `vendeur@ascartel.com` | `Vente123` |
+| Script | Description |
+|--------|-------------|
+| `npm start` | Démarrer le serveur |
+| `npm run dev` | Mode développement (nodemon) |
+| `npm run init-db` | Initialiser la base de données |
+| `npm run backup-db` | Créer un backup de la DB |
+| `npm run health-check` | Vérifier la santé du serveur |
+| `npm run test-api` | Tester toutes les routes API |
+| `npm run pm2:start` | Démarrer avec PM2 |
+| `npm run docker:run` | Lancer avec Docker Compose |
+
+## 🔐 Variables d'Environnement
+
+Voir `.env.example` pour la liste complète. Variables essentielles :
+
+```env
+PORT=3000
+JWT_SECRET=votre_cle_secrete_forte
+FRONTEND_URL=https://votre-frontend.com
+NODE_ENV=production
+```
+
+⚠️ **Générer une clé JWT forte :**
+```bash
+node -e "console.log(require('crypto').randomBytes(64).toString('hex'))"
+```
 
 ## 📡 Endpoints API
 
 ### Authentification
 - `POST /api/auth/login` - Connexion
-- `GET /api/auth/me` - Profil utilisateur (auth requise)
+- `GET /api/auth/me` - Profil utilisateur
 - `POST /api/auth/logout` - Déconnexion
 
-### Articles (Public)
+### Articles
 - `GET /api/articles` - Liste des articles
 - `GET /api/articles/:id` - Détail d'un article
-- `GET /api/articles/categories` - Liste des catégories
-- `GET /api/articles/flash-sales` - Articles en vente flash
-
-### Articles (Admin)
-- `POST /api/articles` - Créer un article
-- `PUT /api/articles/:id` - Modifier un article
-- `PATCH /api/articles/:id/stock` - Modifier le stock
-- `PATCH /api/articles/:id/flash` - Activer/désactiver vente flash
-- `DELETE /api/articles/:id` - Supprimer un article
-
-### Paramètres
-- `GET /api/settings/status` - Statut de la boutique (public)
-- `GET /api/settings` - Tous les paramètres (admin)
-- `PUT /api/settings/hours` - Modifier les horaires (admin)
-- `PUT /api/settings/store` - Ouvrir/fermer la boutique (admin)
-- `PUT /api/settings/flash-global` - Activer/désactiver toutes les ventes flash (admin)
+- `GET /api/articles/flash-sales` - Ventes flash
+- `POST /api/articles` - Créer (Admin)
+- `PUT /api/articles/:id` - Modifier (Admin)
+- `DELETE /api/articles/:id` - Supprimer (Admin)
 
 ### Commandes
-- `POST /api/orders` - Créer une commande (vérifie les horaires)
-- `GET /api/orders` - Liste des commandes (staff)
-- `GET /api/orders/:id` - Détail d'une commande (staff)
-- `PATCH /api/orders/:id/status` - Modifier le statut (staff)
+- `POST /api/orders` - Créer une commande
+- `GET /api/orders` - Liste (Staff)
+- `GET /api/orders/:id` - Détail (Staff)
+- `PATCH /api/orders/:id/status` - Modifier statut (Staff)
+
+### Paramètres
+- `GET /api/settings/status` - Statut boutique
+- `PUT /api/settings/hours` - Modifier horaires (Admin)
+- `PUT /api/settings/store` - Ouvrir/Fermer (Admin)
+
+### Système
+- `GET /api/health` - Health check
+
+## 🚀 Déploiement
+
+Consultez [DEPLOYMENT.md](./DEPLOYMENT.md) pour les guides détaillés :
+
+- Heroku
+- Render
+- Railway
+- Docker
+- VPS avec PM2
+- Nginx reverse proxy
 
 ## 🔒 Sécurité
 
-- Authentification JWT
-- Mots de passe hashés avec bcrypt
-- Middleware de vérification des rôles
-- Blocage des transactions hors horaires
+- ✅ Helmet (protection headers)
+- ✅ Rate Limiting (100 req/15min en prod)
+- ✅ Auth Rate Limiting (5 req/15min)
+- ✅ CORS configuré
+- ✅ JWT avec expiration
+- ✅ Mots de passe hashés (bcrypt)
+- ✅ Validation des entrées
+- ✅ Logs sécurisés
 
-## 📊 Schéma Base de Données
+## 📊 Monitoring
 
-```sql
--- Utilisateurs
-CREATE TABLE users (
-  id INTEGER PRIMARY KEY,
-  email TEXT UNIQUE NOT NULL,
-  password TEXT NOT NULL,
-  role TEXT DEFAULT 'user',
-  name TEXT,
-  created_at DATETIME,
-  updated_at DATETIME
-);
-
--- Articles
-CREATE TABLE articles (
-  id INTEGER PRIMARY KEY,
-  nom TEXT NOT NULL,
-  description TEXT,
-  categorie TEXT,
-  image_url TEXT,
-  prix_reel REAL NOT NULL,
-  prix_promo REAL,
-  stock_quantite INTEGER DEFAULT 0,
-  flash_active INTEGER DEFAULT 0,
-  date_debut_flash DATETIME,
-  date_fin_flash DATETIME,
-  actif INTEGER DEFAULT 1,
-  created_at DATETIME,
-  updated_at DATETIME
-);
-
--- Paramètres
-CREATE TABLE settings (
-  id INTEGER PRIMARY KEY,
-  key TEXT UNIQUE NOT NULL,
-  value TEXT NOT NULL,
-  description TEXT,
-  updated_at DATETIME
-);
-
--- Commandes
-CREATE TABLE orders (
-  id INTEGER PRIMARY KEY,
-  customer_name TEXT NOT NULL,
-  customer_email TEXT,
-  customer_phone TEXT,
-  total_amount REAL NOT NULL,
-  status TEXT DEFAULT 'pending',
-  created_at DATETIME,
-  updated_at DATETIME
-);
-
--- Lignes de commande
-CREATE TABLE order_items (
-  id INTEGER PRIMARY KEY,
-  order_id INTEGER NOT NULL,
-  article_id INTEGER NOT NULL,
-  quantity INTEGER NOT NULL,
-  unit_price REAL NOT NULL
-);
+### Health Check
+```bash
+curl http://localhost:3000/api/health
 ```
+
+### Logs
+```bash
+# PM2
+pm2 logs ascartel-api
+
+# Docker
+docker logs ascartel-backend
+
+# Fichiers
+tail -f logs/combined.log
+```
+
+## 🔄 Backup & Maintenance
+
+### Backup manuel
+```bash
+npm run backup-db
+```
+
+### Backup automatique (cron)
+```bash
+# Tous les jours à 2h du matin
+0 2 * * * cd /chemin/vers/backend && npm run backup-db
+```
+
+Les backups sont stockés dans `data/backups/` (10 derniers conservés).
+
+## 🐳 Docker
+
+### Build
+```bash
+docker build -t ascartel-api .
+```
+
+### Run
+```bash
+docker-compose up -d
+```
+
+### Logs
+```bash
+docker logs -f ascartel-backend
+```
+
+## 🧪 Tests
+
+```bash
+# Tester toutes les routes
+npm run test-api
+
+# Health check
+npm run health-check
+```
+
+## 📁 Structure
+
+```
+backend/
+├── config/          # Configuration (DB, settings)
+├── data/            # Base de données SQLite
+│   └── backups/     # Backups automatiques
+├── logs/            # Logs Winston
+├── middleware/      # Middlewares (auth, validation)
+├── routes/          # Routes API
+├── scripts/         # Scripts utilitaires
+├── utils/           # Fonctions utilitaires
+├── .env.example     # Template variables d'environnement
+├── Dockerfile       # Configuration Docker
+├── ecosystem.config.js  # Configuration PM2
+├── nginx.conf       # Configuration Nginx
+├── Procfile         # Configuration Heroku
+└── server.js        # Point d'entrée
+```
+
+## 🔧 Technologies
+
+- **Runtime** : Node.js 14+
+- **Framework** : Express.js
+- **Base de données** : SQLite (better-sqlite3)
+- **Authentification** : JWT (jsonwebtoken)
+- **Sécurité** : Helmet, bcryptjs, express-rate-limit
+- **Validation** : express-validator, Joi
+- **Logging** : Winston
+- **Cache** : node-cache
+
+## 📝 Identifiants par Défaut
+
+### Admin
+- Email : `master@ascartel.com`
+- Mot de passe : `ASCARTEL_MASTER_2025`
+
+⚠️ **Changez ces identifiants en production !**
+
+## 🆘 Dépannage
+
+### Port déjà utilisé
+```bash
+# Trouver le processus
+lsof -i :3000
+# Tuer le processus
+kill -9 <PID>
+```
+
+### Erreur de base de données
+```bash
+# Réinitialiser
+rm data/ascartel.db
+npm run init-db
+```
+
+### Erreur JWT
+```bash
+# Vérifier la variable
+echo $JWT_SECRET
+# Régénérer une clé
+node -e "console.log(require('crypto').randomBytes(64).toString('hex'))"
+```
+
+## 📈 Roadmap
+
+- [ ] Migration PostgreSQL
+- [ ] Tests unitaires (Jest)
+- [ ] CI/CD (GitHub Actions)
+- [ ] Swagger documentation
+- [ ] WebSocket pour notifications temps réel
+- [ ] Redis pour le cache
+- [ ] Elasticsearch pour la recherche
+
+## 📄 Licence
+
+ISC
+
+## 👨‍💻 Auteur
+
+**ASCARTEL Team**
+
+---
+
+⭐ **N'oubliez pas de sécuriser vos variables d'environnement en production !**

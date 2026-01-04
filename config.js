@@ -1,10 +1,12 @@
 // Configuration ASCARTEL
 const CONFIG = {
   // Mode de fonctionnement : 'standalone' ou 'api'
-  mode: 'standalone', // Changez en 'api' si vous lancez le backend
+  mode: 'api', // Mode API pour production
   
   // URL de l'API backend
-  apiUrl: 'http://localhost:3000/api',
+  apiUrl: window.location.origin.includes('localhost') 
+    ? 'http://localhost:3000/api' 
+    : 'https://votre-backend.onrender.com/api', // Remplacez par votre URL Render
   
   // Produits de démonstration (utilisés en mode standalone)
   demoProducts: [
