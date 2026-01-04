@@ -47,6 +47,7 @@
   <link rel="stylesheet" href="cart.css" />
   <link rel="stylesheet" href="products-states.css" />
   <link rel="stylesheet" href="search.css" />
+  <link rel="stylesheet" href="filters.css" />
   <link rel="stylesheet" href="ux-enhancements.css" />
   <link rel="stylesheet" href="cookies.css" />
   <link rel="stylesheet" href="mobile-enhancements.css" />
@@ -235,74 +236,161 @@
 
   <!-- Section des produits -->
   <section id="products" class="products-section">
-    <div class="section-header">
-      <h2>Nos Produits Populaires</h2>
-      
-      <!-- Filtres avancés -->
-      <div class="advanced-filters">
-        <button class="filter-toggle" id="filterToggle" aria-expanded="false" aria-controls="filtersPanel">
-          <i class="fas fa-sliders-h" aria-hidden="true"></i> Filtres
-        </button>
-        <div class="filters-panel" id="filtersPanel">
-          <div class="filter-group">
-            <h4>Taille</h4>
-            <div class="size-options">
-              <button class="size-btn" data-size="XS">XS</button>
-              <button class="size-btn" data-size="S">S</button>
-              <button class="size-btn" data-size="M">M</button>
-              <button class="size-btn" data-size="L">L</button>
-              <button class="size-btn" data-size="XL">XL</button>
-              <button class="size-btn" data-size="XXL">XXL</button>
-            </div>
+    <div class="container">
+      <div class="filters-container">
+        <!-- Sidebar filtres -->
+        <aside class="filters-sidebar">
+          <div class="filters-header">
+            <h3>
+              <i class="fas fa-filter"></i> Filtres
+              <span class="filters-count" id="activeFiltersCount">0</span>
+            </h3>
+            <button id="resetFilters">Réinitialiser</button>
           </div>
-          <div class="filter-group">
-            <h4>Couleur</h4>
-            <div class="color-options">
-              <button class="color-filter-btn" data-color="black" style="background:#000"></button>
-              <button class="color-filter-btn" data-color="white" style="background:#fff"></button>
-              <button class="color-filter-btn" data-color="pink" style="background:#f9c5d5"></button>
-              <button class="color-filter-btn" data-color="blue" style="background:#3b82f6"></button>
-              <button class="color-filter-btn" data-color="red" style="background:#ef4444"></button>
-              <button class="color-filter-btn" data-color="green" style="background:#22c55e"></button>
-            </div>
+
+          <div class="results-info">
+            <p><strong id="resultsCount">0</strong> produits sur <span id="totalProducts">0</span></p>
           </div>
+
+          <!-- Genre -->
           <div class="filter-group">
-            <h4>Prix</h4>
-            <div class="price-range">
-              <input type="range" min="0" max="200" value="200" id="priceRange">
-              <div class="price-labels">
-                <span>0 Ar</span>
-                <span id="priceValue">200 000 Ar</span>
+            <h4><i class="fas fa-users"></i> Genre</h4>
+            <div class="filter-options">
+              <div class="filter-option">
+                <input type="checkbox" id="genre-femme" name="genre" value="Femme">
+                <label for="genre-femme">Femme</label>
+              </div>
+              <div class="filter-option">
+                <input type="checkbox" id="genre-homme" name="genre" value="Homme">
+                <label for="genre-homme">Homme</label>
+              </div>
+              <div class="filter-option">
+                <input type="checkbox" id="genre-enfant" name="genre" value="Enfant">
+                <label for="genre-enfant">Enfant</label>
               </div>
             </div>
           </div>
+
+          <!-- Catégorie -->
           <div class="filter-group">
-            <h4>Style</h4>
-            <div class="style-options">
-              <label><input type="checkbox" value="casual"> Casual</label>
-              <label><input type="checkbox" value="elegant"> Élégant</label>
-              <label><input type="checkbox" value="sport"> Sport</label>
-              <label><input type="checkbox" value="vintage"> Vintage</label>
+            <h4><i class="fas fa-tags"></i> Catégorie</h4>
+            <div class="filter-options">
+              <div class="filter-option">
+                <input type="checkbox" id="cat-robe" name="category" value="Robe">
+                <label for="cat-robe">Robes</label>
+              </div>
+              <div class="filter-option">
+                <input type="checkbox" id="cat-top" name="category" value="Top">
+                <label for="cat-top">Tops</label>
+              </div>
+              <div class="filter-option">
+                <input type="checkbox" id="cat-pantalon" name="category" value="Pantalon">
+                <label for="cat-pantalon">Pantalons</label>
+              </div>
+              <div class="filter-option">
+                <input type="checkbox" id="cat-accessoire" name="category" value="Accessoire">
+                <label for="cat-accessoire">Accessoires</label>
+              </div>
             </div>
           </div>
-          <button class="apply-filters-btn">Appliquer les filtres</button>
+
+          <!-- Prix -->
+          <div class="filter-group">
+            <h4><i class="fas fa-dollar-sign"></i> Prix (Ar)</h4>
+            <div class="price-inputs">
+              <div class="price-input">
+                <input type="number" id="priceMin" placeholder="Min" min="0">
+              </div>
+              <span class="price-separator">-</span>
+              <div class="price-input">
+                <input type="number" id="priceMax" placeholder="Max" min="0">
+              </div>
+            </div>
+          </div>
+
+          <!-- Tailles -->
+          <div class="filter-group">
+            <h4><i class="fas fa-ruler"></i> Tailles</h4>
+            <div class="size-options">
+              <div class="size-option">
+                <input type="checkbox" id="size-xs" name="size" value="XS">
+                <label for="size-xs" class="size-label">XS</label>
+              </div>
+              <div class="size-option">
+                <input type="checkbox" id="size-s" name="size" value="S">
+                <label for="size-s" class="size-label">S</label>
+              </div>
+              <div class="size-option">
+                <input type="checkbox" id="size-m" name="size" value="M">
+                <label for="size-m" class="size-label">M</label>
+              </div>
+              <div class="size-option">
+                <input type="checkbox" id="size-l" name="size" value="L">
+                <label for="size-l" class="size-label">L</label>
+              </div>
+              <div class="size-option">
+                <input type="checkbox" id="size-xl" name="size" value="XL">
+                <label for="size-xl" class="size-label">XL</label>
+              </div>
+            </div>
+          </div>
+
+          <!-- Couleurs -->
+          <div class="filter-group">
+            <h4><i class="fas fa-palette"></i> Couleurs</h4>
+            <div class="color-options">
+              <div class="color-option">
+                <input type="checkbox" id="color-noir" name="color" value="Noir">
+                <span class="color-swatch" style="background: #000"></span>
+              </div>
+              <div class="color-option">
+                <input type="checkbox" id="color-blanc" name="color" value="Blanc">
+                <span class="color-swatch" style="background: #fff; border: 1px solid #ddd"></span>
+              </div>
+              <div class="color-option">
+                <input type="checkbox" id="color-rose" name="color" value="Rose">
+                <span class="color-swatch" style="background: #f9c5d5"></span>
+              </div>
+              <div class="color-option">
+                <input type="checkbox" id="color-bleu" name="color" value="Bleu">
+                <span class="color-swatch" style="background: #3b82f6"></span>
+              </div>
+              <div class="color-option">
+                <input type="checkbox" id="color-rouge" name="color" value="Rouge">
+                <span class="color-swatch" style="background: #ef4444"></span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Options -->
+          <div class="filter-group">
+            <h4><i class="fas fa-check-circle"></i> Options</h4>
+            <div class="filter-options">
+              <div class="filter-option">
+                <input type="checkbox" id="inStock">
+                <label for="inStock">En stock uniquement</label>
+              </div>
+              <div class="filter-option">
+                <input type="checkbox" id="flashSale">
+                <label for="flashSale">Ventes flash</label>
+              </div>
+            </div>
+          </div>
+        </aside>
+
+        <!-- Contenu principal -->
+        <div class="filters-content">
+          <div class="products-grid" id="productsGrid">
+            <!-- Les produits seront chargés dynamiquement -->
+          </div>
         </div>
       </div>
-      
-      <div class="filters">
-        <button class="filter-btn active" data-genre="all">Tous</button>
-        <button class="filter-btn" data-genre="Femme">👩 Femme</button>
-        <button class="filter-btn" data-genre="Homme">👨 Homme</button>
-        <button class="filter-btn" data-genre="Enfant">👶 Enfant</button>
-        <button class="filter-btn" data-genre="Accessoires">💍 Accessoires</button>
-        <button class="filter-btn" data-genre="flash">🔥 Ventes Flash</button>
-      </div>
     </div>
-    
-    <div class="products-grid" id="productsGrid">
-      <!-- Les produits seront chargés dynamiquement depuis l'API -->
-    </div>
-      
+
+    <!-- Bouton toggle mobile -->
+    <button id="toggleFilters" aria-label="Afficher les filtres">
+      <i class="fas fa-filter"></i>
+    </button>
   </section>
 
   <!-- Bannière promotionnelle -->
@@ -492,6 +580,7 @@
   <script src="user-profile.js"></script>
   <script src="cart.js"></script>
   <script src="search.js"></script>
+  <script src="filters.js"></script>
   <script src="chatbot.js"></script>
   <script src="script.js"></script>
   <script src="products-service.js"></script>

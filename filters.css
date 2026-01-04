@@ -1,0 +1,349 @@
+/* ============================================
+   FILTRES SIDEBAR - ASCARTEL
+   ============================================ */
+
+.filters-container {
+  display: flex;
+  gap: 2rem;
+  margin-top: 2rem;
+}
+
+/* Sidebar */
+.filters-sidebar {
+  width: 280px;
+  background: var(--card-bg);
+  border-radius: 12px;
+  padding: 1.5rem;
+  height: fit-content;
+  position: sticky;
+  top: 100px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.filters-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid var(--border-color);
+}
+
+.filters-header h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.filters-count {
+  background: linear-gradient(135deg, #f9c5d5, #f68db5);
+  color: white;
+  font-size: 0.75rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 12px;
+  font-weight: 600;
+}
+
+#resetFilters {
+  background: none;
+  border: none;
+  color: var(--primary-color);
+  font-size: 0.875rem;
+  cursor: pointer;
+  padding: 0.25rem 0.5rem;
+  border-radius: 6px;
+  transition: all 0.3s;
+}
+
+#resetFilters:hover {
+  background: rgba(246, 141, 181, 0.1);
+}
+
+/* Groupe de filtres */
+.filter-group {
+  margin-bottom: 1.5rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.filter-group:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+
+.filter-group h4 {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 0.75rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.filter-group h4 i {
+  color: var(--primary-color);
+  font-size: 0.875rem;
+}
+
+/* Options */
+.filter-options {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.filter-option {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 6px;
+  transition: background 0.2s;
+}
+
+.filter-option:hover {
+  background: rgba(246, 141, 181, 0.05);
+}
+
+.filter-option input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+  accent-color: var(--primary-color);
+}
+
+.filter-option label {
+  flex: 1;
+  cursor: pointer;
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+}
+
+/* Prix range */
+.price-inputs {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.price-input {
+  flex: 1;
+}
+
+.price-input input {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  font-size: 0.875rem;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+}
+
+.price-input input:focus {
+  outline: none;
+  border-color: var(--primary-color);
+}
+
+.price-separator {
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+/* Couleurs */
+.color-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.color-option {
+  position: relative;
+}
+
+.color-option input {
+  display: none;
+}
+
+.color-swatch {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: all 0.3s;
+  position: relative;
+}
+
+.color-option input:checked + .color-swatch {
+  border-color: var(--primary-color);
+  transform: scale(1.1);
+}
+
+.color-option input:checked + .color-swatch::after {
+  content: '\f00c';
+  font-family: 'Font Awesome 5 Free';
+  font-weight: 900;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: white;
+  font-size: 0.75rem;
+  text-shadow: 0 0 3px rgba(0, 0, 0, 0.5);
+}
+
+/* Tailles */
+.size-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.size-option {
+  position: relative;
+}
+
+.size-option input {
+  display: none;
+}
+
+.size-label {
+  display: block;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  transition: all 0.3s;
+  text-align: center;
+  min-width: 45px;
+}
+
+.size-option input:checked + .size-label {
+  background: linear-gradient(135deg, #f9c5d5, #f68db5);
+  color: white;
+  border-color: transparent;
+}
+
+/* Résultats */
+.results-info {
+  background: linear-gradient(135deg, rgba(249, 197, 213, 0.2), rgba(246, 141, 181, 0.2));
+  padding: 1rem;
+  border-radius: 8px;
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+.results-info p {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+.results-info strong {
+  color: var(--primary-color);
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+/* Contenu principal */
+.filters-content {
+  flex: 1;
+  min-width: 0;
+}
+
+/* Toggle mobile */
+#toggleFilters {
+  display: none;
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #f9c5d5, #f68db5);
+  color: white;
+  border: none;
+  box-shadow: 0 4px 12px rgba(246, 141, 181, 0.4);
+  cursor: pointer;
+  z-index: 999;
+  font-size: 1.25rem;
+  transition: transform 0.3s;
+}
+
+#toggleFilters:hover {
+  transform: scale(1.1);
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .filters-sidebar {
+    width: 240px;
+  }
+}
+
+@media (max-width: 768px) {
+  .filters-container {
+    flex-direction: column;
+  }
+
+  .filters-sidebar {
+    position: fixed;
+    top: 0;
+    left: -100%;
+    width: 85%;
+    max-width: 320px;
+    height: 100vh;
+    z-index: 1000;
+    overflow-y: auto;
+    transition: left 0.3s;
+    box-shadow: 2px 0 12px rgba(0, 0, 0, 0.2);
+  }
+
+  .filters-sidebar.active {
+    left: 0;
+  }
+
+  #toggleFilters {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Overlay */
+  .filters-sidebar.active::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: -1;
+  }
+}
+
+/* Dark mode */
+body.dark-mode .filters-sidebar {
+  background: var(--card-bg);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+body.dark-mode .filter-option:hover {
+  background: rgba(246, 141, 181, 0.1);
+}
+
+body.dark-mode .price-input input {
+  background: var(--bg-secondary);
+  border-color: var(--border-color);
+  color: var(--text-primary);
+}

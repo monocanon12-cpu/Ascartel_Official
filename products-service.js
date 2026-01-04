@@ -213,6 +213,11 @@ class ProductsState {
           error: null
         });
 
+        // Mettre à jour le système de filtres si disponible
+        if (typeof filtersSystem !== 'undefined' && filtersSystem) {
+          filtersSystem.setProducts(data.articles);
+        }
+
         if (isEmpty) {
           this.renderEmpty();
         } else {
@@ -356,6 +361,17 @@ document.addEventListener('DOMContentLoaded', () => {
   if (productsGrid) {
     productsState = new ProductsState('productsGrid');
     productsState.loadProducts();
+    
+    // Intégrer avec le système de filtres
+    if (typeof FiltersSystem !== 'undefined' && typeof filtersSystem !== 'undefined') {
+      // Charger les produits dans le système de filtres
+      productsState.loadProducts().then(() => {
+        if (productsState.state.data) {
+          filtersSystem.setProducts(productsState.state.data);
+        }
+      });
+    }
+    
     console.log('✨ Service API Produits initialisé');
   }
 });

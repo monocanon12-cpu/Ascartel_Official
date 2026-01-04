@@ -253,8 +253,82 @@ document.addEventListener('DOMContentLoaded', function() {
   });
   
   // =============================================
-  // FILTRES AVANCÉS
+  // FILTRES AVANCÉS - Système complet
   // =============================================
+  
+  // Initialiser le système de filtres
+  let filtersSystem = null;
+  
+  if (typeof FiltersSystem !== 'undefined') {
+    filtersSystem = new FiltersSystem();
+    
+    // Callback quand les filtres changent
+    filtersSystem.onFilterChange = (filteredProducts) => {
+      // Mettre à jour l'affichage des produits
+      renderFilteredProducts(filteredProducts);
+      
+      // Mettre à jour le compteur de filtres actifs
+      const activeCount = filtersSystem.getActiveFiltersCount();
+      const countElement = document.getElementById('activeFiltersCount');
+      if (countElement) {
+        countElement.textContent = activeCount;
+        countElement.style.display = activeCount > 0 ? 'inline-block' : 'none';
+      }
+    };
+  }
+  
+  // Fonction pour rendre les produits filtrés
+  function renderFilteredProducts(products) {
+    const grid = document.getElementById('productsGrid');
+    if (!grid) return;
+    
+    if (products.length === 0) {
+      grid.innerHTML = `
+        <div style="grid-column: 1/-1; text-align: center; padding: 3rem;">
+          <i class="fas fa-search" style="font-size: 3rem; color: #d1d5db; margin-bottom: 1rem;"></i>
+          <p style="color: #6b7280; font-size: 1.125rem;">Aucun produit ne correspond à vos critères</p>
+          <button id="resetFiltersBtn" style="margin-top: 1rem; padding: 0.75rem 1.5rem; background: linear-gradient(135deg, #f9c5d5, #f68db5); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600;">
+            Réinitialiser les filtres
+          </button>
+        </div>
+      `;
+      
+      document.getElementById('resetFiltersBtn')?.addEventListener('click', () => {
+        if (filtersSystem) filtersSystem.resetFilters();
+      });
+      return;
+    }
+    
+    grid.innerHTML = products.map(product => `
+      <div class="product-card" data-product-id="${product.id}">
+        <div class="product-image">
+          ${product.flash_sale ? `<div class="flash-badge">-${product.flash_sale.discount}%</div>` : ''}
+          <button class="wishlist-btn" data-product-id="${product.id}">
+            <i class="far fa-heart"></i>
+          </button>
+          <img src="${product.image_url || 'https://via.placeholder.com/300x400'}" alt="${product.nom}" loading="lazy">
+        </div>
+        <div class="product-info">
+          <h3>${product.nom}</h3>
+          <p class="product-category">${product.category || ''}</p>
+          <div class="product-price">
+            ${product.flash_sale ? 
+              `<span class="original-price">${product.prix_original?.toLocaleString()} Ar</span>
+               <span class="sale-price">${product.prix.toLocaleString()} Ar</span>` :
+              `<span class="price">${product.prix.toLocaleString()} Ar</span>`
+            }
+          </div>
+          <button class="add-to-cart" data-product-id="${product.id}">
+            <i class="fas fa-shopping-bag"></i> Ajouter au panier
+          </button>
+        </div>
+      </div>
+    `).join('');
+    
+    // Réattacher les événements
+    wishlist.updateUI();
+  }
+  
   const filterToggle = document.getElementById('filterToggle');
   const filtersPanel = document.getElementById('filtersPanel');
   
