@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Recherche • AsCartel</title>
+  
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <link rel="stylesheet" href="design-system.css">
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="products-states.css">
+  <link rel="stylesheet" href="search.css">
+</head>
+<body>
+  <header class="main-header">
+    <div class="header-nav-wrapper">
+      <div class="header-container">
+        <a href="index.html" class="logo">
+          <span class="logo-text">As<span class="asc-c">C</span></span>
+        </a>
+        
+        <div class="header-actions">
+          <div class="search-box">
+            <input type="text" placeholder="Rechercher..." id="searchInput">
+            <button type="submit"><i class="fas fa-search"></i></button>
+          </div>
+          
+          <div class="header-icons">
+            <a href="login.html" class="icon-link">
+              <i class="far fa-user"></i>
+            </a>
+            <a href="#" class="icon-link wishlist-icon">
+              <i class="far fa-heart"></i>
+              <span class="wishlist-count">0</span>
+            </a>
+            <a href="panier.html" class="icon-link cart-icon">
+              <i class="fas fa-shopping-bag"></i>
+              <span class="cart-count">0</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div style="max-width: 1400px; margin: 40px auto; padding: 0 20px;">
+    <div style="margin-bottom: 30px;">
+      <h1 style="font-size: 2rem; margin-bottom: 10px;">
+        Résultats de recherche
+      </h1>
+      <p style="color: #6b7280;">
+        <span id="resultCount">0</span> résultats pour "<span id="searchQuery"></span>"
+      </p>
+    </div>
+
+    <div class="products-grid" id="searchResults">
+      <!-- Résultats chargés dynamiquement -->
+    </div>
+  </div>
+
+  <script src="config.js"></script>
+  <script src="cart.js"></script>
+  <script src="search.js"></script>
+  <script>
+    async function loadSearchResults() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const query = urlParams.get('q');
+
+      if (!query) {
+        window.location.href = 'index.html';
+        return;
+      }
+
+      document.getElementById('searchQuery').textContent = query;
+      document.getElementById('searchInput').value = query;
+
+      const resultsDiv = document.getElementById('searchResults');
+      resultsDiv.innerHTML = '<p style="text-align: center; padding: 40px;"><i class="fas fa-spinner fa-spin" style="font-size: 2rem; color: #f68db5;"></i></p>';
+
+      try {
+        const response = await fetch(`${CONFIG.apiUrl}/articles?limit=100`);
+        const data = await response.json();
+
+        if (data.success && data.articles) {
+          const results = data.articles.filter(article => {
+            const searchText = `${article.nom} ${article.description || ''} ${article.categorie || ''}`.toLowerCase();
+            return searchText.includes(query.toLowerCase());
+          });
+
+          document.getElementById('resultCount').textContent = results.length;
+
+          if (results.length === 0) {
+            resultsDiv.innerHTML = `
+              <div style="grid-column: 1/-1; text-align: center; padding: 80px 20px;">
+                <i class="fas fa-search" style="font-size: 4rem; color: #d1d5db; margin-bottom: 20px;"></i>
+                <h3 style="color: #374151; margin-bottom: 10px;">Aucun résultat trouvé</h3>
+                <p style="color: #6b7280; margin-bottom: 30px;">Essayez avec d'autres mots-clés</p>
+                <button class="cta-button" onclick="window.location.href='index.html'">
+                  Voir tous les produits
+                </button>
+              </div>
+            `;
+            return;
+          }
+
+          resultsDiv.innerHTML = results.map(article => `
+            <div class="product-card">
+              ${article.flash_sale && article.flash_sale.active ? 
+                `<div class="product-badge sale">-${article.flash_sale.discount}%</div>` : ''}
+              
+              <div class="product-image">
+                <img src="${article.image_url || 'https://via.placeholder.com/300x400'}" 
+                     alt="${article.nom}" 
+                     loading="lazy" />
+                <div class="product-actions">
+                  <button class="quick-view" onclick="window.location.href='produit-detail.html?id=${article.id}'">Voir plus</button>
+                  <button class="add-to-cart" 
+                          onclick="addToCart(${article.id}, '${article.nom.replace(/'/g, "\\'")}', ${article.prix}, '${article.image_url || ''}')" 
+                          ${article.stock <= 0 ? 'disabled' : ''}>
+                    ${article.stock <= 0 ? 'Indisponible' : 'Ajouter au panier'}
+                  </button>
+                </div>
+                <button class="wishlist-btn">
+                  <i class="far fa-heart"></i>
+                </button>
+              </div>
+              
+              <div class="product-info">
+                <h3>${article.nom}</h3>
+                ${article.categorie ? `<p class="product-category">${article.categorie}</p>` : ''}
+                <div class="product-rating">
+                  <div class="stars">
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star-half-alt"></i>
+                  </div>
+                  <span class="rating-count">(${Math.floor(Math.random() * 50) + 10})</span>
+                </div>
+                <div class="product-price">
+                  ${article.prix_original && article.prix_original > article.prix ? 
+                    `<span class="original-price">${article.prix_original.toLocaleString()} Ar</span>` : ''}
+                  <span class="price">${article.prix.toLocaleString()} Ar</span>
+                </div>
+              </div>
+            </div>
+          `).join('');
+        }
+      } catch (error) {
+        console.error('Erreur:', error);
+        resultsDiv.innerHTML = `
+          <div style="grid-column: 1/-1; text-align: center; padding: 80px 20px;">
+            <i class="fas fa-exclamation-triangle" style="font-size: 4rem; color: #ef4444; margin-bottom: 20px;"></i>
+            <h3 style="color: #374151;">Erreur de chargement</h3>
+            <button class="cta-button" onclick="loadSearchResults()">Réessayer</button>
+          </div>
+        `;
+      }
+    }
+
+    window.addEventListener('load', loadSearchResults);
+  </script>
+</body>
+</html>

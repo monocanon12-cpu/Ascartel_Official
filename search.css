@@ -1,0 +1,145 @@
+/* =============================================
+   ASCARTEL - Styles Recherche
+   ============================================= */
+
+.search-box {
+  position: relative;
+}
+
+.search-results {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: white;
+  border-radius: 0 0 12px 12px;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+  max-height: 400px;
+  overflow-y: auto;
+  z-index: 1000;
+  margin-top: 5px;
+}
+
+.search-result-item {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 12px 15px;
+  cursor: pointer;
+  transition: all 0.2s;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.search-result-item:last-child {
+  border-bottom: none;
+}
+
+.search-result-item:hover,
+.search-result-item.selected {
+  background: #fef3f8;
+}
+
+.search-result-item img {
+  width: 40px;
+  height: 50px;
+  object-fit: cover;
+  border-radius: 6px;
+}
+
+.result-info {
+  flex: 1;
+}
+
+.result-name {
+  font-weight: 600;
+  color: #1a1a2e;
+  margin-bottom: 3px;
+}
+
+.result-name mark {
+  background: #fef3f8;
+  color: #f68db5;
+  padding: 2px 4px;
+  border-radius: 3px;
+}
+
+.result-category {
+  font-size: 0.85rem;
+  color: #6b7280;
+}
+
+.result-price {
+  font-weight: 700;
+  color: #f68db5;
+  white-space: nowrap;
+}
+
+.search-result-item.no-results {
+  justify-content: center;
+  padding: 30px;
+  color: #6b7280;
+  cursor: default;
+}
+
+.search-result-item.no-results:hover {
+  background: white;
+}
+
+.search-result-item.no-results i {
+  font-size: 1.5rem;
+  margin-right: 10px;
+}
+
+/* Scrollbar personnalisée */
+.search-results::-webkit-scrollbar {
+  width: 6px;
+}
+
+.search-results::-webkit-scrollbar-track {
+  background: #f3f4f6;
+}
+
+.search-results::-webkit-scrollbar-thumb {
+  background: #d1d5db;
+  border-radius: 3px;
+}
+
+.search-results::-webkit-scrollbar-thumb:hover {
+  background: #9ca3af;
+}
+
+/* Animation d'entrée */
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.search-results {
+  animation: slideDown 0.2s ease;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .search-results {
+    position: fixed;
+    top: 60px;
+    left: 10px;
+    right: 10px;
+    max-height: 60vh;
+  }
+
+  .search-result-item {
+    padding: 15px;
+  }
+
+  .search-result-item img {
+    width: 50px;
+    height: 60px;
+  }
+}
