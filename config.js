@@ -1,7 +1,7 @@
 // Configuration ASCARTEL
 const CONFIG = {
   // Mode de fonctionnement : 'standalone' ou 'api'
-  mode: 'api', // Mode API pour production
+  mode: 'standalone', // Mode standalone par défaut (pas besoin du backend)
   
   // URL de l'API backend
   apiUrl: window.location.origin.includes('localhost') 

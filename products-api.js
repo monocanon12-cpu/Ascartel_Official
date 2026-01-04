@@ -25,63 +25,49 @@ async function loadProducts(genre = 'all', flashOnly = false) {
     </div>
   `;
   
-  // Mode standalone : utiliser les produits de démonstration
-  if (!USE_API && typeof CONFIG !== 'undefined' && CONFIG.demoProducts) {
-    console.log('🎨 Mode standalone : utilisation des produits de démonstration');
-    
-    let products = [...CONFIG.demoProducts]; // Copie pour éviter la mutation
-    
-    // Filtrer par genre
-    if (genre !== 'all') {
-      products = products.filter(p => p.genre === genre);
-    }
-    
-    // Filtrer par ventes flash
-    if (flashOnly) {
-      products = products.filter(p => p.flash_sale && p.flash_sale.active);
-    }
-    
-    // Simuler un délai de chargement
-    setTimeout(() => {
-      if (products.length > 0) {
-        renderProducts(products);
+  let products = [];
+  
+  // Essayer d'abord l'API, puis fallback vers standalone
+  if (USE_API) {
+    try {
+      console.log('🌐 Tentative de chargement depuis l\'API...');
+      const url = `${API_URL}/articles?limit=50`;
+      const response = await fetch(url, { timeout: 5000 });
+      const data = await response.json();
+      
+      if (data.success && data.articles && data.articles.length > 0) {
+        products = data.articles;
+        console.log('✅ Produits chargés depuis l\'API:', products.length);
       } else {
-        showEmptyState(genre);
+        throw new Error('Pas de produits dans l\'API');
       }
-    }, 300);
-    
-    return;
+    } catch (error) {
+      console.warn('⚠️ API non disponible, utilisation des produits de démonstration');
+      products = CONFIG.demoProducts || [];
+    }
+  } else {
+    console.log('🎨 Mode standalone : utilisation des produits de démonstration');
+    products = CONFIG.demoProducts || [];
   }
   
-  // Mode API : charger depuis le backend
-  try {
-    console.log('🌐 Mode API : chargement depuis le backend');
-    
-    // Construire l'URL avec les filtres
-    let url = `${API_URL}/articles?limit=50`;
-    
-    if (genre !== 'all') {
-      url += `&genre=${encodeURIComponent(genre)}`;
-    }
-    
-    if (flashOnly) {
-      url += `&flash_only=true`;
-    }
-    
-    const response = await fetch(url);
-    const data = await response.json();
-    
-    if (data.success && data.articles && data.articles.length > 0) {
-      renderProducts(data.articles);
+  // Filtrer par genre
+  if (genre !== 'all') {
+    products = products.filter(p => p.genre === genre);
+  }
+  
+  // Filtrer par ventes flash
+  if (flashOnly) {
+    products = products.filter(p => p.flash_sale && p.flash_sale.active);
+  }
+  
+  // Afficher les produits
+  setTimeout(() => {
+    if (products.length > 0) {
+      renderProducts(products);
     } else {
       showEmptyState(genre);
     }
-    
-  } catch (error) {
-    console.error('❌ Erreur chargement produits:', error);
-    console.log('💡 Astuce : Lancez le backend avec "cd backend && npm start" ou passez en mode standalone dans config.js');
-    showErrorState();
-  }
+  }, 300);
 }
 
 // =============================================
