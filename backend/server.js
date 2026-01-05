@@ -14,6 +14,7 @@ const articlesRoutes = require('./routes/articles');
 const settingsRoutes = require('./routes/settings');
 const ordersRoutes = require('./routes/orders');
 const addressesRoutes = require('./routes/addresses');
+const paymentRoutes = require('./routes/payment');
 
 const app = express();
 
@@ -107,6 +108,7 @@ app.use('/api/articles', articlesRoutes);
 app.use('/api/settings', settingsRoutes);
 app.use('/api/orders', ordersRoutes);
 app.use('/api/addresses', addressesRoutes);
+app.use('/api/payment', paymentRoutes);
 
 // Route de santé avancée
 app.get('/api/health', (req, res) => {

@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Paiement Mobile - AsCartel</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .payment-container {
+            max-width: 600px;
+            margin: 100px auto 50px;
+            padding: 2rem;
+            background: var(--bg-secondary);
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        }
+
+        .payment-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .payment-header h1 {
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .payment-amount {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin: 1rem 0;
+        }
+
+        .provider-selector {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+
+        .provider-card {
+            padding: 1.5rem;
+            border: 3px solid transparent;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+            background: white;
+        }
+
+        .provider-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+
+        .provider-card.selected {
+            border-color: var(--primary-color);
+            background: linear-gradient(135deg, #fff0f5, #ffffff);
+        }
+
+        .provider-logo {
+            font-size: 3rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .provider-name {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .payment-form {
+            margin: 2rem 0;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        .fees-info {
+            background: #fff9e6;
+            padding: 1rem;
+            border-radius: 10px;
+            margin: 1rem 0;
+            border-left: 4px solid #ffc107;
+        }
+
+        .fees-row {
+            display: flex;
+            justify-content: space-between;
+            margin: 0.5rem 0;
+        }
+
+        .fees-total {
+            font-weight: 700;
+            font-size: 1.2rem;
+            color: var(--primary-color);
+            padding-top: 0.5rem;
+            border-top: 2px solid #e0e0e0;
+        }
+
+        .pay-button {
+            width: 100%;
+            padding: 1.2rem;
+            background: linear-gradient(135deg, var(--primary-color), #ff4d8d);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .pay-button:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(246, 141, 181, 0.4);
+        }
+
+        .pay-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .transaction-status {
+            margin-top: 2rem;
+            padding: 1.5rem;
+            border-radius: 10px;
+            text-align: center;
+            display: none;
+        }
+
+        .transaction-status.pending {
+            background: #e3f2fd;
+            border: 2px solid #2196f3;
+            display: block;
+        }
+
+        .transaction-status.success {
+            background: #e8f5e9;
+            border: 2px solid #4caf50;
+            display: block;
+        }
+
+        .transaction-status.error {
+            background: #ffebee;
+            border: 2px solid #f44336;
+            display: block;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid var(--primary-color);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 1rem auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .ussd-code {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin: 1rem 0;
+            font-family: monospace;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 2rem;
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="payment-container">
+        <div class="payment-header">
+            <h1><i class="fas fa-mobile-alt"></i> Paiement Mobile</h1>
+            <p>Commande #<span id="orderId">12345</span></p>
+            <div class="payment-amount" id="paymentAmount">0 Ar</div>
+        </div>
+
+        <div class="provider-selector" id="providerSelector">
+            <div class="provider-card" data-provider="mvola">
+                <div class="provider-logo">🟢</div>
+                <div class="provider-name">MVola</div>
+            </div>
+            <div class="provider-card" data-provider="orange">
+                <div class="provider-logo">🟠</div>
+                <div class="provider-name">Orange Money</div>
+            </div>
+            <div class="provider-card" data-provider="airtel">
+                <div class="provider-logo">🔴</div>
+                <div class="provider-name">Airtel Money</div>
+            </div>
+        </div>
+
+        <form class="payment-form" id="paymentForm">
+            <div class="form-group">
+                <label for="phoneNumber">
+                    <i class="fas fa-phone"></i> Numéro de téléphone
+                </label>
+                <input 
+                    type="tel" 
+                    id="phoneNumber" 
+                    placeholder="032 00 000 00"
+                    required
+                    pattern="[0-9]{10}"
+                >
+                <small style="color: #666;">Format: 03X XX XXX XX</small>
+            </div>
+
+            <div class="form-group">
+                <label for="customerName">
+                    <i class="fas fa-user"></i> Nom complet
+                </label>
+                <input 
+                    type="text" 
+                    id="customerName" 
+                    placeholder="Votre nom"
+                    required
+                >
+            </div>
+
+            <div class="fees-info" id="feesInfo" style="display: none;">
+                <div class="fees-row">
+                    <span>Montant:</span>
+                    <span id="feeAmount">0 Ar</span>
+                </div>
+                <div class="fees-row">
+                    <span>Frais transaction:</span>
+                    <span id="feeFees">0 Ar</span>
+                </div>
+                <div class="fees-row fees-total">
+                    <span>Total à payer:</span>
+                    <span id="feeTotal">0 Ar</span>
+                </div>
+            </div>
+
+            <button type="submit" class="pay-button" id="payButton">
+                <i class="fas fa-lock"></i> Payer maintenant
+            </button>
+        </form>
+
+        <div class="transaction-status" id="transactionStatus">
+            <div class="spinner" id="spinner"></div>
+            <h3 id="statusTitle">En attente...</h3>
+            <p id="statusMessage"></p>
+            <div class="ussd-code" id="ussdCode"></div>
+            <button class="pay-button" id="checkStatusBtn" style="display: none;">
+                Vérifier le statut
+            </button>
+            <button class="pay-button" id="cancelBtn" style="display: none; background: #f44336;">
+                Annuler
+            </button>
+        </div>
+
+        <a href="panier.html" class="back-link">
+            <i class="fas fa-arrow-left"></i> Retour au panier
+        </a>
+    </div>
+
+    <script src="mobile-payment.js"></script>
+    <script>
+        const payment = new MobilePaymentMadagascar();
+        let selectedProvider = null;
+        let currentTransaction = null;
+
+        // Récupérer montant depuis URL ou localStorage
+        const urlParams = new URLSearchParams(window.location.search);
+        const amount = parseInt(urlParams.get('amount')) || 50000;
+        const orderId = urlParams.get('orderId') || `ORD-${Date.now()}`;
+
+        document.getElementById('paymentAmount').textContent = amount.toLocaleString() + ' Ar';
+        document.getElementById('orderId').textContent = orderId;
+
+        // Sélection opérateur
+        document.querySelectorAll('.provider-card').forEach(card => {
+            card.addEventListener('click', () => {
+                document.querySelectorAll('.provider-card').forEach(c => c.classList.remove('selected'));
+                card.classList.add('selected');
+                selectedProvider = card.dataset.provider;
+                updateFees();
+            });
+        });
+
+        // Mise à jour frais
+        function updateFees() {
+            if (!selectedProvider) return;
+            
+            const fees = payment.getTransactionFees(amount, selectedProvider);
+            document.getElementById('feeAmount').textContent = fees.amount.toLocaleString() + ' Ar';
+            document.getElementById('feeFees').textContent = fees.fees.toLocaleString() + ' Ar';
+            document.getElementById('feeTotal').textContent = fees.total.toLocaleString() + ' Ar';
+            document.getElementById('feesInfo').style.display = 'block';
+        }
+
+        // Auto-détection opérateur
+        document.getElementById('phoneNumber').addEventListener('input', (e) => {
+            const phone = e.target.value.replace(/\D/g, '');
+            if (phone.length >= 3) {
+                const provider = payment.detectProvider(phone);
+                if (provider) {
+                    document.querySelectorAll('.provider-card').forEach(c => c.classList.remove('selected'));
+                    document.querySelector(`[data-provider="${provider}"]`).classList.add('selected');
+                    selectedProvider = provider;
+                    updateFees();
+                }
+            }
+        });
+
+        // Soumission formulaire
+        document.getElementById('paymentForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            if (!selectedProvider) {
+                alert('Veuillez sélectionner un opérateur');
+                return;
+            }
+
+            const phoneNumber = document.getElementById('phoneNumber').value;
+            const customerName = document.getElementById('customerName').value;
+
+            try {
+                document.getElementById('payButton').disabled = true;
+                document.getElementById('transactionStatus').className = 'transaction-status pending';
+                document.getElementById('statusTitle').textContent = 'Initiation du paiement...';
+                document.getElementById('statusMessage').textContent = '';
+                document.getElementById('spinner').style.display = 'block';
+
+                const result = await payment.initiatePayment(phoneNumber, amount, orderId, customerName);
+                
+                if (result.success) {
+                    currentTransaction = result.transaction;
+                    document.getElementById('statusTitle').textContent = 'Confirmation requise';
+                    document.getElementById('statusMessage').textContent = result.message;
+                    document.getElementById('ussdCode').textContent = `*${payment.getUSSDCode(selectedProvider)}#`;
+                    document.getElementById('spinner').style.display = 'none';
+                    document.getElementById('checkStatusBtn').style.display = 'block';
+                    document.getElementById('cancelBtn').style.display = 'block';
+                }
+            } catch (error) {
+                document.getElementById('transactionStatus').className = 'transaction-status error';
+                document.getElementById('statusTitle').textContent = 'Erreur';
+                document.getElementById('statusMessage').textContent = error.message;
+                document.getElementById('spinner').style.display = 'none';
+                document.getElementById('payButton').disabled = false;
+            }
+        });
+
+        // Vérifier statut
+        document.getElementById('checkStatusBtn').addEventListener('click', async () => {
+            if (!currentTransaction) return;
+
+            document.getElementById('spinner').style.display = 'block';
+            document.getElementById('checkStatusBtn').disabled = true;
+
+            const result = await payment.checkTransactionStatus(currentTransaction.id);
+            
+            document.getElementById('spinner').style.display = 'none';
+            document.getElementById('checkStatusBtn').disabled = false;
+
+            if (result.status === 'completed') {
+                document.getElementById('transactionStatus').className = 'transaction-status success';
+                document.getElementById('statusTitle').textContent = '✅ Paiement réussi !';
+                document.getElementById('statusMessage').textContent = result.message;
+                document.getElementById('ussdCode').style.display = 'none';
+                document.getElementById('checkStatusBtn').style.display = 'none';
+                document.getElementById('cancelBtn').style.display = 'none';
+                
+                setTimeout(() => {
+                    window.location.href = 'confirmation.html?orderId=' + orderId;
+                }, 3000);
+            } else {
+                document.getElementById('statusMessage').textContent = result.message;
+            }
+        });
+
+        // Annuler
+        document.getElementById('cancelBtn').addEventListener('click', async () => {
+            if (!currentTransaction) return;
+            
+            const result = await payment.cancelTransaction(currentTransaction.id);
+            if (result.success) {
+                document.getElementById('transactionStatus').style.display = 'none';
+                document.getElementById('payButton').disabled = false;
+                currentTransaction = null;
+            }
+        });
+    </script>
+</body>
+</html>
