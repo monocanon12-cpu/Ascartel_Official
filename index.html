@@ -135,24 +135,24 @@
             <div class="dropdown-menu">
               <div class="dropdown-column">
                 <h4>Vêtements</h4>
-                <a href="index.html#products">Robes</a>
-                <a href="index.html#products">Tops & T-shirts</a>
-                <a href="index.html#products">Pantalons & Jeans</a>
-                <a href="index.html#products">Jupes</a>
-                <a href="index.html#products">Vestes & Manteaux</a>
+                <a href="index.html#products" onclick="filterByCategory('Robes')">Robes</a>
+                <a href="index.html#products" onclick="filterByCategory('Tops')">Tops & T-shirts</a>
+                <a href="index.html#products" onclick="filterByCategory('Pantalons')">Pantalons & Jeans</a>
+                <a href="index.html#products" onclick="filterByCategory('Jupes')">Jupes</a>
+                <a href="index.html#products" onclick="filterByCategory('Vestes')">Vestes & Manteaux</a>
               </div>
               <div class="dropdown-column">
                 <h4>Accessoires</h4>
-                <a href="index.html#products">Sacs</a>
-                <a href="index.html#products">Bijoux</a>
-                <a href="index.html#products">Chaussures</a>
-                <a href="index.html#products">Écharpes</a>
+                <a href="index.html#products" onclick="filterByCategory('Sacs')">Sacs</a>
+                <a href="index.html#products" onclick="filterByCategory('Bijoux')">Bijoux</a>
+                <a href="index.html#products" onclick="filterByCategory('Chaussures')">Chaussures</a>
+                <a href="index.html#products" onclick="filterByCategory('Écharpes')">Écharpes</a>
               </div>
               <div class="dropdown-column">
                 <h4>Collections</h4>
-                <a href="#" class="tag-link">#ChicFWEdit</a>
-                <a href="#" class="tag-link">#WinterVibes</a>
-                <a href="#" class="tag-link">#StreetStyle</a>
+                <a href="index.html#products" onclick="filterByTag('ChicFWEdit')" class="tag-link">#ChicFWEdit</a>
+                <a href="index.html#products" onclick="filterByTag('WinterVibes')" class="tag-link">#WinterVibes</a>
+                <a href="index.html#products" onclick="filterByTag('StreetStyle')" class="tag-link">#StreetStyle</a>
               </div>
             </div>
           </div>
@@ -161,18 +161,18 @@
             <div class="dropdown-menu">
               <div class="dropdown-column">
                 <h4>Vêtements</h4>
-                <a href="#">Chemises</a>
-                <a href="#">T-shirts & Polos</a>
-                <a href="#">Pantalons & Jeans</a>
-                <a href="#">Vestes</a>
-                <a href="#">Costumes</a>
+                <a href="index.html#products" onclick="filterByCategory('Chemises')">Chemises</a>
+                <a href="index.html#products" onclick="filterByCategory('T-shirts')">T-shirts & Polos</a>
+                <a href="index.html#products" onclick="filterByCategory('Pantalons')">Pantalons & Jeans</a>
+                <a href="index.html#products" onclick="filterByCategory('Vestes')">Vestes</a>
+                <a href="index.html#products" onclick="filterByCategory('Costumes')">Costumes</a>
               </div>
               <div class="dropdown-column">
                 <h4>Accessoires</h4>
-                <a href="#">Montres</a>
-                <a href="#">Ceintures</a>
-                <a href="#">Chaussures</a>
-                <a href="#">Sacs</a>
+                <a href="index.html#products" onclick="filterByCategory('Montres')">Montres</a>
+                <a href="index.html#products" onclick="filterByCategory('Ceintures')">Ceintures</a>
+                <a href="index.html#products" onclick="filterByCategory('Chaussures')">Chaussures</a>
+                <a href="index.html#products" onclick="filterByCategory('Sacs')">Sacs</a>
               </div>
             </div>
           </div>
@@ -181,20 +181,20 @@
             <div class="dropdown-menu">
               <div class="dropdown-column">
                 <h4>Fille</h4>
-                <a href="#">Robes</a>
-                <a href="#">Ensembles</a>
-                <a href="#">Accessoires</a>
+                <a href="index.html#products" onclick="filterByCategory('Robes')">Robes</a>
+                <a href="index.html#products" onclick="filterByCategory('Ensembles')">Ensembles</a>
+                <a href="index.html#products" onclick="filterByCategory('Accessoires')">Accessoires</a>
               </div>
               <div class="dropdown-column">
                 <h4>Garçon</h4>
-                <a href="#">T-shirts</a>
-                <a href="#">Pantalons</a>
-                <a href="#">Ensembles</a>
+                <a href="index.html#products" onclick="filterByCategory('T-shirts')">T-shirts</a>
+                <a href="index.html#products" onclick="filterByCategory('Pantalons')">Pantalons</a>
+                <a href="index.html#products" onclick="filterByCategory('Ensembles')">Ensembles</a>
               </div>
               <div class="dropdown-column">
                 <h4>Bébé</h4>
-                <a href="#">0-12 mois</a>
-                <a href="#">12-24 mois</a>
+                <a href="index.html#products" onclick="filterByCategory('0-12 mois')">0-12 mois</a>
+                <a href="index.html#products" onclick="filterByCategory('12-24 mois')">12-24 mois</a>
               </div>
             </div>
           </div>
@@ -202,16 +202,16 @@
         </nav>
         
         <div class="header-actions">
-          <div class="search-box" role="search">
-            <input type="text" placeholder="Rechercher des produits..." aria-label="Rechercher des produits" />
+          <form class="search-box" role="search" onsubmit="event.preventDefault(); window.location.href='recherche.html?q=' + encodeURIComponent(this.querySelector('input').value);">
+            <input type="text" placeholder="Rechercher des produits..." aria-label="Rechercher des produits" name="q" />
             <button type="submit" aria-label="Lancer la recherche"><i class="fas fa-search" aria-hidden="true"></i></button>
-          </div>
+          </form>
           
           <div class="header-icons">
             <a href="login.html" class="icon-link" aria-label="Compte">
               <i class="far fa-user"></i>
             </a>
-            <a href="#" class="icon-link wishlist-icon" aria-label="Favoris" id="wishlistIcon">
+            <a href="wishlist.html" class="icon-link wishlist-icon" aria-label="Favoris" id="wishlistIcon">
               <i class="far fa-heart"></i>
               <span class="wishlist-count" id="wishlistCount">0</span>
             </a>
@@ -495,7 +495,7 @@
     <div class="newsletter-content">
       <h2 id="newsletter-title">Inscrivez-vous à notre newsletter</h2>
       <p>Recevez 10% de réduction sur votre première commande</p>
-      <form class="newsletter-form">
+      <form class="newsletter-form" onsubmit="event.preventDefault(); const email = this.querySelector('input').value; if(email) { alert('✅ Merci ! Vous recevrez bientôt votre code promo de 10% par email.'); this.reset(); }">
         <input type="email" placeholder="Votre adresse email" required />
         <button type="submit" class="cta-button">S'inscrire</button>
       </form>
@@ -535,10 +535,10 @@
       <div class="footer-section">
         <h3>Rejoignez-nous</h3>
         <div class="social-links">
-          <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
-          <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
-          <a href="#" aria-label="Pinterest"><i class="fab fa-pinterest-p"></i></a>
-          <a href="#" aria-label="TikTok"><i class="fab fa-tiktok"></i></a>
+          <a href="https://facebook.com/ascartel" target="_blank" rel="noopener" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+          <a href="https://instagram.com/ascartel" target="_blank" rel="noopener" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+          <a href="https://pinterest.com/ascartel" target="_blank" rel="noopener" aria-label="Pinterest"><i class="fab fa-pinterest-p"></i></a>
+          <a href="https://tiktok.com/@ascartel" target="_blank" rel="noopener" aria-label="TikTok"><i class="fab fa-tiktok"></i></a>
         </div>
         <div class="payment-methods">
           <i class="fab fa-cc-visa"></i>
@@ -638,6 +638,28 @@
     <i class="fas fa-moon"></i>
   </button>
   <script>
+    // Fonctions de filtrage
+    function filterByCategory(category) {
+      event.preventDefault();
+      if (typeof filtersSystem !== 'undefined') {
+        // Reset puis applique filtre
+        filtersSystem.resetFilters();
+        const checkbox = document.querySelector(`input[name="category"][value="${category}"]`);
+        if (checkbox) {
+          checkbox.checked = true;
+          filtersSystem.toggleArrayFilter('category', category, true);
+        }
+      }
+      // Scroll vers produits
+      document.getElementById('products').scrollIntoView({ behavior: 'smooth' });
+    }
+    
+    function filterByTag(tag) {
+      event.preventDefault();
+      // Pour l'instant, juste scroll vers produits
+      document.getElementById('products').scrollIntoView({ behavior: 'smooth' });
+    }
+    
     // Compte à rebours (24 heures à partir de maintenant)
     function updateCountdown() {
       // Date de fin (maintenant + 24 heures)
