@@ -189,10 +189,11 @@
 .chat-input-container {
     padding: 15px;
     background: white;
-    border-top: 1px solid #f0f0f0;
+    border-top: 2px solid #f68db5;
     display: flex;
     gap: 8px;
     align-items: center;
+    box-shadow: 0 -2px 10px rgba(246, 141, 181, 0.1);
 }
 
 .pinka-voice,
@@ -225,15 +226,18 @@
 .chat-input {
     flex: 1;
     padding: 12px 15px;
-    border: 1px solid #f0f0f0;
+    border: 2px solid #f0f0f0;
     border-radius: 25px;
     outline: none;
     font-size: 14px;
-    transition: border-color 0.3s;
+    transition: all 0.3s;
+    background: #fafafa;
 }
 
 .chat-input:focus {
-    border-color: #ff6b9d;
+    border-color: #f68db5;
+    background: white;
+    box-shadow: 0 0 0 3px rgba(246, 141, 181, 0.1);
 }
 
 .send-btn {
