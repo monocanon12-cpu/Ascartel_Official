@@ -185,13 +185,41 @@
     color: #ff4d8d;
 }
 
-/* Champ de saisie */
+/* Champ de saisie v4.0 */
 .chat-input-container {
     padding: 15px;
     background: white;
     border-top: 1px solid #f0f0f0;
     display: flex;
-    gap: 10px;
+    gap: 8px;
+    align-items: center;
+}
+
+.pinka-voice,
+.pinka-image-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #f9c5d5, #f68db5);
+    color: white;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    font-size: 16px;
+}
+
+.pinka-voice:hover,
+.pinka-image-btn:hover {
+    transform: scale(1.1);
+    box-shadow: 0 4px 12px rgba(246, 141, 181, 0.4);
+}
+
+.pinka-voice.listening {
+    background: linear-gradient(135deg, #ff5252, #ff6b6b);
+    animation: pulse 1s infinite;
 }
 
 .chat-input {

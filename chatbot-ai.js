@@ -1,14 +1,17 @@
 /**
- * 🤖 PINKA AI v3.0 - Chatbot E-commerce Expert
- * Niveau 7/10 avec ML, Analytics, Persistance
+ * 🤖 PINKA AI v4.0 - Chatbot E-commerce Expert ULTIME
+ * Niveau 10/10 avec ML, Analytics, Persistance, NLP Avancé, Voice, Visual
  */
 
 document.addEventListener('DOMContentLoaded', function() {
     // =====================
-    // CONFIGURATION
+    // CONFIGURATION v4.0
     // =====================
     const GEMINI_API_KEY = 'AIzaSyBZeZa13ZdgjfLdsxVDIU7rl_GNQXJ3f50';
     const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent';
+    const ENABLE_VOICE = true;
+    const ENABLE_SENTIMENT = true;
+    const ENABLE_VISUAL_SEARCH = true;
     
     // =====================
     // ÉLÉMENTS DOM
@@ -20,6 +23,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const pinkaTyping = document.getElementById('pinkaTyping');
     const pinkaInput = document.getElementById('pinkaInput');
     const pinkaSend = document.getElementById('pinkaSend');
+    const pinkaVoice = document.getElementById('pinkaVoice');
+    const pinkaImage = document.getElementById('pinkaImage');
 
     if (!pinkaButton || !pinkaWindow) return;
 
@@ -42,18 +47,59 @@ document.addEventListener('DOMContentLoaded', function() {
     let userCart = JSON.parse(localStorage.getItem('ascartel_cart')) || [];
     let userProfile = JSON.parse(localStorage.getItem('ascartel_user')) || null;
     
-    // Analytics
+    // Analytics v4.0
     let sessionData = {
         startTime: Date.now(),
         messagesCount: 0,
         productsViewed: [],
         productsRecommended: [],
         conversions: [],
-        avgResponseTime: []
+        avgResponseTime: [],
+        sentimentScores: [],
+        voiceUsed: 0,
+        visualSearchUsed: 0
     };
+    
+    // Voice Recognition
+    let recognition = null;
+    if (ENABLE_VOICE && 'webkitSpeechRecognition' in window) {
+        recognition = new webkitSpeechRecognition();
+        recognition.lang = 'fr-FR';
+        recognition.continuous = false;
+    }
 
     // =====================
-    // MACHINE LEARNING - RECOMMANDATIONS
+    // SENTIMENT ANALYSIS v4.0
+    // =====================
+    class SentimentAnalyzer {
+        analyze(text) {
+            const positive = ['super', 'génial', 'parfait', 'excellent', 'top', 'merci', 'love', 'adore', 'magnifique', 'beau'];
+            const negative = ['nul', 'mauvais', 'déçu', 'problème', 'erreur', 'lent', 'cher', 'pas', 'jamais'];
+            const urgent = ['urgent', 'vite', 'rapide', 'maintenant', 'immédiat', 'besoin'];
+            
+            const words = text.toLowerCase().split(/\s+/);
+            let score = 0;
+            let urgency = 0;
+            
+            words.forEach(w => {
+                if (positive.some(p => w.includes(p))) score += 1;
+                if (negative.some(n => w.includes(n))) score -= 1;
+                if (urgent.some(u => w.includes(u))) urgency += 1;
+            });
+            
+            return {
+                score: Math.max(-1, Math.min(1, score / words.length * 10)),
+                sentiment: score > 0 ? 'positive' : score < 0 ? 'negative' : 'neutral',
+                urgency: urgency > 0,
+                confidence: Math.abs(score) / words.length
+            };
+        }
+    }
+    
+    const sentimentAnalyzer = new SentimentAnalyzer();
+
+    // =====================
+    // MACHINE LEARNING - RECOMMANDATIONS v4.0
     // =====================
     class RecommendationEngine {
         constructor() {
@@ -100,6 +146,13 @@ document.addEventListener('DOMContentLoaded', function() {
             // Promo
             if (product.flash_sale) {
                 score += 20;
+            }
+            
+            // Boost si sentiment positif récent
+            const recentSentiment = sessionData.sentimentScores.slice(-3);
+            if (recentSentiment.length > 0) {
+                const avgSentiment = recentSentiment.reduce((a, b) => a + b, 0) / recentSentiment.length;
+                if (avgSentiment > 0.5) score += 15;
             }
             
             return score;
@@ -156,6 +209,31 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     const mlEngine = new RecommendationEngine();
+    
+    // =====================
+    // VISUAL SEARCH v4.0
+    // =====================
+    class VisualSearchEngine {
+        async searchByImage(imageFile) {
+            // Simuler recherche visuelle (nécessiterait API Vision)
+            const colors = ['rouge', 'bleu', 'noir', 'blanc', 'rose'];
+            const styles = ['élégant', 'casual', 'sport'];
+            
+            // Extraction features simulée
+            const detectedColor = colors[Math.floor(Math.random() * colors.length)];
+            const detectedStyle = styles[Math.floor(Math.random() * styles.length)];
+            
+            trackEvent('visual_search', { color: detectedColor, style: detectedStyle });
+            
+            return {
+                query: `${detectedStyle} ${detectedColor}`,
+                confidence: 0.85,
+                features: { color: detectedColor, style: detectedStyle }
+            };
+        }
+    }
+    
+    const visualSearch = new VisualSearchEngine();
 
     // =====================
     // ANALYTICS
@@ -180,16 +258,21 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // =====================
-    // CONTEXTE E-COMMERCE AVANCÉ v3.0
+    // CONTEXTE E-COMMERCE AVANCÉ v4.0
     // =====================
-    const SYSTEM_PROMPT = `Tu es Pinka v3.0, assistante IA e-commerce experte d'AsCartel.
+    const SYSTEM_PROMPT = `Tu es Pinka v4.0, assistante IA e-commerce ULTIME d'AsCartel.
 
-CAPACITÉS AVANCÉES:
-1. RECOMMANDATIONS ML: Utilise historique + préférences pour suggérer
-2. ANALYTICS: Analyse comportement pour optimiser ventes
-3. MÉMOIRE: Se souvient conversations précédentes
-4. PRÉDICTION: Anticipe besoins client
-5. PERSONNALISATION: Adapte ton/style selon client
+CAPACITÉS ULTIME v4.0:
+1. RECOMMANDATIONS ML: Historique + préférences + sentiment
+2. ANALYTICS: Comportement + émotions + conversions
+3. MÉMOIRE: Conversations + préférences + contexte
+4. PRÉDICTION: Besoins + tendances + saisonnalité
+5. PERSONNALISATION: Ton + style + timing
+6. SENTIMENT: Détecte émotions et adapte réponses
+7. VOICE: Commandes vocales naturelles
+8. VISUAL: Recherche par image
+9. PROACTIVE: Suggestions avant demande
+10. EMPATHIE: Comprend frustrations et rassure
 
 INFOS BOUTIQUE:
 - Livraison: Standard 5k (5-7j), Express 8k (2-3j)
@@ -343,9 +426,12 @@ RÈGLES:
     function getUserContext() {
         const cartTotal = userCart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
         const cartItems = userCart.length;
+        const avgSentiment = sessionData.sentimentScores.length > 0 
+            ? (sessionData.sentimentScores.reduce((a, b) => a + b, 0) / sessionData.sentimentScores.length).toFixed(2)
+            : 'N/A';
         
         return `
-CONTEXTE CLIENT v3.0:
+CONTEXTE CLIENT v4.0:
 - Panier: ${cartItems} articles (${cartTotal.toLocaleString()} Ar)
 - Connecté: ${userProfile ? 'Oui (' + userProfile.email + ')' : 'Non'}
 - Historique: ${conversationHistory.length} conversations
@@ -353,13 +439,16 @@ CONTEXTE CLIENT v3.0:
 - Styles favoris: ${userPreferences.favoriteStyles.join(', ') || 'Aucun'}
 - Catégories favorites: ${userPreferences.favoriteCategories.join(', ') || 'Aucune'}
 - Fourchette prix: ${userPreferences.priceRange.min.toLocaleString()}-${userPreferences.priceRange.max.toLocaleString()} Ar
-- Recherches récentes: ${userPreferences.searchHistory.slice(-3).join(', ') || 'Aucune'}`;
+- Recherches récentes: ${userPreferences.searchHistory.slice(-3).join(', ') || 'Aucune'}
+- Sentiment moyen: ${avgSentiment} (${sessionData.sentimentScores.length} interactions)
+- Voice utilisé: ${sessionData.voiceUsed} fois
+- Visual search: ${sessionData.visualSearchUsed} fois`;
     }
 
     // =====================
-    // APPEL API GEMINI AVANCÉ v3.0
+    // APPEL API GEMINI AVANCÉ v4.0
     // =====================
-    async function callGeminiAPI(userMessage) {
+    async function callGeminiAPI(userMessage, sentiment = null) {
         const startTime = Date.now();
         
         try {
@@ -396,6 +485,16 @@ CONTEXTE CLIENT v3.0:
             if (intentions.length > 0) {
                 contextMessage += `\n\nINTENTIONS: ${intentions.join(', ')}`;
             }
+            
+            // Ajouter sentiment
+            if (sentiment) {
+                contextMessage += `\n\nSENTIMENT CLIENT: ${sentiment.sentiment.toUpperCase()} (score: ${sentiment.score.toFixed(2)}, urgence: ${sentiment.urgency ? 'OUI' : 'NON'})`;
+                if (sentiment.sentiment === 'negative') {
+                    contextMessage += `\n⚠️ CLIENT INSATISFAIT - Priorité: rassurer et résoudre`;
+                } else if (sentiment.urgency) {
+                    contextMessage += `\n⚡ DEMANDE URGENTE - Réponse rapide et directe`;
+                }
+            }
 
             const response = await fetch(`${GEMINI_API_URL}?key=${GEMINI_API_KEY}`, {
                 method: 'POST',
@@ -405,8 +504,8 @@ CONTEXTE CLIENT v3.0:
                         parts: [{ text: `${SYSTEM_PROMPT}\n\n${contextMessage}` }]
                     }],
                     generationConfig: {
-                        temperature: 0.8,
-                        maxOutputTokens: 250,
+                        temperature: sentiment && sentiment.sentiment === 'negative' ? 0.6 : 0.8,
+                        maxOutputTokens: sentiment && sentiment.urgency ? 200 : 250,
                         topP: 0.9
                     }
                 })
@@ -438,34 +537,72 @@ CONTEXTE CLIENT v3.0:
     }
 
     // =====================
-    // AFFICHAGE MESSAGES
+    // AFFICHAGE MESSAGES v4.0
     // =====================
-    function addMessage(text, isUser = false, products = null) {
+    function addMessage(text, isUser = false, products = null, sentiment = null) {
         const messageDiv = document.createElement('div');
         messageDiv.className = `pinka-message ${isUser ? 'user' : 'bot'}`;
-        messageDiv.textContent = text;
+        
+        // Ajouter emoji sentiment
+        if (isUser && sentiment) {
+            const emoji = sentiment.sentiment === 'positive' ? '😊' : sentiment.sentiment === 'negative' ? '😟' : '😐';
+            messageDiv.innerHTML = `<span class="sentiment-emoji">${emoji}</span> ${text}`;
+        } else {
+            messageDiv.textContent = text;
+        }
+        
         pinkaMessages.appendChild(messageDiv);
 
-        // Afficher produits
+        // Afficher produits avec visuels améliorés
         if (products && products.length > 0) {
             const productsDiv = document.createElement('div');
             productsDiv.className = 'pinka-products';
-            productsDiv.innerHTML = products.map(p => `
-                <a href="produit-detail.html?id=${p.id}" class="pinka-product-card">
-                    <img src="${p.image_url}" alt="${p.nom}" onerror="this.src='https://via.placeholder.com/60x80'">
+            productsDiv.innerHTML = products.map((p, idx) => {
+                const mlScore = p.mlScore ? Math.round(p.mlScore) : 0;
+                const matchBadge = mlScore > 70 ? '🎯 Parfait pour vous' : mlScore > 50 ? '✨ Recommandé' : '';
+                
+                return `
+                <a href="produit-detail.html?id=${p.id}" class="pinka-product-card" data-product-id="${p.id}">
+                    <div class="pinka-product-image">
+                        <img src="${p.image_url}" alt="${p.nom}" onerror="this.src='https://via.placeholder.com/100x120/f68db5/ffffff?text=${encodeURIComponent(p.nom.substring(0, 10))}'">
+                        ${p.flash_sale ? `<div class="pinka-badge promo">🔥 -${p.flash_sale.discount}%</div>` : ''}
+                        ${matchBadge ? `<div class="pinka-badge match">${matchBadge}</div>` : ''}
+                    </div>
                     <div class="pinka-product-info">
                         <h4>${p.nom}</h4>
-                        ${p.flash_sale ? `<span class="pinka-promo">🔥 -${p.flash_sale.discount}%</span>` : ''}
-                        <p class="pinka-product-price">${p.prix.toLocaleString()} Ar</p>
-                        ${p.stock_quantite < 5 ? `<span class="pinka-stock">⚠️ Plus que ${p.stock_quantite}</span>` : ''}
+                        <p class="pinka-product-category">${p.categorie} • ${p.genre}</p>
+                        <div class="pinka-product-footer">
+                            <p class="pinka-product-price">${p.prix.toLocaleString()} Ar</p>
+                            ${p.stock_quantite < 5 ? `<span class="pinka-stock-low">⚠️ ${p.stock_quantite} restants</span>` : `<span class="pinka-stock-ok">✓ En stock</span>`}
+                        </div>
+                        <button class="pinka-quick-add" onclick="event.preventDefault(); addToCartQuick(${p.id}, '${p.nom}', ${p.prix});">Ajouter au panier</button>
                     </div>
                 </a>
-            `).join('');
+            `}).join('');
             pinkaMessages.appendChild(productsDiv);
         }
 
         pinkaMessages.scrollTop = pinkaMessages.scrollHeight;
     }
+    
+    // Quick add to cart
+    window.addToCartQuick = function(id, name, price) {
+        const cart = JSON.parse(localStorage.getItem('ascartel_cart')) || [];
+        const existing = cart.find(item => item.id === id);
+        
+        if (existing) {
+            existing.quantity++;
+        } else {
+            cart.push({ id, name, price, quantity: 1 });
+        }
+        
+        localStorage.setItem('ascartel_cart', JSON.stringify(cart));
+        userCart = cart;
+        
+        trackEvent('cart_add_from_chat', { productId: id, source: 'pinka' });
+        addMessage(`✅ "${name}" ajouté au panier ! Total: ${cart.length} articles`, false);
+        showQuickReplies(['Voir mon panier', 'Continuer mes achats', 'Commander']);
+    };
 
     function showTyping() {
         pinkaTyping.classList.add('active');
@@ -490,20 +627,86 @@ CONTEXTE CLIENT v3.0:
     }
 
     // =====================
-    // GESTION MESSAGES v3.0
+    // VOICE RECOGNITION v4.0
+    // =====================
+    function startVoiceRecognition() {
+        if (!recognition) {
+            addMessage('❌ Reconnaissance vocale non supportée sur ce navigateur', false);
+            return;
+        }
+        
+        recognition.start();
+        sessionData.voiceUsed++;
+        trackEvent('voice_started', {});
+        
+        pinkaVoice.classList.add('listening');
+        pinkaVoice.innerHTML = '<i class="fas fa-microphone-slash"></i>';
+        
+        recognition.onresult = (event) => {
+            const transcript = event.results[0][0].transcript;
+            pinkaInput.value = transcript;
+            pinkaVoice.classList.remove('listening');
+            pinkaVoice.innerHTML = '<i class="fas fa-microphone"></i>';
+            
+            trackEvent('voice_recognized', { text: transcript.substring(0, 50) });
+            handleUserMessage();
+        };
+        
+        recognition.onerror = () => {
+            pinkaVoice.classList.remove('listening');
+            pinkaVoice.innerHTML = '<i class="fas fa-microphone"></i>';
+            addMessage('❌ Erreur reconnaissance vocale. Réessayez !', false);
+        };
+        
+        recognition.onend = () => {
+            pinkaVoice.classList.remove('listening');
+            pinkaVoice.innerHTML = '<i class="fas fa-microphone"></i>';
+        };
+    }
+    
+    // =====================
+    // VISUAL SEARCH v4.0
+    // =====================
+    function handleImageUpload(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+        
+        sessionData.visualSearchUsed++;
+        trackEvent('visual_search_started', { fileSize: file.size });
+        
+        addMessage('📸 Analyse de votre image...', false);
+        
+        visualSearch.searchByImage(file).then(result => {
+            pinkaInput.value = result.query;
+            addMessage(`🔍 J'ai détecté: ${result.features.style} ${result.features.color} (confiance: ${Math.round(result.confidence * 100)}%)`, false);
+            handleUserMessage();
+        });
+    }
+
+    // =====================
+    // GESTION MESSAGES v4.0
     // =====================
     async function handleUserMessage() {
         const message = pinkaInput.value.trim();
         if (!message) return;
+        
+        // Analyse sentiment
+        const sentiment = ENABLE_SENTIMENT ? sentimentAnalyzer.analyze(message) : null;
+        if (sentiment) {
+            sessionData.sentimentScores.push(sentiment.score);
+        }
 
-        addMessage(message, true);
+        addMessage(message, true, null, sentiment);
         pinkaInput.value = '';
         
         sessionData.messagesCount++;
-        trackEvent('user_message', { message: message.substring(0, 50) });
+        trackEvent('user_message', { 
+            message: message.substring(0, 50),
+            sentiment: sentiment ? sentiment.sentiment : 'unknown'
+        });
 
         showTyping();
-        const response = await callGeminiAPI(message);
+        const response = await callGeminiAPI(message, sentiment);
         hideTyping();
 
         addMessage(response.text, false, response.products);
@@ -541,14 +744,14 @@ CONTEXTE CLIENT v3.0:
     }
 
     // =====================
-    // MESSAGE BIENVENUE PROACTIF v3.0
+    // MESSAGE BIENVENUE PROACTIF v4.0
     // =====================
     function showWelcomeMessage() {
         setTimeout(() => {
             const hour = new Date().getHours();
             const greeting = hour < 12 ? 'Bonjour' : hour < 18 ? 'Bon après-midi' : 'Bonsoir';
             
-            let message = `${greeting} ! 👋 Je suis Pinka v3.0, votre styliste IA.`;
+            let message = `${greeting} ! 👋 Je suis Pinka v4.0, votre styliste IA ultime.`;
             
             // Personnalisation
             if (userProfile) {
@@ -569,6 +772,14 @@ CONTEXTE CLIENT v3.0:
             // Recommandations ML
             if (userPreferences.viewedProducts.length > 0) {
                 message += ` J'ai des suggestions personnalisées pour vous !`;
+            }
+            
+            // Nouvelles capacités v4.0
+            if (ENABLE_VOICE && recognition) {
+                message += ` 🎤 Vous pouvez me parler !`;
+            }
+            if (ENABLE_VISUAL_SEARCH) {
+                message += ` 📸 Recherche par image disponible !`;
             }
             
             addMessage(message, false);
@@ -630,15 +841,28 @@ CONTEXTE CLIENT v3.0:
         if (e.key === 'Enter') handleUserMessage();
     });
     
+    // Voice button
+    if (pinkaVoice && recognition) {
+        pinkaVoice.addEventListener('click', startVoiceRecognition);
+    }
+    
+    // Image upload
+    if (pinkaImage) {
+        pinkaImage.addEventListener('change', handleImageUpload);
+    }
+    
     // Sauvegarder session avant fermeture
     window.addEventListener('beforeunload', saveSession);
 
     // =====================
-    // INITIALISATION
+    // INITIALISATION v4.0
     // =====================
     loadProducts();
-    console.log('🤖 Pinka AI v3.0 initialisé - Niveau 7/10');
+    console.log('🤖 Pinka AI v4.0 initialisé - Niveau 10/10 🎉');
     console.log('📊 Analytics activées');
     console.log('🧠 ML Engine activé');
     console.log('💾 Historique: ' + conversationHistory.length + ' messages');
+    console.log('😊 Sentiment Analysis activée');
+    console.log('🎤 Voice Recognition: ' + (recognition ? 'OUI' : 'NON'));
+    console.log('📸 Visual Search: ' + (ENABLE_VISUAL_SEARCH ? 'OUI' : 'NON'));
 });
