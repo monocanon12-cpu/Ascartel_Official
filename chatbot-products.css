@@ -19,6 +19,7 @@
 .pinka-product-card:hover {
   background: var(--bg-primary);
   transform: translateX(4px);
+  box-shadow: 0 2px 8px rgba(246, 141, 181, 0.2);
 }
 
 .pinka-product-card img {
@@ -44,4 +45,49 @@
   font-weight: 700;
   color: var(--primary-color);
   margin: 0;
+}
+
+.pinka-promo {
+  display: inline-block;
+  background: linear-gradient(135deg, #ff6b6b, #ff5252);
+  color: white;
+  font-size: 0.7rem;
+  padding: 0.15rem 0.4rem;
+  border-radius: 4px;
+  font-weight: 700;
+  margin: 0.25rem 0;
+}
+
+.pinka-stock {
+  display: inline-block;
+  color: #ff9800;
+  font-size: 0.75rem;
+  font-weight: 600;
+  margin-top: 0.25rem;
+}
+
+/* Suggestions rapides */
+.pinka-quick-replies {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+  padding: 0.5rem;
+}
+
+.pinka-quick-btn {
+  padding: 0.5rem 0.75rem;
+  background: linear-gradient(135deg, #f9c5d5, #f68db5);
+  color: white;
+  border: none;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.pinka-quick-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(246, 141, 181, 0.3);
 }
