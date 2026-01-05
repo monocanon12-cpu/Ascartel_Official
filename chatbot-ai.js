@@ -26,7 +26,10 @@ document.addEventListener('DOMContentLoaded', function() {
     const pinkaVoice = document.getElementById('pinkaVoice');
     const pinkaImage = document.getElementById('pinkaImage');
 
-    if (!pinkaButton || !pinkaWindow) return;
+    if (!pinkaButton || !pinkaWindow || !pinkaMessages || !pinkaInput || !pinkaSend) {
+        console.error('❌ Pinka: Éléments DOM manquants');
+        return;
+    }
 
     // =====================
     // ÉTAT & PERSISTANCE
@@ -60,12 +63,17 @@ document.addEventListener('DOMContentLoaded', function() {
         visualSearchUsed: 0
     };
     
-    // Voice Recognition
+    // Voice Recognition (avec fallback)
     let recognition = null;
-    if (ENABLE_VOICE && 'webkitSpeechRecognition' in window) {
-        recognition = new webkitSpeechRecognition();
-        recognition.lang = 'fr-FR';
-        recognition.continuous = false;
+    if (ENABLE_VOICE && typeof webkitSpeechRecognition !== 'undefined') {
+        try {
+            recognition = new webkitSpeechRecognition();
+            recognition.lang = 'fr-FR';
+            recognition.continuous = false;
+            recognition.interimResults = false;
+        } catch (e) {
+            console.warn('⚠️ Voice recognition non disponible:', e);
+        }
     }
 
     // =====================
@@ -321,22 +329,34 @@ RÈGLES:
     // =====================
     async function loadProducts() {
         try {
-            const response = await fetch('https://ascartel-backend.onrender.com/api/articles');
+            const apiUrl = typeof CONFIG !== 'undefined' && CONFIG.apiUrl 
+                ? CONFIG.apiUrl + '/articles'
+                : 'https://ascartel-backend.onrender.com/api/articles';
+            
+            const response = await fetch(apiUrl);
+            if (!response.ok) throw new Error(`HTTP ${response.status}`);
+            
             const data = await response.json();
-            if (data.success) {
+            if (data.success && Array.isArray(data.articles)) {
                 productsData = data.articles;
                 trackEvent('products_loaded', { count: productsData.length });
+                console.log(`✅ ${productsData.length} produits chargés`);
+            } else {
+                throw new Error('Format de données invalide');
             }
         } catch (error) {
-            console.error('Erreur produits:', error);
+            console.error('❌ Erreur chargement produits:', error);
+            productsData = [];
         }
     }
 
     // =====================
-    // RECHERCHE INTELLIGENTE v3.0
+    // RECHERCHE INTELLIGENTE v4.0
     // =====================
     function searchProducts(query, limit = 3, useML = true) {
-        const q = query.toLowerCase();
+        if (!query || productsData.length === 0) return [];
+        
+        const q = query.toLowerCase().trim();
         
         // Mots-clés enrichis
         const keywords = {
@@ -540,13 +560,20 @@ CONTEXTE CLIENT v4.0:
     // AFFICHAGE MESSAGES v4.0
     // =====================
     function addMessage(text, isUser = false, products = null, sentiment = null) {
+        if (!pinkaMessages) return;
+        
         const messageDiv = document.createElement('div');
         messageDiv.className = `pinka-message ${isUser ? 'user' : 'bot'}`;
         
         // Ajouter emoji sentiment
         if (isUser && sentiment) {
             const emoji = sentiment.sentiment === 'positive' ? '😊' : sentiment.sentiment === 'negative' ? '😟' : '😐';
-            messageDiv.innerHTML = `<span class="sentiment-emoji">${emoji}</span> ${text}`;
+            const textNode = document.createTextNode(text);
+            const emojiSpan = document.createElement('span');
+            emojiSpan.className = 'sentiment-emoji';
+            emojiSpan.textContent = emoji + ' ';
+            messageDiv.appendChild(emojiSpan);
+            messageDiv.appendChild(textNode);
         } else {
             messageDiv.textContent = text;
         }
@@ -560,22 +587,23 @@ CONTEXTE CLIENT v4.0:
             productsDiv.innerHTML = products.map((p, idx) => {
                 const mlScore = p.mlScore ? Math.round(p.mlScore) : 0;
                 const matchBadge = mlScore > 70 ? '🎯 Parfait pour vous' : mlScore > 50 ? '✨ Recommandé' : '';
+                const productName = (p.nom || 'Produit').replace(/'/g, "\\'");
                 
                 return `
                 <a href="produit-detail.html?id=${p.id}" class="pinka-product-card" data-product-id="${p.id}">
                     <div class="pinka-product-image">
-                        <img src="${p.image_url}" alt="${p.nom}" onerror="this.src='https://via.placeholder.com/100x120/f68db5/ffffff?text=${encodeURIComponent(p.nom.substring(0, 10))}'">
+                        <img src="${p.image_url || 'https://via.placeholder.com/100x120'}" alt="${productName}" onerror="this.src='https://via.placeholder.com/100x120/f68db5/ffffff?text=${encodeURIComponent(productName.substring(0, 10))}'">
                         ${p.flash_sale ? `<div class="pinka-badge promo">🔥 -${p.flash_sale.discount}%</div>` : ''}
                         ${matchBadge ? `<div class="pinka-badge match">${matchBadge}</div>` : ''}
                     </div>
                     <div class="pinka-product-info">
-                        <h4>${p.nom}</h4>
-                        <p class="pinka-product-category">${p.categorie} • ${p.genre}</p>
+                        <h4>${productName}</h4>
+                        <p class="pinka-product-category">${p.categorie || 'Produit'} • ${p.genre || 'Unisexe'}</p>
                         <div class="pinka-product-footer">
-                            <p class="pinka-product-price">${p.prix.toLocaleString()} Ar</p>
-                            ${p.stock_quantite < 5 ? `<span class="pinka-stock-low">⚠️ ${p.stock_quantite} restants</span>` : `<span class="pinka-stock-ok">✓ En stock</span>`}
+                            <p class="pinka-product-price">${(p.prix || 0).toLocaleString()} Ar</p>
+                            ${(p.stock_quantite || 0) < 5 ? `<span class="pinka-stock-low">⚠️ ${p.stock_quantite} restants</span>` : `<span class="pinka-stock-ok">✓ En stock</span>`}
                         </div>
-                        <button class="pinka-quick-add" onclick="event.preventDefault(); addToCartQuick(${p.id}, '${p.nom}', ${p.prix});">Ajouter au panier</button>
+                        <button class="pinka-quick-add" onclick="event.preventDefault(); if(typeof addToCartQuick === 'function') addToCartQuick(${p.id}, '${productName}', ${p.prix || 0});">Ajouter au panier</button>
                     </div>
                 </a>
             `}).join('');
@@ -585,32 +613,47 @@ CONTEXTE CLIENT v4.0:
         pinkaMessages.scrollTop = pinkaMessages.scrollHeight;
     }
     
-    // Quick add to cart
+    // Quick add to cart (avec protection)
     window.addToCartQuick = function(id, name, price) {
-        const cart = JSON.parse(localStorage.getItem('ascartel_cart')) || [];
-        const existing = cart.find(item => item.id === id);
-        
-        if (existing) {
-            existing.quantity++;
-        } else {
-            cart.push({ id, name, price, quantity: 1 });
+        try {
+            const cart = JSON.parse(localStorage.getItem('ascartel_cart')) || [];
+            const existing = cart.find(item => item.id === id);
+            
+            if (existing) {
+                existing.quantity++;
+            } else {
+                cart.push({ id, name, price, quantity: 1 });
+            }
+            
+            localStorage.setItem('ascartel_cart', JSON.stringify(cart));
+            userCart = cart;
+            
+            // Mettre à jour compteur panier
+            const cartCount = document.querySelector('.cart-count');
+            if (cartCount) {
+                cartCount.textContent = cart.reduce((sum, item) => sum + item.quantity, 0);
+            }
+            
+            trackEvent('cart_add_from_chat', { productId: id, source: 'pinka' });
+            addMessage(`✅ "${name}" ajouté au panier ! Total: ${cart.length} articles`, false);
+            showQuickReplies(['Voir mon panier', 'Continuer mes achats', 'Commander']);
+        } catch (error) {
+            console.error('❌ Erreur ajout panier:', error);
+            addMessage('❌ Erreur lors de l\'ajout au panier', false);
         }
-        
-        localStorage.setItem('ascartel_cart', JSON.stringify(cart));
-        userCart = cart;
-        
-        trackEvent('cart_add_from_chat', { productId: id, source: 'pinka' });
-        addMessage(`✅ "${name}" ajouté au panier ! Total: ${cart.length} articles`, false);
-        showQuickReplies(['Voir mon panier', 'Continuer mes achats', 'Commander']);
     };
 
     function showTyping() {
-        pinkaTyping.classList.add('active');
-        pinkaMessages.scrollTop = pinkaMessages.scrollHeight;
+        if (pinkaTyping) {
+            pinkaTyping.classList.add('active');
+            pinkaMessages.scrollTop = pinkaMessages.scrollHeight;
+        }
     }
 
     function hideTyping() {
-        pinkaTyping.classList.remove('active');
+        if (pinkaTyping) {
+            pinkaTyping.classList.remove('active');
+        }
     }
 
     // =====================
@@ -635,33 +678,48 @@ CONTEXTE CLIENT v4.0:
             return;
         }
         
-        recognition.start();
-        sessionData.voiceUsed++;
-        trackEvent('voice_started', {});
-        
-        pinkaVoice.classList.add('listening');
-        pinkaVoice.innerHTML = '<i class="fas fa-microphone-slash"></i>';
-        
-        recognition.onresult = (event) => {
-            const transcript = event.results[0][0].transcript;
-            pinkaInput.value = transcript;
-            pinkaVoice.classList.remove('listening');
-            pinkaVoice.innerHTML = '<i class="fas fa-microphone"></i>';
+        try {
+            recognition.start();
+            sessionData.voiceUsed++;
+            trackEvent('voice_started', {});
             
-            trackEvent('voice_recognized', { text: transcript.substring(0, 50) });
-            handleUserMessage();
-        };
-        
-        recognition.onerror = () => {
-            pinkaVoice.classList.remove('listening');
-            pinkaVoice.innerHTML = '<i class="fas fa-microphone"></i>';
-            addMessage('❌ Erreur reconnaissance vocale. Réessayez !', false);
-        };
-        
-        recognition.onend = () => {
-            pinkaVoice.classList.remove('listening');
-            pinkaVoice.innerHTML = '<i class="fas fa-microphone"></i>';
-        };
+            if (pinkaVoice) {
+                pinkaVoice.classList.add('listening');
+                pinkaVoice.innerHTML = '<i class="fas fa-microphone-slash"></i>';
+            }
+            
+            recognition.onresult = (event) => {
+                const transcript = event.results[0][0].transcript;
+                pinkaInput.value = transcript;
+                
+                if (pinkaVoice) {
+                    pinkaVoice.classList.remove('listening');
+                    pinkaVoice.innerHTML = '<i class="fas fa-microphone"></i>';
+                }
+                
+                trackEvent('voice_recognized', { text: transcript.substring(0, 50) });
+                handleUserMessage();
+            };
+            
+            recognition.onerror = (error) => {
+                console.error('❌ Voice error:', error);
+                if (pinkaVoice) {
+                    pinkaVoice.classList.remove('listening');
+                    pinkaVoice.innerHTML = '<i class="fas fa-microphone"></i>';
+                }
+                addMessage('❌ Erreur reconnaissance vocale. Réessayez !', false);
+            };
+            
+            recognition.onend = () => {
+                if (pinkaVoice) {
+                    pinkaVoice.classList.remove('listening');
+                    pinkaVoice.innerHTML = '<i class="fas fa-microphone"></i>';
+                }
+            };
+        } catch (error) {
+            console.error('❌ Erreur démarrage voice:', error);
+            addMessage('❌ Impossible de démarrer la reconnaissance vocale', false);
+        }
     }
     
     // =====================
@@ -670,6 +728,18 @@ CONTEXTE CLIENT v4.0:
     function handleImageUpload(event) {
         const file = event.target.files[0];
         if (!file) return;
+        
+        // Vérifier type fichier
+        if (!file.type.startsWith('image/')) {
+            addMessage('❌ Veuillez sélectionner une image valide', false);
+            return;
+        }
+        
+        // Vérifier taille (max 5MB)
+        if (file.size > 5 * 1024 * 1024) {
+            addMessage('❌ Image trop volumineuse (max 5MB)', false);
+            return;
+        }
         
         sessionData.visualSearchUsed++;
         trackEvent('visual_search_started', { fileSize: file.size });
@@ -680,6 +750,9 @@ CONTEXTE CLIENT v4.0:
             pinkaInput.value = result.query;
             addMessage(`🔍 J'ai détecté: ${result.features.style} ${result.features.color} (confiance: ${Math.round(result.confidence * 100)}%)`, false);
             handleUserMessage();
+        }).catch(error => {
+            console.error('❌ Visual search error:', error);
+            addMessage('❌ Erreur lors de l\'analyse de l\'image', false);
         });
     }
 
@@ -818,32 +891,42 @@ CONTEXTE CLIENT v4.0:
     // =====================
     // ÉVÉNEMENTS
     // =====================
-    pinkaButton.addEventListener('click', (e) => {
-        e.stopPropagation();
-        isChatOpen = !isChatOpen;
-        pinkaWindow.classList.toggle('active');
-        
-        if (isChatOpen && pinkaMessages.children.length === 0) {
-            showWelcomeMessage();
-        }
-    });
+    if (pinkaButton) {
+        pinkaButton.addEventListener('click', (e) => {
+            e.stopPropagation();
+            isChatOpen = !isChatOpen;
+            pinkaWindow.classList.toggle('active');
+            
+            if (isChatOpen && pinkaMessages.children.length === 0) {
+                showWelcomeMessage();
+            }
+        });
+    }
 
-    pinkaClose.addEventListener('click', (e) => {
-        e.stopPropagation();
-        isChatOpen = false;
-        pinkaWindow.classList.remove('active');
-        saveSession();
-    });
+    if (pinkaClose) {
+        pinkaClose.addEventListener('click', (e) => {
+            e.stopPropagation();
+            isChatOpen = false;
+            pinkaWindow.classList.remove('active');
+            saveSession();
+        });
+    }
 
-    pinkaSend.addEventListener('click', handleUserMessage);
+    if (pinkaSend) {
+        pinkaSend.addEventListener('click', handleUserMessage);
+    }
 
-    pinkaInput.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') handleUserMessage();
-    });
+    if (pinkaInput) {
+        pinkaInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') handleUserMessage();
+        });
+    }
     
     // Voice button
     if (pinkaVoice && recognition) {
         pinkaVoice.addEventListener('click', startVoiceRecognition);
+    } else if (pinkaVoice) {
+        pinkaVoice.style.display = 'none';
     }
     
     // Image upload
