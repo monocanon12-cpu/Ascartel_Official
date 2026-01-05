@@ -16,6 +16,8 @@
     "backup-db": "node scripts/backup-db.js",
     "health-check": "node scripts/health-check.js",
     "test-api": "node scripts/test-api.js",
+    "test": "node tests/api.test.js",
+    "test:full": "npm run health-check && npm run test",
     "deploy": "./start-production.sh",
     "pm2:start": "pm2 start ecosystem.config.js --env production",
     "pm2:stop": "pm2 stop ascartel-api",
